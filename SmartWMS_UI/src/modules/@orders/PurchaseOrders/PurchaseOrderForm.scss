@@ -1,0 +1,5 @@
+@import '../SalesOrders/SalesOrderForm.scss';
+
+.purchase-order-form {
+  @extend .sales-order-form;
+}

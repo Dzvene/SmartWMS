@@ -1,0 +1,6 @@
+@SmartWMS.API_HostAddress = http://localhost:5064
+
+GET {{SmartWMS.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

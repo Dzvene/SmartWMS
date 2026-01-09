@@ -1,0 +1,246 @@
+.sales-order-details {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--color-background, #f5f5f5);
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 1.5rem;
+    background: var(--color-surface, #fff);
+    border-bottom: 1px solid var(--color-border, #e0e0e0);
+    gap: 1rem;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+    }
+  }
+
+  &__header-left {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  &__header-actions {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  &__title-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-text-primary, #1a1a1a);
+  }
+
+  &__subtitle {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary, #666);
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.25rem;
+  }
+
+  &__customer {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary, #666);
+  }
+
+  &__content {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+  }
+
+  &__loading,
+  &__error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 3rem;
+    text-align: center;
+    color: var(--color-text-secondary, #666);
+  }
+
+  &__readonly {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 4px;
+  text-transform: uppercase;
+
+  &--neutral {
+    background: #e0e0e0;
+    color: #424242;
+  }
+
+  &--warning {
+    background: #fff3e0;
+    color: #e65100;
+  }
+
+  &--info {
+    background: #e3f2fd;
+    color: #1565c0;
+  }
+
+  &--primary {
+    background: #e8eaf6;
+    color: #3949ab;
+  }
+
+  &--success {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  &--error {
+    background: #ffebee;
+    color: #c62828;
+  }
+}
+
+.readonly-notice {
+  padding: 1rem;
+  background: #fff3e0;
+  border: 1px solid #ffcc80;
+  border-radius: 6px;
+  color: #e65100;
+  font-size: 0.875rem;
+}
+
+.order-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  &__section {
+    background: var(--color-surface, #fff);
+    border: 1px solid var(--color-border, #e0e0e0);
+    border-radius: 8px;
+    padding: 1.5rem;
+
+    h3 {
+      margin: 0 0 1rem 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-text-primary, #1a1a1a);
+    }
+
+    dl {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      gap: 0.5rem 1rem;
+      margin: 0;
+
+      dt {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--color-text-secondary, #666);
+      }
+
+      dd {
+        margin: 0;
+        font-size: 0.875rem;
+        color: var(--color-text-primary, #1a1a1a);
+      }
+    }
+  }
+}
+
+.progress-stats {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.progress-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  &__label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--color-text-secondary, #666);
+  }
+
+  &__value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-text-primary, #1a1a1a);
+  }
+}
+
+.lines-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+
+  th,
+  td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--color-border, #e0e0e0);
+  }
+
+  th {
+    font-weight: 600;
+    color: var(--color-text-secondary, #666);
+    background: var(--color-surface-secondary, #f5f5f5);
+  }
+
+  td {
+    color: var(--color-text-primary, #1a1a1a);
+  }
+
+  tbody tr:hover {
+    background: var(--color-surface-secondary, #f9f9f9);
+  }
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--color-border, #e0e0e0);
+  background: var(--color-surface-secondary, #f5f5f5);
+}
+
+.btn-danger {
+  background: var(--color-error, #dc3545);
+  color: #fff;
+
+  &:hover:not(:disabled) {
+    background: #c82333;
+  }
+}

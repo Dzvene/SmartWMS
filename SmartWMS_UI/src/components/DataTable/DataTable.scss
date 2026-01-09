@@ -1,0 +1,209 @@
+.data-table {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border-translucent);
+  border-radius: var(--radius-8);
+  overflow: hidden;
+
+  &__container {
+    flex: 1;
+    overflow: auto;
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+  }
+
+  &__thead {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
+  &__header-row {
+    background: var(--color-bg-secondary);
+  }
+
+  &__th {
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: var(--font-weight-semibold);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--color-text-tertiary);
+    border-bottom: 1px solid var(--color-border-translucent);
+    white-space: nowrap;
+    user-select: none;
+
+    &--sortable {
+      cursor: pointer;
+      transition: color var(--speed-fast) var(--ease-out);
+
+      &:hover {
+        color: var(--color-text-primary);
+      }
+    }
+
+    &--sorted-asc,
+    &--sorted-desc {
+      color: var(--color-accent);
+    }
+  }
+
+  &__th-content {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  &__sort-icon {
+    font-size: 0.625rem;
+    color: var(--color-text-quaternary);
+    opacity: 0.5;
+
+    .data-table__th--sortable:hover & {
+      opacity: 1;
+    }
+
+    .data-table__th--sorted-asc &,
+    .data-table__th--sorted-desc & {
+      color: var(--color-accent);
+      opacity: 1;
+    }
+  }
+
+  &__tbody {
+    background: var(--color-bg-tertiary);
+  }
+
+  &__row {
+    border-bottom: 1px solid var(--color-border-translucent);
+    transition: background var(--speed-fast) var(--ease-out);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background: var(--color-bg-secondary);
+    }
+
+    &--clickable {
+      cursor: pointer;
+    }
+
+    &--selected {
+      background: var(--color-accent-tint);
+
+      &:hover {
+        background: var(--color-accent-tint);
+      }
+    }
+  }
+
+  &__td {
+    padding: 12px 16px;
+    color: var(--color-text-secondary);
+    vertical-align: middle;
+  }
+
+  &__loading-row td,
+  &__empty-row td {
+    padding: 0;
+  }
+
+  &__loading,
+  &__empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 16px;
+    color: var(--color-text-quaternary);
+    font-size: 0.875rem;
+  }
+
+  &__pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-top: 1px solid var(--color-border-translucent);
+    background: var(--color-bg-secondary);
+  }
+
+  &__pagination-info {
+    font-size: 0.8125rem;
+    color: var(--color-text-tertiary);
+  }
+
+  &__pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  &__page-size {
+    height: 32px;
+    padding: 0 8px;
+    background: var(--color-bg-tertiary);
+    border: 1px solid var(--color-border-translucent);
+    border-radius: var(--radius-4);
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    outline: none;
+
+    &:hover {
+      border-color: var(--color-border-secondary);
+    }
+
+    &:focus {
+      border-color: var(--color-border-focus);
+    }
+  }
+
+  &__page-buttons {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  &__page-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    background: var(--color-bg-tertiary);
+    border: 1px solid var(--color-border-translucent);
+    border-radius: var(--radius-4);
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all var(--speed-fast) var(--ease-out);
+
+    &:hover:not(:disabled) {
+      background: var(--color-bg-secondary);
+      border-color: var(--color-border-secondary);
+      color: var(--color-text-primary);
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+  }
+
+  &__page-indicator {
+    padding: 0 8px;
+    font-size: 0.8125rem;
+    color: var(--color-text-tertiary);
+    white-space: nowrap;
+  }
+}

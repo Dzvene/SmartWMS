@@ -1,0 +1,116 @@
+.customers {
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+  &__title-section {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+  }
+
+  &__subtitle {
+    margin: 0;
+    font-size: 0.9375rem;
+    color: var(--color-text-tertiary);
+  }
+
+  &__actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  &__btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: var(--radius-6);
+    font-size: 0.875rem;
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: all var(--speed-fast) var(--ease-out);
+
+    &--primary {
+      background: var(--color-primary);
+      color: white;
+
+      &:hover {
+        background: var(--color-primary-hover);
+      }
+    }
+  }
+
+  &__filters {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  &__search {
+    flex: 1;
+    max-width: 300px;
+    padding: 10px 12px;
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--radius-6);
+    font-size: 0.875rem;
+    background: var(--color-bg-primary);
+    color: var(--color-text-primary);
+
+    &:focus {
+      outline: none;
+      border-color: var(--color-primary);
+    }
+  }
+
+  &__filter-select {
+    padding: 10px 12px;
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--radius-6);
+    font-size: 0.875rem;
+    background: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    cursor: pointer;
+
+    &:focus {
+      outline: none;
+      border-color: var(--color-primary);
+    }
+  }
+
+  &__code {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--color-text-secondary);
+  }
+
+  &__name {
+    font-weight: var(--font-weight-medium);
+  }
+
+  &__status {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: var(--radius-4);
+    font-size: 0.75rem;
+    font-weight: var(--font-weight-medium);
+
+    &--active {
+      background: rgba(var(--color-success-rgb), 0.1);
+      color: var(--color-success);
+    }
+
+    &--inactive {
+      background: var(--color-bg-quaternary);
+      color: var(--color-text-tertiary);
+    }
+  }
+}

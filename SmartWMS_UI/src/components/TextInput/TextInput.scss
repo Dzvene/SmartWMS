@@ -1,0 +1,116 @@
+.form-input {
+  width: 100%;
+  margin-bottom: 1.5rem;
+  max-width: 100%;
+
+  &--disabled {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  &__label {
+    display: block;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+    font-size: var(--font-size-small);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+
+  &__required {
+    color: var(--color-error);
+    margin-left: 0.25rem;
+  }
+
+  &__wrapper {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-start;
+    align-items: center;
+    background: var(--form-bg);
+    border: 2px solid var(--form-border);
+    border-radius: var(--radius-6);
+    position: relative;
+    transition: var(--speed-regular) var(--ease-out);
+    overflow: hidden;
+
+    &:hover {
+      border-color: var(--form-border-hover);
+    }
+
+    &:focus-within {
+      border-color: var(--form-border-focus);
+    }
+
+    &--borderless {
+      border: none;
+      background: transparent;
+    }
+
+    &--error {
+      border-color: var(--color-error);
+
+      &:focus-within {
+        border-color: var(--color-error);
+      }
+    }
+  }
+
+  &__control {
+    flex: 1;
+    font-weight: 400;
+    font-size: var(--font-size-regular);
+    line-height: 1.5;
+    color: var(--form-text);
+    padding: 0.75rem 1rem;
+    border: none;
+    outline: none;
+    background: transparent;
+    width: 100%;
+
+    &::placeholder {
+      color: var(--form-placeholder);
+      opacity: 1;
+    }
+
+    &:disabled {
+      background: var(--color-bg-secondary);
+      color: var(--color-text-tertiary);
+      cursor: not-allowed;
+    }
+  }
+
+  &__visibility-toggle {
+    margin-right: 0.25rem;
+    color: var(--color-text-tertiary);
+    padding: 0.5rem;
+    border-radius: var(--radius-6);
+
+    &:hover {
+      background: var(--color-bg-quaternary);
+      color: var(--color-text-secondary);
+    }
+  }
+
+  &__help {
+    color: var(--color-text-tertiary);
+    padding-top: 0.5rem;
+    width: 100%;
+    font-size: var(--font-size-small);
+    line-height: 1.4;
+  }
+
+  &--sm {
+    .form-input__control {
+      padding: 4px 5px;
+      font-size: var(--font-size-small);
+    }
+  }
+
+  &--lg {
+    .form-input__control {
+      padding: 4px 5px;
+      font-size: var(--font-size-large);
+    }
+  }
+}

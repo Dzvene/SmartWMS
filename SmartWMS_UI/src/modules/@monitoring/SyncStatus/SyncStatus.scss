@@ -1,0 +1,121 @@
+.sync-status {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 16px;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__title-section {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+  }
+
+  &__actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  &__summary {
+    display: flex;
+    gap: 16px;
+  }
+
+  &__stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 24px;
+    background: var(--color-bg-tertiary);
+    border: 1px solid var(--color-border-translucent);
+    border-radius: var(--radius-8);
+    min-width: 120px;
+
+    &--running {
+      border-color: var(--color-success);
+      background: var(--color-success-bg);
+    }
+
+    &--error {
+      border-color: var(--color-error);
+      background: var(--color-error-bg);
+    }
+  }
+
+  &__stat-value {
+    font-size: 1.5rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+  }
+
+  &__stat-label {
+    font-size: 0.75rem;
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  &__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+}
+
+.sync-type {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--radius-4);
+  font-size: 0.6875rem;
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+
+  &--inbound {
+    background: rgba(74, 194, 139, 0.15);
+    color: var(--color-success);
+  }
+
+  &--outbound {
+    background: rgba(58, 123, 255, 0.15);
+    color: var(--color-accent);
+  }
+
+  &--bidirectional {
+    background: rgba(245, 166, 35, 0.15);
+    color: var(--color-warning);
+  }
+}
+
+.status-badge__dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  margin-right: 6px;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}

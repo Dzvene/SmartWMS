@@ -1,0 +1,9 @@
+@import '../SalesOrders/SalesOrderDetails.scss';
+
+.purchase-order-details {
+  @extend .sales-order-details;
+
+  &__supplier {
+    @extend .sales-order-details__customer;
+  }
+}

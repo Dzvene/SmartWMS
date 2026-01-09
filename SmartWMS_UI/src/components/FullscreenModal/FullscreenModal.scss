@@ -1,0 +1,242 @@
+.fullscreen-modal {
+  &__overlay {
+    position: fixed;
+    inset: 0;
+    z-index: var(--layer-dialog);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-overlay-primary);
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: var(--color-bg-primary);
+  animation: slideUp 0.25s ease-out;
+
+  @media (min-width: 768px) {
+    height: auto;
+    max-height: 90vh;
+    border-radius: var(--radius-12);
+    box-shadow: var(--overlay-shadow);
+  }
+
+  &--sm {
+    @media (min-width: 768px) {
+      max-width: 480px;
+    }
+  }
+
+  &--md {
+    @media (min-width: 768px) {
+      max-width: 640px;
+    }
+  }
+
+  &--lg {
+    @media (min-width: 768px) {
+      max-width: 800px;
+    }
+  }
+
+  &--xl {
+    @media (min-width: 768px) {
+      max-width: 1024px;
+    }
+  }
+
+  &--full {
+    @media (min-width: 768px) {
+      max-width: calc(100vw - 48px);
+      max-height: calc(100vh - 48px);
+    }
+  }
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--color-border-translucent);
+    flex-shrink: 0;
+  }
+
+  &__header-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+  }
+
+  &__subtitle {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--color-text-tertiary);
+  }
+
+  &__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-6);
+    color: var(--color-text-tertiary);
+    cursor: pointer;
+    transition: all var(--speed-fast) var(--ease-out);
+
+    &:hover {
+      background: var(--color-bg-secondary);
+      color: var(--color-text-primary);
+    }
+  }
+
+  &__body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 24px;
+    border-top: 1px solid var(--color-border-translucent);
+    background: var(--color-bg-secondary);
+    flex-shrink: 0;
+  }
+}
+
+// Modal Section
+.modal-section {
+  margin-bottom: 24px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 16px;
+
+    &--collapsible {
+      cursor: pointer;
+      padding: 8px;
+      margin: -8px -8px 8px;
+      border-radius: var(--radius-6);
+      transition: background var(--speed-fast) var(--ease-out);
+
+      &:hover {
+        background: var(--color-bg-secondary);
+      }
+    }
+  }
+
+  &__header-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+  }
+
+  &__description {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--color-text-tertiary);
+  }
+
+  &__toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    color: var(--color-text-tertiary);
+    cursor: pointer;
+    transition: transform var(--speed-fast) var(--ease-out);
+
+    svg {
+      transition: transform var(--speed-fast) var(--ease-out);
+    }
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
+// Form grid for modal content
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+
+  &--single {
+    grid-template-columns: 1fr;
+  }
+
+  &--triple {
+    grid-template-columns: repeat(3, 1fr);
+
+    @media (max-width: 800px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+// Animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,0 +1,143 @@
+:root {
+  /* === Colors === */
+
+  --color-white: #ffffff;
+
+  /* === Backgrounds === */
+  --color-bg-primary: #0F0F12;
+  --color-bg-secondary: rgba(255,255,255,0.06);
+  --color-bg-tertiary: #1A1A1F;
+  --color-bg-quaternary: #202026;
+  --color-bg-quinary: #26262D;
+  --color-bg-marketing: #0D0D10;
+
+  /* === Surfaces === */
+  --color-surface-primary: #22222A;
+
+  /* === Depth Levels === */
+  --color-bg-level-1: #15151A;
+  --color-bg-level-2: #1C1C22;
+  --color-bg-level-3: #22222A;
+  --color-bg-tint: #1A1A1F;
+
+  /* === Borders === */
+  --color-border-primary: #2D2E35;
+  --color-border-secondary: #3A3B43;
+  --color-border-tertiary: #474952;
+  --color-border-translucent: rgba(255,255,255,0.08);
+  --color-border-focus: #3A7BFF;
+
+  /* === Text === */
+  --color-text-primary: #F2F2F5;
+  --color-text-secondary: #C5C7D0;
+  --color-text-tertiary: #9A9DA6;
+  --color-text-quaternary: #6C6F78;
+  --color-text-link: #6BA4FF;
+
+  /* === Brand === */
+  --color-brand-bg: #3A7BFF;
+  --color-accent: #3A7BFF;
+  --color-accent-hover: #5590FF;
+  --color-accent-tint: #13203A;
+  --color-link-primary: #6BA4FF;
+  --color-primary-hover: #5590FF;
+
+  /* === Feedback === */
+  --color-success: #4AC28B;
+  --color-warning: #F5A623;
+  --color-error: #F45C5C;
+
+  --color-success-bg: rgba(74,194,139,0.12);
+  --color-warning-bg: rgba(245,166,35,0.12);
+  --color-error-bg: rgba(244,92,92,0.12);
+
+  /* === Header === */
+  --header-bg: rgba(12,12,16,0.85);
+  --header-border: rgba(255,255,255,0.05);
+
+  /* === Overlay === */
+  --color-overlay-primary: rgba(0,0,0,0.92);
+  --modal-overlay: rgba(26,26,31,0.75);
+  --color-overlay-dim-rgb: 255,255,255;
+  --overlay-bg: rgba(0,0,0,0.65);
+  --overlay-blur: blur(12px);
+  --overlay-border: rgba(255,255,255,0.06);
+  --overlay-shadow: 0 20px 40px rgba(0,0,0,0.55);
+
+  /* === Shadows === */
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+  --shadow-lg: 0 20px 50px rgba(0,0,0,0.6);
+
+  /* === Selection === */
+  --color-selection-text: #ffffff;
+  --color-selection-bg: color-mix(in lch, #3A7BFF, #000 12%);
+  --color-selection-dim: color-mix(in lch, #3A7BFF, transparent 70%);
+
+  /* === Icons === */
+  --icon-color-primary: #D0D3DB;
+  --icon-color-secondary: #8D9098;
+  --icon-color-hover: #ffffff;
+  --icon-color-disabled: #51535A;
+  --icon-grayscale-image-filter: grayscale(100%) brightness(380%);
+
+  /* === Lines === */
+  --color-line-primary: rgba(255,255,255,0.10);
+  --color-line-secondary: #292A2F;
+  --color-line-tertiary: #1B1C1F;
+  --color-line-quaternary: #141416;
+
+  /* === Forms === */
+  --form-bg: #1A1A20;
+  --form-border: #2A2B30;
+  --form-border-hover: #3B3C42;
+  --form-border-focus: #3A7BFF;
+  --form-text: var(--color-text-primary);
+  --form-placeholder: #82848E;
+
+  /* === Layout === */
+  --header-height: 64px;
+  --sidebar-width: 240px;
+  --sidebar-collapsed-width: 64px;
+  --page-padding-inline: 24px;
+  --page-padding-block: 64px;
+  --page-max-width: 1024px;
+
+  /* === Typography === */
+  --font-regular: "IBM Plex Sans", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "JetBrains Mono", "Roboto Mono", "SF Mono", "Consolas", monospace;
+  --font-weight-regular: 400;
+  --font-weight-semibold: 600;
+
+  --font-size-small: 0.875rem;
+  --font-size-regular: 0.9375rem;
+  --font-size-large: 1.125rem;
+  --font-size-title: 1.5rem;
+
+  /* === Border Radius === */
+  --radius-4: 4px;
+  --radius-6: 6px;
+  --radius-8: 8px;
+  --radius-12: 12px;
+  --radius-md: 6px;
+  --radius-rounded: 9999px;
+
+  /* === Z-Index === */
+  --layer-header: 100;
+  --layer-popover: 600;
+  --layer-dialog: 700;
+  --layer-tooltip: 1100;
+
+  /* === Transitions === */
+  --speed-fast: 0.1s;
+  --speed-quick: 0.1s;
+  --speed-regular: 0.25s;
+  --ease-out: cubic-bezier(0.215, 0.61, 0.355, 1);
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-theme: background 0.3s ease, color 0.3s ease;
+
+  /* === Scrollbar === */
+  --scrollbar-size: 6px;
+  --scrollbar-color: hsla(0, 0%, 100%, 0.10);
+}

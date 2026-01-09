@@ -1,0 +1,149 @@
+@import '../../@outbound/Picking/PickTaskExecution.scss';
+
+.receiving-execution {
+  @extend .pick-task-execution;
+
+  &__loading { @extend .pick-task-execution__loading; }
+  &__error { @extend .pick-task-execution__error; }
+  &__header { @extend .pick-task-execution__header; }
+  &__header-left { @extend .pick-task-execution__header-left; }
+  &__title-section { @extend .pick-task-execution__title-section; }
+  &__title { @extend .pick-task-execution__title; }
+  &__content { @extend .pick-task-execution__content; }
+  &__actions { @extend .pick-task-execution__actions; }
+  &__completed { @extend .pick-task-execution__completed; }
+
+  &__header-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+}
+
+.task-card__progress {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.task-card__progress-text {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.progress-bar {
+  height: 8px;
+  background: var(--background-color);
+  border-radius: 4px;
+  overflow: hidden;
+
+  &__fill {
+    height: 100%;
+    background: var(--primary-color);
+    transition: width 0.3s ease;
+  }
+}
+
+.receiving-section {
+  background: var(--surface-color);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    background: var(--background-color);
+    border-bottom: 1px solid var(--border-color);
+
+    h3 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+  }
+}
+
+.receiving-lines {
+  overflow-x: auto;
+}
+
+.receiving-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  th {
+    background: var(--background-color);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    letter-spacing: 0.5px;
+  }
+
+  &__sku {
+    font-family: var(--font-mono);
+    font-weight: 600;
+  }
+
+  &__received {
+    color: var(--success-color);
+    font-weight: 600;
+  }
+
+  &__remaining {
+    color: var(--warning-color);
+    font-weight: 600;
+  }
+
+  &__done {
+    color: var(--success-color);
+    font-size: 1.25rem;
+  }
+
+  &__row--complete {
+    background: var(--success-bg);
+    opacity: 0.7;
+  }
+}
+
+.receive-line-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: var(--background-color);
+  border-radius: 6px;
+
+  &__sku {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 1.125rem;
+  }
+
+  &__name {
+    color: var(--text-secondary);
+  }
+
+  &__remaining {
+    margin-top: 0.5rem;
+    color: var(--primary-color);
+    font-weight: 500;
+  }
+}
+
+.form-field__optional {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: normal;
+  margin-left: 0.5rem;
+}

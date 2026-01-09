@@ -1,0 +1,40 @@
+@import '../../@outbound/Picking/PickTaskExecution.scss';
+
+.putaway-task-execution {
+  @extend .pick-task-execution;
+
+  &__loading { @extend .pick-task-execution__loading; }
+  &__error { @extend .pick-task-execution__error; }
+  &__header { @extend .pick-task-execution__header; }
+  &__header-left { @extend .pick-task-execution__header-left; }
+  &__title-section { @extend .pick-task-execution__title-section; }
+  &__title { @extend .pick-task-execution__title; }
+  &__content { @extend .pick-task-execution__content; }
+  &__actions { @extend .pick-task-execution__actions; }
+  &__completed { @extend .pick-task-execution__completed; }
+
+  &__complete-form {
+    background: var(--surface-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1rem;
+    }
+  }
+}
+
+.form-field__with-button {
+  display: flex;
+  gap: 0.5rem;
+
+  .form-field__input {
+    flex: 1;
+  }
+}

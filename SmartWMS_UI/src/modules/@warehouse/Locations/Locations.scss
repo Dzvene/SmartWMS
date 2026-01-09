@@ -1,0 +1,244 @@
+// =============================================================================
+// Locations List
+// =============================================================================
+
+.locations {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 16px;
+
+  &__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+}
+
+// Location name cell with badge
+.location-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.location-name {
+  font-weight: var(--font-weight-medium);
+}
+
+.location-code {
+  font-family: var(--font-family-mono);
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+}
+
+.location-type-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-4);
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
+
+  &--bulk {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+  }
+
+  &--pick {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+  }
+
+  &--staging {
+    background: rgba(251, 191, 36, 0.15);
+    color: #f59e0b;
+  }
+
+  &--receiving {
+    background: rgba(20, 184, 166, 0.15);
+    color: #14b8a6;
+  }
+
+  &--shipping {
+    background: rgba(236, 72, 153, 0.15);
+    color: #ec4899;
+  }
+
+  &--returns {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+  }
+
+  &--quarantine {
+    background: rgba(249, 115, 22, 0.15);
+    color: #f97316;
+  }
+
+  &--reserve {
+    background: rgba(168, 85, 247, 0.15);
+    color: #a855f7;
+  }
+}
+
+// =============================================================================
+// Location Details / Create Page
+// Uses same layout classes as Zones (.zone-details pattern)
+// =============================================================================
+
+.location-details {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0; // Allow shrinking for parent flex
+  gap: 24px;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0; // Header stays fixed height
+  }
+
+  &__header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  &__title-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+  }
+
+  &__content {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 24px;
+    flex: 1;
+    min-height: 0; // Critical for overflow to work
+    overflow: hidden; // Prevent content from overflowing
+
+    @media (max-width: 1024px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__form-container {
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border-translucent);
+    border-radius: var(--radius-12);
+    padding: 24px;
+    overflow-y: auto;
+
+    &--full {
+      grid-column: 1 / -1;
+      max-width: 900px;
+    }
+  }
+
+  &__sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    @media (max-width: 1024px) {
+      order: -1;
+    }
+  }
+
+  &__loading,
+  &__not-found {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    height: 100%;
+    color: var(--color-text-secondary);
+  }
+}
+
+// =============================================================================
+// Location Form
+// =============================================================================
+
+.location-form {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+// Form grid with 4 columns for position fields
+.form-grid--4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+// Form grid with 3 columns for dimensions
+.form-grid--3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+// =============================================================================
+// Location Flags
+// =============================================================================
+
+.location-flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.location-flag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-4);
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
+
+  &--pick {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+  }
+
+  &--putaway {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+  }
+
+  &--receiving {
+    background: rgba(20, 184, 166, 0.15);
+    color: #14b8a6;
+  }
+
+  &--shipping {
+    background: rgba(236, 72, 153, 0.15);
+    color: #ec4899;
+  }
+}
