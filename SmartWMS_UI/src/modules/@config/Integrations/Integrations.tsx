@@ -1,9 +1,26 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useIntl } from 'react-intl';
+import { useForm } from 'react-hook-form';
 import { DataTable, createColumns } from '@/components/DataTable';
 import { FullscreenModal, ModalSection } from '@/components/FullscreenModal';
-import { useGetIntegrationsQuery } from '@/api/modules/integrations';
-import type { IntegrationSummaryDto, IntegrationType, IntegrationStatus, SyncStatus } from '@/api/modules/integrations';
+import { Modal } from '@/components';
+import {
+  useGetIntegrationsQuery,
+  useCreateIntegrationMutation,
+  useUpdateIntegrationMutation,
+  useDeleteIntegrationMutation,
+  useActivateIntegrationMutation,
+  useDeactivateIntegrationMutation,
+  useTestIntegrationConnectionMutation,
+} from '@/api/modules/integrations';
+import type {
+  IntegrationSummaryDto,
+  IntegrationType,
+  IntegrationStatus,
+  SyncStatus,
+  CreateIntegrationRequest,
+  UpdateIntegrationRequest,
+} from '@/api/modules/integrations';
 import './Integrations.scss';
 
 const typeLabels: Record<IntegrationType, string> = {
@@ -15,6 +32,8 @@ const typeLabels: Record<IntegrationType, string> = {
   Custom: 'Custom',
 };
 
+const INTEGRATION_TYPES: IntegrationType[] = ['ERP', 'Ecommerce', 'Carrier', 'Accounting', 'CRM', 'Custom'];
+
 const statusClassMap: Record<IntegrationStatus, string> = {
   Active: 'active',
   Inactive: 'inactive',
@@ -23,6 +42,17 @@ const statusClassMap: Record<IntegrationStatus, string> = {
   Disconnected: 'inactive',
 };
 
+interface IntegrationFormData {
+  name: string;
+  integrationType: IntegrationType;
+  providerName: string;
+  description: string;
+  baseUrl: string;
+  apiVersion: string;
+  authType: string;
+  syncSchedule: string;
+}
+
 /**
  * Integrations Module
  *
@@ -30,14 +60,17 @@ const statusClassMap: Record<IntegrationStatus, string> = {
  */
 export function Integrations() {
   const { formatMessage } = useIntl();
-  const t = (id: string) => formatMessage({ id });
+  const t = (id: string, defaultMessage?: string) => formatMessage({ id, defaultMessage });
 
   const [searchQuery, setSearchQuery] = useState('');
   const [paginationState, setPaginationState] = useState({ page: 1, pageSize: 25 });
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingIntegration, setEditingIntegration] = useState<IntegrationSummaryDto | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [testResult, setTestResult] = useState<{ success: boolean; message: string } | null>(null);
 
+  // API
   const { data, isLoading } = useGetIntegrationsQuery({
     page: paginationState.page,
     pageSize: paginationState.pageSize,
@@ -47,29 +80,83 @@ export function Integrations() {
   const integrations = data?.data?.items ?? [];
   const totalRows = data?.data?.totalCount ?? 0;
 
+  const [createIntegration, { isLoading: isCreating }] = useCreateIntegrationMutation();
+  const [updateIntegration, { isLoading: isUpdating }] = useUpdateIntegrationMutation();
+  const [deleteIntegration, { isLoading: isDeleting }] = useDeleteIntegrationMutation();
+  const [activateIntegration] = useActivateIntegrationMutation();
+  const [deactivateIntegration] = useDeactivateIntegrationMutation();
+  const [testConnection, { isLoading: isTesting }] = useTestIntegrationConnectionMutation();
+
+  // Form
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<IntegrationFormData>({
+    defaultValues: {
+      name: '',
+      integrationType: 'ERP',
+      providerName: '',
+      description: '',
+      baseUrl: '',
+      apiVersion: '',
+      authType: 'ApiKey',
+      syncSchedule: '',
+    },
+  });
+
+  // Reset form when editing changes
+  useEffect(() => {
+    if (editingIntegration) {
+      reset({
+        name: editingIntegration.name,
+        integrationType: editingIntegration.integrationType,
+        providerName: editingIntegration.providerName,
+        description: '',
+        baseUrl: '',
+        apiVersion: '',
+        authType: 'ApiKey',
+        syncSchedule: '',
+      });
+    } else {
+      reset({
+        name: '',
+        integrationType: 'ERP',
+        providerName: '',
+        description: '',
+        baseUrl: '',
+        apiVersion: '',
+        authType: 'ApiKey',
+        syncSchedule: '',
+      });
+    }
+    setTestResult(null);
+  }, [editingIntegration, reset]);
+
   const columnHelper = createColumns<IntegrationSummaryDto>();
 
   const columns = useMemo(
     () => [
       columnHelper.accessor('name', {
-        header: t('common.name'),
+        header: t('common.name', 'Name'),
         size: 180,
         cell: ({ getValue }) => <strong>{getValue()}</strong>,
       }),
       columnHelper.accessor('integrationType', {
-        header: t('common.type'),
+        header: t('common.type', 'Type'),
         size: 120,
         cell: ({ getValue }) => (
           <span className="integration-type">{typeLabels[getValue()]}</span>
         ),
       }),
       columnHelper.accessor('providerName', {
-        header: 'Provider',
+        header: t('integrations.provider', 'Provider'),
         size: 140,
         cell: ({ getValue }) => getValue() || '—',
       }),
       columnHelper.accessor('status', {
-        header: t('integrations.status'),
+        header: t('integrations.status', 'Status'),
         size: 120,
         cell: ({ getValue }) => {
           const status = getValue();
@@ -81,7 +168,7 @@ export function Integrations() {
         },
       }),
       columnHelper.accessor('lastSyncAt', {
-        header: t('integrations.lastSync'),
+        header: t('integrations.lastSync', 'Last Sync'),
         size: 160,
         cell: ({ getValue }) => {
           const value = getValue();
@@ -90,7 +177,7 @@ export function Integrations() {
         },
       }),
       columnHelper.accessor('lastSyncStatus', {
-        header: 'Sync Status',
+        header: t('integrations.syncStatus', 'Sync Status'),
         size: 120,
         cell: ({ getValue }) => {
           const status = getValue() as SyncStatus | undefined;
@@ -114,19 +201,92 @@ export function Integrations() {
     setModalOpen(true);
   };
 
-  const handleSave = () => {
+  const handleCloseModal = () => {
     setModalOpen(false);
+    setEditingIntegration(null);
+    setTestResult(null);
   };
+
+  const onSubmit = async (data: IntegrationFormData) => {
+    try {
+      if (editingIntegration) {
+        const updateData: UpdateIntegrationRequest = {
+          name: data.name,
+          description: data.description || undefined,
+          baseUrl: data.baseUrl || undefined,
+          apiVersion: data.apiVersion || undefined,
+          syncSchedule: data.syncSchedule || undefined,
+        };
+        await updateIntegration({ id: editingIntegration.id, data: updateData }).unwrap();
+      } else {
+        const createData: CreateIntegrationRequest = {
+          name: data.name,
+          integrationType: data.integrationType,
+          providerName: data.providerName,
+          description: data.description || undefined,
+          baseUrl: data.baseUrl || undefined,
+          apiVersion: data.apiVersion || undefined,
+          authType: data.authType || undefined,
+          syncSchedule: data.syncSchedule || undefined,
+        };
+        await createIntegration(createData).unwrap();
+      }
+      handleCloseModal();
+    } catch (error) {
+      console.error('Failed to save integration:', error);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!editingIntegration) return;
+
+    try {
+      await deleteIntegration(editingIntegration.id).unwrap();
+      setDeleteConfirmOpen(false);
+      handleCloseModal();
+    } catch (error) {
+      console.error('Failed to delete integration:', error);
+    }
+  };
+
+  const handleToggleStatus = async () => {
+    if (!editingIntegration) return;
+
+    try {
+      if (editingIntegration.status === 'Active') {
+        await deactivateIntegration(editingIntegration.id).unwrap();
+      } else {
+        await activateIntegration(editingIntegration.id).unwrap();
+      }
+      handleCloseModal();
+    } catch (error) {
+      console.error('Failed to toggle integration status:', error);
+    }
+  };
+
+  const handleTestConnection = async () => {
+    if (!editingIntegration) return;
+
+    try {
+      const result = await testConnection(editingIntegration.id).unwrap();
+      setTestResult(result.data || { success: false, message: 'Unknown error' });
+    } catch (error) {
+      setTestResult({ success: false, message: 'Connection test failed' });
+    }
+  };
+
+  const isSaving = isCreating || isUpdating;
 
   return (
     <div className="integrations">
       <header className="integrations__header">
         <div className="integrations__title-section">
-          <h1 className="integrations__title">{t('integrations.title')}</h1>
+          <h1 className="integrations__title">{t('integrations.title', 'Integrations')}</h1>
+          <p className="integrations__subtitle">{t('integrations.subtitle', 'Connect external systems')}</p>
         </div>
         <div className="integrations__actions">
-          <button className="btn btn-primary" onClick={handleAdd}>
-            {t('common.add')}
+          <button className="btn btn--primary" onClick={handleAdd}>
+            {t('integrations.addIntegration', 'Add Integration')}
           </button>
         </div>
       </header>
@@ -136,7 +296,7 @@ export function Integrations() {
           <input
             type="search"
             className="integrations__search-input"
-            placeholder={t('common.search')}
+            placeholder={t('common.search', 'Search...')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -159,100 +319,208 @@ export function Integrations() {
           onRowClick={handleRowClick}
           getRowId={(row) => row.id}
           loading={isLoading}
-          emptyMessage={t('common.noData')}
+          emptyMessage={t('common.noData', 'No data found')}
         />
       </div>
 
+      {/* Integration Form Modal */}
       <FullscreenModal
         open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        title={editingIntegration ? 'Edit Integration' : 'Add Integration'}
-        subtitle={editingIntegration ? `Editing ${editingIntegration.name}` : 'Configure external system connection'}
-        onSave={handleSave}
+        onClose={handleCloseModal}
+        title={editingIntegration ? t('integrations.editIntegration', 'Edit Integration') : t('integrations.addIntegration', 'Add Integration')}
+        subtitle={editingIntegration ? `${editingIntegration.providerName} - ${editingIntegration.name}` : t('integrations.configureConnection', 'Configure external system connection')}
+        onSave={handleSubmit(onSubmit)}
+        saveLabel={isSaving ? t('common.saving', 'Saving...') : t('common.save', 'Save')}
+        saveDisabled={isSaving}
         maxWidth="lg"
       >
-        <ModalSection title="Connection Details">
-          <div className="form-grid">
-            <div className="form-field">
-              <label className="form-field__label">{t('common.name')}</label>
-              <input
-                type="text"
-                className="form-field__input"
-                defaultValue={editingIntegration?.name}
-                placeholder="Integration name"
-              />
+        <form>
+          <ModalSection title={t('integrations.connectionDetails', 'Connection Details')}>
+            <div className="form-grid">
+              <div className="form-field">
+                <label className="form-field__label">
+                  {t('common.name', 'Name')} <span className="required">*</span>
+                </label>
+                <input
+                  type="text"
+                  className={`form-field__input ${errors.name ? 'form-field__input--error' : ''}`}
+                  placeholder="My ERP Integration"
+                  {...register('name', { required: t('validation.required', 'Required') })}
+                />
+                {errors.name && <span className="form-field__error">{errors.name.message}</span>}
+              </div>
+              <div className="form-field">
+                <label className="form-field__label">
+                  {t('common.type', 'Type')} <span className="required">*</span>
+                </label>
+                <select
+                  className="form-field__select"
+                  disabled={!!editingIntegration}
+                  {...register('integrationType')}
+                >
+                  {INTEGRATION_TYPES.map(type => (
+                    <option key={type} value={type}>{typeLabels[type]}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-field">
+                <label className="form-field__label">
+                  {t('integrations.provider', 'Provider')} <span className="required">*</span>
+                </label>
+                <input
+                  type="text"
+                  className={`form-field__input ${errors.providerName ? 'form-field__input--error' : ''}`}
+                  placeholder="SAP, Shopify, etc."
+                  disabled={!!editingIntegration}
+                  {...register('providerName', { required: !editingIntegration ? t('validation.required', 'Required') : false })}
+                />
+                {errors.providerName && <span className="form-field__error">{errors.providerName.message}</span>}
+              </div>
+              <div className="form-field form-field--full">
+                <label className="form-field__label">{t('integrations.description', 'Description')}</label>
+                <textarea
+                  className="form-field__textarea"
+                  rows={2}
+                  placeholder={t('integrations.descriptionPlaceholder', 'Optional description...')}
+                  {...register('description')}
+                />
+              </div>
             </div>
-            <div className="form-field">
-              <label className="form-field__label">{t('common.type')}</label>
-              <select className="form-field__select" defaultValue={editingIntegration?.integrationType || ''}>
-                <option value="">Select type...</option>
-                <option value="ERP">ERP</option>
-                <option value="Ecommerce">E-commerce</option>
-                <option value="Carrier">Carrier</option>
-                <option value="Accounting">Accounting</option>
-                <option value="CRM">CRM</option>
-                <option value="Custom">Custom</option>
-              </select>
-            </div>
-          </div>
-        </ModalSection>
+          </ModalSection>
 
-        <ModalSection title="API Configuration">
-          <div className="form-grid--single">
-            <div className="form-field">
-              <label className="form-field__label">{t('integrations.apiEndpoint')}</label>
-              <input
-                type="url"
-                className="form-field__input"
-                placeholder="https://api.example.com"
-              />
+          <ModalSection title={t('integrations.apiConfiguration', 'API Configuration')}>
+            <div className="form-grid">
+              <div className="form-field form-field--full">
+                <label className="form-field__label">{t('integrations.apiEndpoint', 'API Endpoint')}</label>
+                <input
+                  type="url"
+                  className="form-field__input"
+                  placeholder="https://api.example.com"
+                  {...register('baseUrl')}
+                />
+              </div>
+              <div className="form-field">
+                <label className="form-field__label">{t('integrations.apiVersion', 'API Version')}</label>
+                <input
+                  type="text"
+                  className="form-field__input"
+                  placeholder="v1"
+                  {...register('apiVersion')}
+                />
+              </div>
+              <div className="form-field">
+                <label className="form-field__label">{t('integrations.authType', 'Auth Type')}</label>
+                <select className="form-field__select" {...register('authType')}>
+                  <option value="ApiKey">API Key</option>
+                  <option value="OAuth2">OAuth 2.0</option>
+                  <option value="Basic">Basic Auth</option>
+                  <option value="Bearer">Bearer Token</option>
+                  <option value="Custom">Custom</option>
+                </select>
+              </div>
             </div>
-          </div>
-          <div className="form-grid">
-            <div className="form-field">
-              <label className="form-field__label">API Key</label>
-              <input
-                type="password"
-                className="form-field__input"
-                placeholder="Enter API key"
-              />
-            </div>
-            <div className="form-field">
-              <label className="form-field__label">API Secret</label>
-              <input
-                type="password"
-                className="form-field__input"
-                placeholder="Enter API secret"
-              />
-            </div>
-          </div>
-        </ModalSection>
 
-        <ModalSection title="Sync Settings" description="Configure synchronization frequency" collapsible defaultExpanded={false}>
-          <div className="form-grid">
-            <div className="form-field">
-              <label className="form-field__label">Sync Frequency</label>
-              <select className="form-field__select" defaultValue="30">
-                <option value="5">Every 5 minutes</option>
-                <option value="15">Every 15 minutes</option>
-                <option value="30">Every 30 minutes</option>
-                <option value="60">Every hour</option>
-                <option value="1440">Daily</option>
-              </select>
+            {editingIntegration && (
+              <div className="form-actions" style={{ marginTop: '1rem' }}>
+                <button
+                  type="button"
+                  className="btn btn--secondary"
+                  onClick={handleTestConnection}
+                  disabled={isTesting}
+                >
+                  {isTesting ? t('integrations.testing', 'Testing...') : t('integrations.testConnection', 'Test Connection')}
+                </button>
+                {testResult && (
+                  <span className={`test-result ${testResult.success ? 'test-result--success' : 'test-result--error'}`}>
+                    {testResult.success ? '✓ ' : '✗ '}{testResult.message}
+                  </span>
+                )}
+              </div>
+            )}
+          </ModalSection>
+
+          <ModalSection title={t('integrations.syncSettings', 'Sync Settings')} collapsible defaultExpanded={false}>
+            <div className="form-grid">
+              <div className="form-field">
+                <label className="form-field__label">{t('integrations.syncSchedule', 'Sync Schedule')}</label>
+                <input
+                  type="text"
+                  className="form-field__input"
+                  placeholder="0 */6 * * *"
+                  {...register('syncSchedule')}
+                />
+                <p className="form-field__hint">
+                  {t('integrations.cronHint', 'Cron expression (e.g., 0 */6 * * * for every 6 hours)')}
+                </p>
+              </div>
             </div>
-            <div className="form-field">
-              <label className="form-field__label">Retry Attempts</label>
-              <input
-                type="number"
-                className="form-field__input"
-                defaultValue={3}
-                min={1}
-                max={10}
-              />
-            </div>
-          </div>
-        </ModalSection>
+          </ModalSection>
+
+          {editingIntegration && (
+            <>
+              <ModalSection title={t('integrations.status', 'Status')}>
+                <div className="form-grid">
+                  <div className="form-field">
+                    <p>
+                      {t('integrations.currentStatus', 'Current Status')}: {' '}
+                      <span className={`status-badge status-badge--${statusClassMap[editingIntegration.status]}`}>
+                        {editingIntegration.status}
+                      </span>
+                    </p>
+                    <button
+                      type="button"
+                      className={`btn ${editingIntegration.status === 'Active' ? 'btn--warning' : 'btn--success'}`}
+                      onClick={handleToggleStatus}
+                      style={{ marginTop: '1rem' }}
+                    >
+                      {editingIntegration.status === 'Active'
+                        ? t('integrations.deactivate', 'Deactivate')
+                        : t('integrations.activate', 'Activate')}
+                    </button>
+                  </div>
+                </div>
+              </ModalSection>
+
+              <ModalSection title={t('common.dangerZone', 'Danger Zone')}>
+                <div className="danger-zone">
+                  <p>{t('integrations.deleteWarning', 'Deleting an integration will remove all sync history and webhooks.')}</p>
+                  <button
+                    type="button"
+                    className="btn btn--danger"
+                    onClick={() => setDeleteConfirmOpen(true)}
+                  >
+                    {t('integrations.deleteIntegration', 'Delete Integration')}
+                  </button>
+                </div>
+              </ModalSection>
+            </>
+          )}
+        </form>
       </FullscreenModal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        open={deleteConfirmOpen}
+        onClose={() => setDeleteConfirmOpen(false)}
+        title={t('integrations.deleteIntegration', 'Delete Integration')}
+      >
+        <div className="modal__body">
+          <p>
+            {t(
+              'integrations.deleteConfirmation',
+              `Are you sure you want to delete "${editingIntegration?.name}"? This will remove all sync history and webhooks.`
+            )}
+          </p>
+        </div>
+        <div className="modal__actions">
+          <button className="btn btn-ghost" onClick={() => setDeleteConfirmOpen(false)}>
+            {t('common.cancel', 'Cancel')}
+          </button>
+          <button className="btn btn--danger" onClick={handleDelete} disabled={isDeleting}>
+            {isDeleting ? t('common.deleting', 'Deleting...') : t('common.delete', 'Delete')}
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 }

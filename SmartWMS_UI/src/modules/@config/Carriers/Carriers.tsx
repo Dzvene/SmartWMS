@@ -1,11 +1,23 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useIntl } from 'react-intl';
+import { useForm } from 'react-hook-form';
 import type { ColumnDef } from '@tanstack/react-table';
 
 import { DataTable } from '@/components/DataTable';
-import { FullscreenModal } from '@/components/FullscreenModal';
-import { useGetCarriersQuery } from '@/api/modules/carriers';
-import type { CarrierListDto, CarrierIntegrationType } from '@/api/modules/carriers';
+import { FullscreenModal, ModalSection } from '@/components/FullscreenModal';
+import { Modal } from '@/components';
+import {
+  useGetCarriersQuery,
+  useCreateCarrierMutation,
+  useUpdateCarrierMutation,
+  useDeleteCarrierMutation,
+} from '@/api/modules/carriers';
+import type {
+  CarrierListDto,
+  CarrierIntegrationType,
+  CreateCarrierRequest,
+  UpdateCarrierRequest,
+} from '@/api/modules/carriers';
 
 const INTEGRATION_LABELS: Record<CarrierIntegrationType, string> = {
   Manual: 'Manual',
@@ -13,6 +25,23 @@ const INTEGRATION_LABELS: Record<CarrierIntegrationType, string> = {
   EDI: 'EDI',
   File: 'File Import',
 };
+
+const INTEGRATION_TYPES: CarrierIntegrationType[] = ['Manual', 'API', 'EDI', 'File'];
+
+interface CarrierFormData {
+  code: string;
+  name: string;
+  description: string;
+  contactName: string;
+  phone: string;
+  email: string;
+  website: string;
+  accountNumber: string;
+  integrationType: CarrierIntegrationType;
+  defaultServiceCode: string;
+  notes: string;
+  isActive: boolean;
+}
 
 /**
  * Carriers Configuration Module
@@ -36,6 +65,70 @@ export function Carriers() {
 
   const [selectedCarrier, setSelectedCarrier] = useState<CarrierListDto | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+
+  // API mutations
+  const [createCarrier, { isLoading: isCreating }] = useCreateCarrierMutation();
+  const [updateCarrier, { isLoading: isUpdating }] = useUpdateCarrierMutation();
+  const [deleteCarrier, { isLoading: isDeleting }] = useDeleteCarrierMutation();
+
+  // Form
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<CarrierFormData>({
+    defaultValues: {
+      code: '',
+      name: '',
+      description: '',
+      contactName: '',
+      phone: '',
+      email: '',
+      website: '',
+      accountNumber: '',
+      integrationType: 'Manual',
+      defaultServiceCode: '',
+      notes: '',
+      isActive: true,
+    },
+  });
+
+  // Reset form when editing changes
+  useEffect(() => {
+    if (selectedCarrier) {
+      reset({
+        code: selectedCarrier.code,
+        name: selectedCarrier.name,
+        description: '',
+        contactName: '',
+        phone: '',
+        email: '',
+        website: '',
+        accountNumber: '',
+        integrationType: selectedCarrier.integrationType,
+        defaultServiceCode: '',
+        notes: '',
+        isActive: selectedCarrier.isActive,
+      });
+    } else {
+      reset({
+        code: '',
+        name: '',
+        description: '',
+        contactName: '',
+        phone: '',
+        email: '',
+        website: '',
+        accountNumber: '',
+        integrationType: 'Manual',
+        defaultServiceCode: '',
+        notes: '',
+        isActive: true,
+      });
+    }
+  }, [selectedCarrier, reset]);
 
   const columns = useMemo<ColumnDef<CarrierListDto, unknown>[]>(
     () => [
@@ -65,7 +158,6 @@ export function Carriers() {
         accessorKey: 'serviceCount',
         header: t('carriers.services', 'Services'),
         size: 100,
-        meta: { align: 'right' },
         cell: ({ getValue }) => `${getValue()} services`,
       },
       {
@@ -98,6 +190,11 @@ export function Carriers() {
     setIsModalOpen(true);
   };
 
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedCarrier(null);
+  };
+
   const handlePageChange = (page: number) => {
     setFilters((prev) => ({ ...prev, page }));
   };
@@ -105,6 +202,59 @@ export function Carriers() {
   const handleSearch = (value: string) => {
     setFilters((prev) => ({ ...prev, search: value, page: 1 }));
   };
+
+  const onSubmit = async (data: CarrierFormData) => {
+    try {
+      if (selectedCarrier) {
+        const updateData: UpdateCarrierRequest = {
+          name: data.name,
+          description: data.description || undefined,
+          contactName: data.contactName || undefined,
+          phone: data.phone || undefined,
+          email: data.email || undefined,
+          website: data.website || undefined,
+          accountNumber: data.accountNumber || undefined,
+          integrationType: data.integrationType,
+          defaultServiceCode: data.defaultServiceCode || undefined,
+          notes: data.notes || undefined,
+          isActive: data.isActive,
+        };
+        await updateCarrier({ id: selectedCarrier.id, body: updateData }).unwrap();
+      } else {
+        const createData: CreateCarrierRequest = {
+          code: data.code,
+          name: data.name,
+          description: data.description || undefined,
+          contactName: data.contactName || undefined,
+          phone: data.phone || undefined,
+          email: data.email || undefined,
+          website: data.website || undefined,
+          accountNumber: data.accountNumber || undefined,
+          integrationType: data.integrationType,
+          defaultServiceCode: data.defaultServiceCode || undefined,
+          notes: data.notes || undefined,
+        };
+        await createCarrier(createData).unwrap();
+      }
+      handleCloseModal();
+    } catch (error) {
+      console.error('Failed to save carrier:', error);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!selectedCarrier) return;
+
+    try {
+      await deleteCarrier(selectedCarrier.id).unwrap();
+      setDeleteConfirmOpen(false);
+      handleCloseModal();
+    } catch (error) {
+      console.error('Failed to delete carrier:', error);
+    }
+  };
+
+  const isSaving = isCreating || isUpdating;
 
   return (
     <div className="page">
@@ -167,40 +317,186 @@ export function Carriers() {
         />
       </div>
 
+      {/* Carrier Form Modal */}
       <FullscreenModal
         open={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title={selectedCarrier ? `Edit ${selectedCarrier.name}` : t('carriers.addCarrier', 'Add Carrier')}
+        onClose={handleCloseModal}
+        title={selectedCarrier ? t('carriers.editCarrier', 'Edit Carrier') : t('carriers.addCarrier', 'Add Carrier')}
+        subtitle={selectedCarrier ? `${selectedCarrier.code} - ${selectedCarrier.name}` : undefined}
+        onSave={handleSubmit(onSubmit)}
+        saveLabel={isSaving ? t('common.saving', 'Saving...') : t('common.save', 'Save')}
+        saveDisabled={isSaving}
+        maxWidth="lg"
       >
-        <div className="form">
-          {selectedCarrier ? (
-            <div className="carrier-details">
-              <div className="form-group">
-                <label>{t('carriers.carrierCode', 'Code')}</label>
-                <p>{selectedCarrier.code}</p>
+        <form>
+          <ModalSection title={t('carriers.basicInfo', 'Basic Information')}>
+            <div className="form-grid">
+              <div className="form-field">
+                <label className="form-field__label">
+                  {t('carriers.carrierCode', 'Code')} <span className="required">*</span>
+                </label>
+                <input
+                  type="text"
+                  className={`form-field__input ${errors.code ? 'form-field__input--error' : ''}`}
+                  placeholder="UPS"
+                  disabled={!!selectedCarrier}
+                  {...register('code', { required: t('validation.required', 'Required') })}
+                />
+                {errors.code && <span className="form-field__error">{errors.code.message}</span>}
               </div>
-              <div className="form-group">
-                <label>{t('carriers.carrierName', 'Name')}</label>
-                <p>{selectedCarrier.name}</p>
+              <div className="form-field">
+                <label className="form-field__label">
+                  {t('carriers.carrierName', 'Name')} <span className="required">*</span>
+                </label>
+                <input
+                  type="text"
+                  className={`form-field__input ${errors.name ? 'form-field__input--error' : ''}`}
+                  placeholder="United Parcel Service"
+                  {...register('name', { required: t('validation.required', 'Required') })}
+                />
+                {errors.name && <span className="form-field__error">{errors.name.message}</span>}
               </div>
-              <div className="form-group">
-                <label>{t('carriers.integrationType', 'Integration Type')}</label>
-                <p>{INTEGRATION_LABELS[selectedCarrier.integrationType]}</p>
+              <div className="form-field">
+                <label className="form-field__label">{t('carriers.integrationType', 'Integration Type')}</label>
+                <select className="form-field__select" {...register('integrationType')}>
+                  {INTEGRATION_TYPES.map((type) => (
+                    <option key={type} value={type}>
+                      {INTEGRATION_LABELS[type]}
+                    </option>
+                  ))}
+                </select>
               </div>
-              <div className="form-group">
-                <label>{t('carriers.services', 'Services')}</label>
-                <p>{selectedCarrier.serviceCount} services configured</p>
+              <div className="form-field">
+                <label className="form-field__label">{t('carriers.accountNumber', 'Account Number')}</label>
+                <input
+                  type="text"
+                  className="form-field__input"
+                  placeholder="123456789"
+                  {...register('accountNumber')}
+                />
               </div>
-              <div className="form-group">
-                <label>{t('common.status', 'Status')}</label>
-                <p>{selectedCarrier.isActive ? 'Active' : 'Inactive'}</p>
+              <div className="form-field form-field--full">
+                <label className="form-field__label">{t('carriers.description', 'Description')}</label>
+                <textarea
+                  className="form-field__textarea"
+                  rows={2}
+                  placeholder={t('carriers.descriptionPlaceholder', 'Optional description...')}
+                  {...register('description')}
+                />
+              </div>
+              <div className="form-field">
+                <label className="form-checkbox">
+                  <input type="checkbox" {...register('isActive')} />
+                  <span>{t('common.active', 'Active')}</span>
+                </label>
               </div>
             </div>
-          ) : (
-            <p>{t('carriers.formPlaceholder', 'Carrier configuration form will be implemented here.')}</p>
+          </ModalSection>
+
+          <ModalSection title={t('carriers.contactInfo', 'Contact Information')} collapsible defaultExpanded>
+            <div className="form-grid">
+              <div className="form-field">
+                <label className="form-field__label">{t('carriers.contactName', 'Contact Name')}</label>
+                <input
+                  type="text"
+                  className="form-field__input"
+                  placeholder="John Doe"
+                  {...register('contactName')}
+                />
+              </div>
+              <div className="form-field">
+                <label className="form-field__label">{t('carriers.phone', 'Phone')}</label>
+                <input
+                  type="tel"
+                  className="form-field__input"
+                  placeholder="+1 800 742 5877"
+                  {...register('phone')}
+                />
+              </div>
+              <div className="form-field">
+                <label className="form-field__label">{t('carriers.email', 'Email')}</label>
+                <input
+                  type="email"
+                  className="form-field__input"
+                  placeholder="support@carrier.com"
+                  {...register('email')}
+                />
+              </div>
+              <div className="form-field">
+                <label className="form-field__label">{t('carriers.website', 'Website')}</label>
+                <input
+                  type="url"
+                  className="form-field__input"
+                  placeholder="https://www.ups.com"
+                  {...register('website')}
+                />
+              </div>
+            </div>
+          </ModalSection>
+
+          <ModalSection title={t('carriers.settings', 'Settings')} collapsible defaultExpanded={false}>
+            <div className="form-grid">
+              <div className="form-field">
+                <label className="form-field__label">{t('carriers.defaultService', 'Default Service Code')}</label>
+                <input
+                  type="text"
+                  className="form-field__input"
+                  placeholder="GROUND"
+                  {...register('defaultServiceCode')}
+                />
+              </div>
+              <div className="form-field form-field--full">
+                <label className="form-field__label">{t('carriers.notes', 'Notes')}</label>
+                <textarea
+                  className="form-field__textarea"
+                  rows={3}
+                  placeholder={t('carriers.notesPlaceholder', 'Internal notes...')}
+                  {...register('notes')}
+                />
+              </div>
+            </div>
+          </ModalSection>
+
+          {selectedCarrier && (
+            <ModalSection title={t('common.dangerZone', 'Danger Zone')}>
+              <div className="danger-zone">
+                <p>{t('carriers.deleteWarning', 'Deleting a carrier will remove all associated services.')}</p>
+                <button
+                  type="button"
+                  className="btn btn--danger"
+                  onClick={() => setDeleteConfirmOpen(true)}
+                >
+                  {t('carriers.deleteCarrier', 'Delete Carrier')}
+                </button>
+              </div>
+            </ModalSection>
           )}
-        </div>
+        </form>
       </FullscreenModal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        open={deleteConfirmOpen}
+        onClose={() => setDeleteConfirmOpen(false)}
+        title={t('carriers.deleteCarrier', 'Delete Carrier')}
+      >
+        <div className="modal__body">
+          <p>
+            {t(
+              'carriers.deleteConfirmation',
+              `Are you sure you want to delete "${selectedCarrier?.name}"? This will also remove all associated services.`
+            )}
+          </p>
+        </div>
+        <div className="modal__actions">
+          <button className="btn btn-ghost" onClick={() => setDeleteConfirmOpen(false)}>
+            {t('common.cancel', 'Cancel')}
+          </button>
+          <button className="btn btn--danger" onClick={handleDelete} disabled={isDeleting}>
+            {isDeleting ? t('common.deleting', 'Deleting...') : t('common.delete', 'Delete')}
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 }
