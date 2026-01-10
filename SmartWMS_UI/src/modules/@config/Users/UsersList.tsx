@@ -87,10 +87,15 @@ export function UsersList() {
   };
 
   return (
-    <div className="users">
-      <header className="users__header">
-        <div className="users__title-section">
-          <h1 className="users__title">{t('users.title', 'Users')}</h1>
+    <div className="page">
+      <header className="page__header">
+        <div className="page__title-section">
+          <h1 className="page__title">{t('users.title', 'Users')}</h1>
+        </div>
+        <div className="page__actions">
+          <button className="btn btn--primary" onClick={handleAddUser}>
+            {t('users.addUser', 'Add User')}
+          </button>
         </div>
       </header>
 
@@ -104,14 +109,9 @@ export function UsersList() {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <div className="page-actions">
-          <button className="btn btn-primary" onClick={handleAddUser}>
-            {t('users.addUser', 'Add User')}
-          </button>
-        </div>
       </div>
 
-      <div className="users__content">
+      <div className="page__content">
         <DataTable
           data={users}
           columns={columns}

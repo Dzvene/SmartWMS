@@ -108,8 +108,8 @@ export function Carriers() {
 
   return (
     <div className="page">
-      <div className="page__header">
-        <div>
+      <header className="page__header">
+        <div className="page__title-section">
           <h1 className="page__title">{t('carriers.title', 'Carriers')}</h1>
           <p className="page__subtitle">{t('carriers.subtitle', 'Manage shipping carriers and services')}</p>
         </div>
@@ -118,31 +118,35 @@ export function Carriers() {
             {t('carriers.addCarrier', 'Add Carrier')}
           </button>
         </div>
-      </div>
+      </header>
 
-      <div className="page__filters">
-        <input
-          type="text"
-          className="input"
-          placeholder={t('common.search', 'Search...')}
-          value={filters.search}
-          onChange={(e) => handleSearch(e.target.value)}
-        />
-        <select
-          className="select"
-          value={filters.isActive === undefined ? '' : filters.isActive.toString()}
-          onChange={(e) =>
-            setFilters((prev) => ({
-              ...prev,
-              isActive: e.target.value === '' ? undefined : e.target.value === 'true',
-              page: 1,
-            }))
-          }
-        >
-          <option value="">{t('carriers.allStatuses', 'All')}</option>
-          <option value="true">{t('status.active', 'Active')}</option>
-          <option value="false">{t('status.inactive', 'Inactive')}</option>
-        </select>
+      <div className="page-toolbar">
+        <div className="page-search">
+          <input
+            type="text"
+            className="page-search__input"
+            placeholder={t('common.search', 'Search...')}
+            value={filters.search}
+            onChange={(e) => handleSearch(e.target.value)}
+          />
+        </div>
+        <div className="page-filters">
+          <select
+            className="page-filter__select"
+            value={filters.isActive === undefined ? '' : filters.isActive.toString()}
+            onChange={(e) =>
+              setFilters((prev) => ({
+                ...prev,
+                isActive: e.target.value === '' ? undefined : e.target.value === 'true',
+                page: 1,
+              }))
+            }
+          >
+            <option value="">{t('carriers.allStatuses', 'All')}</option>
+            <option value="true">{t('status.active', 'Active')}</option>
+            <option value="false">{t('status.inactive', 'Inactive')}</option>
+          </select>
+        </div>
       </div>
 
       <div className="page__content">

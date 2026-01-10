@@ -125,15 +125,15 @@ export function PurchaseOrders() {
   };
 
   return (
-    <div className="purchase-orders">
-      <header className="purchase-orders__header">
-        <div className="purchase-orders__title-section">
-          <h1 className="purchase-orders__title">{t('purchaseOrders.title', 'Purchase Orders')}</h1>
-          <p className="purchase-orders__subtitle">
+    <div className="page">
+      <header className="page__header">
+        <div className="page__title-section">
+          <h1 className="page__title">{t('purchaseOrders.title', 'Purchase Orders')}</h1>
+          <p className="page__subtitle">
             {t('purchaseOrders.subtitle', 'Manage supplier orders and receiving')}
           </p>
         </div>
-        <div className="purchase-orders__actions">
+        <div className="page__actions">
           <button className="btn btn--primary" onClick={handleCreateOrder}>
             {t('purchaseOrders.createOrder', 'Create PO')}
           </button>
@@ -168,7 +168,7 @@ export function PurchaseOrders() {
         </div>
       </div>
 
-      <div className="purchase-orders__content">
+      <div className="page__content">
         <DataTable
           data={orders}
           columns={columns}

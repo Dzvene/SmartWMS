@@ -147,15 +147,15 @@ export function SalesOrders() {
   };
 
   return (
-    <div className="sales-orders">
-      <header className="sales-orders__header">
-        <div className="sales-orders__title-section">
-          <h1 className="sales-orders__title">{t('salesOrders.title', 'Sales Orders')}</h1>
-          <p className="sales-orders__subtitle">
+    <div className="page">
+      <header className="page__header">
+        <div className="page__title-section">
+          <h1 className="page__title">{t('salesOrders.title', 'Sales Orders')}</h1>
+          <p className="page__subtitle">
             {t('salesOrders.subtitle', 'Manage customer orders and fulfillment')}
           </p>
         </div>
-        <div className="sales-orders__actions">
+        <div className="page__actions">
           <button className="btn btn--primary" onClick={handleCreateOrder}>
             {t('salesOrders.createOrder', 'Create Order')}
           </button>
@@ -192,7 +192,7 @@ export function SalesOrders() {
         </div>
       </div>
 
-      <div className="sales-orders__content">
+      <div className="page__content">
         <DataTable
           data={orders}
           columns={columns}

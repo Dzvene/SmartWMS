@@ -101,12 +101,19 @@ export function ZonesList() {
   };
 
   return (
-    <div className="zones">
-      <header className="page-header">
-        <h1 className="page-header__title">{t('zone.title', 'Zones')}</h1>
-        <p className="page-header__subtitle">
-          {t('zone.subtitle', 'Manage warehouse zones for storage and operations')}
-        </p>
+    <div className="page">
+      <header className="page__header">
+        <div className="page__title-section">
+          <h1 className="page__title">{t('zone.title', 'Zones')}</h1>
+          <p className="page__subtitle">
+            {t('zone.subtitle', 'Manage warehouse zones for storage and operations')}
+          </p>
+        </div>
+        <div className="page__actions">
+          <button className="btn btn--primary" onClick={handleAddZone}>
+            {t('zone.addZone', 'Add Zone')}
+          </button>
+        </div>
       </header>
 
       <div className="page-toolbar">
@@ -119,14 +126,9 @@ export function ZonesList() {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <div className="page-actions">
-          <button className="btn btn-primary" onClick={handleAddZone}>
-            {t('zone.addZone', 'Add Zone')}
-          </button>
-        </div>
       </div>
 
-      <div className="zones__content">
+      <div className="page__content">
         <DataTable
           data={zones}
           columns={columns}

@@ -80,16 +80,37 @@ const icons = {
       <path d="M18.333 10h-3.333l-2.5 7.5-5-15-2.5 7.5H1.667" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   ),
+  orders: (
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <path d="M16.667 17.5H3.333A1.667 1.667 0 011.667 15.833V4.167A1.667 1.667 0 013.333 2.5H7.5l1.667 2.5h7.5a1.667 1.667 0 011.666 1.667V15.833a1.667 1.667 0 01-1.666 1.667z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M6.667 10h6.666M6.667 13.333h4.166" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  ),
+  operations: (
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <path d="M10 17.5a7.5 7.5 0 100-15 7.5 7.5 0 000 15z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M10 6.667V10l2.5 1.667" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  ),
+  reports: (
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+      <path d="M17.5 17.5H2.5V2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M5.833 12.5l3.334-4.167 3.333 2.5 4.167-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  ),
 };
 
 // Map group IDs to icons
 const groupIcons: Record<string, React.ReactNode> = {
   main: icons.dashboard,
+  orders: icons.orders,
   inbound: icons.inbound,
   outbound: icons.outbound,
   inventory: icons.inventory,
   warehouse: icons.warehouse,
+  operations: icons.operations,
   config: icons.config,
+  reports: icons.reports,
   monitoring: icons.monitoring,
 };
 

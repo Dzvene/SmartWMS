@@ -135,33 +135,37 @@ export function Deliveries() {
 
   return (
     <div className="page">
-      <div className="page__header">
-        <div>
+      <header className="page__header">
+        <div className="page__title-section">
           <h1 className="page__title">{t('deliveries.title', 'Deliveries')}</h1>
           <p className="page__subtitle">{t('deliveries.subtitle', 'Track shipments and delivery status')}</p>
         </div>
-      </div>
+      </header>
 
-      <div className="page__filters">
-        <input
-          type="text"
-          className="input"
-          placeholder={t('common.search', 'Search...')}
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        <select
-          className="select"
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value as ShipmentStatus | '')}
-        >
-          <option value="">{t('deliveries.allStatuses', 'All Statuses')}</option>
-          <option value="Pending">Pending</option>
-          <option value="ReadyToShip">Ready to Ship</option>
-          <option value="Shipped">Shipped</option>
-          <option value="Delivered">Delivered</option>
-          <option value="Cancelled">Cancelled</option>
-        </select>
+      <div className="page-toolbar">
+        <div className="page-search">
+          <input
+            type="text"
+            className="page-search__input"
+            placeholder={t('common.search', 'Search...')}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+        <div className="page-filters">
+          <select
+            className="page-filter__select"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value as ShipmentStatus | '')}
+          >
+            <option value="">{t('deliveries.allStatuses', 'All Statuses')}</option>
+            <option value="Pending">Pending</option>
+            <option value="ReadyToShip">Ready to Ship</option>
+            <option value="Shipped">Shipped</option>
+            <option value="Delivered">Delivered</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+        </div>
       </div>
 
       <div className="page__content">

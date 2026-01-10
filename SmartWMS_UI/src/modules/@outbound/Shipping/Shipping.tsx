@@ -115,32 +115,32 @@ export function Shipping() {
   };
 
   return (
-    <div className="shipping">
-      <header className="shipping__header">
-        <div className="shipping__title-section">
-          <h1 className="shipping__title">{t('shipment.title', 'Shipments')}</h1>
-          <p className="shipping__subtitle">{t('shipment.subtitle', 'Manage outbound shipments')}</p>
+    <div className="page">
+      <header className="page__header">
+        <div className="page__title-section">
+          <h1 className="page__title">{t('shipment.title', 'Shipments')}</h1>
+          <p className="page__subtitle">{t('shipment.subtitle', 'Manage outbound shipments')}</p>
         </div>
-        <div className="shipping__actions">
+        <div className="page__actions">
           <button className="btn btn--secondary">
             {t('common.export', 'Export')}
           </button>
         </div>
       </header>
 
-      <div className="shipping__toolbar">
-        <div className="shipping__search">
+      <div className="page-toolbar">
+        <div className="page-search">
           <input
-            type="search"
-            className="shipping__search-input"
+            type="text"
+            className="page-search__input"
             placeholder={t('common.search', 'Search...')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <div className="shipping__filters">
+        <div className="page-filters">
           <select
-            className="select"
+            className="page-filter__select"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as ShipmentStatus | '')}
           >
@@ -154,7 +154,7 @@ export function Shipping() {
         </div>
       </div>
 
-      <div className="shipping__content">
+      <div className="page__content">
         <DataTable
           data={shipments}
           columns={columns}

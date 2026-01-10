@@ -82,10 +82,15 @@ export function WarehousesList() {
   };
 
   return (
-    <div className="warehouses">
-      <header className="warehouses__header">
-        <div className="warehouses__title-section">
-          <h1 className="warehouses__title">{t('warehouse.warehouses', 'Warehouses')}</h1>
+    <div className="page">
+      <header className="page__header">
+        <div className="page__title-section">
+          <h1 className="page__title">{t('warehouse.warehouses', 'Warehouses')}</h1>
+        </div>
+        <div className="page__actions">
+          <button className="btn btn--primary" onClick={handleAddWarehouse}>
+            {t('warehouse.addWarehouse', 'Add Warehouse')}
+          </button>
         </div>
       </header>
 
@@ -99,14 +104,9 @@ export function WarehousesList() {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <div className="page-actions">
-          <button className="btn btn-primary" onClick={handleAddWarehouse}>
-            {t('warehouse.addWarehouse', 'Add Warehouse')}
-          </button>
-        </div>
       </div>
 
-      <div className="warehouses__content">
+      <div className="page__content">
         <DataTable
           data={warehouses}
           columns={columns}

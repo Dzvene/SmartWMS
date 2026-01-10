@@ -6,7 +6,6 @@ import { useGetWarehouseOptionsQuery } from '@/api/modules/warehouses';
 import { WAREHOUSE } from '@/constants/routes';
 import { ZoneForm, type ZoneFormData } from './ZoneForm';
 import { FullscreenModal, ModalSection } from '@/components/FullscreenModal';
-import './Zones.scss';
 
 export function ZoneDetails() {
   const { formatMessage } = useIntl();
@@ -16,7 +15,6 @@ export function ZoneDetails() {
 
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
-  // tenantId is automatically injected by baseApi
   const { data: zoneResponse, isLoading: isLoadingZone } = useGetZoneByIdQuery(
     id || '',
     { skip: !id }
@@ -68,19 +66,19 @@ export function ZoneDetails() {
 
   if (isLoadingZone) {
     return (
-      <div className="zone-details">
-        <div className="zone-details__loading">Loading...</div>
+      <div className="detail-page">
+        <div className="detail-page__loading">{t('common.loading', 'Loading...')}</div>
       </div>
     );
   }
 
   if (!zone) {
     return (
-      <div className="zone-details">
-        <div className="zone-details__not-found">
-          <h2>Zone not found</h2>
+      <div className="detail-page">
+        <div className="detail-page__error">
+          <h2>{t('zone.notFound', 'Zone not found')}</h2>
           <button className="btn btn-secondary" onClick={handleBack}>
-            Back to Zones
+            {t('zone.backToList', 'Back to Zones')}
           </button>
         </div>
       </div>
@@ -88,29 +86,27 @@ export function ZoneDetails() {
   }
 
   return (
-    <div className="zone-details">
-      {/* Header with back button */}
-      <header className="zone-details__header">
-        <div className="zone-details__header-left">
+    <div className="detail-page">
+      <header className="detail-page__header">
+        <div className="detail-page__header-left">
           <button className="btn btn-ghost" onClick={handleBack}>
             <span className="btn__icon">&larr;</span>
             {t('common.back', 'Back')}
           </button>
-          <div className="zone-details__title-section">
-            <h1 className="zone-details__title">{zone.name}</h1>
-            <span className={`zone-type-badge zone-type-badge--${zone.zoneType.toLowerCase()}`}>
-              {zone.zoneType}
-            </span>
-            <span className={`status-badge status-badge--${zone.isActive ? 'active' : 'inactive'}`}>
-              {zone.isActive ? t('status.active', 'Active') : t('status.inactive', 'Inactive')}
-            </span>
+          <div className="detail-page__title-section">
+            <h1 className="detail-page__title">{zone.name}</h1>
+            <div className="detail-page__meta">
+              <span className="status-badge status-badge--info">{zone.zoneType}</span>
+              <span className={`status-badge status-badge--${zone.isActive ? 'success' : 'neutral'}`}>
+                {zone.isActive ? t('status.active', 'Active') : t('status.inactive', 'Inactive')}
+              </span>
+            </div>
           </div>
         </div>
       </header>
 
-      {/* Main content */}
-      <div className="zone-details__content">
-        <div className="zone-details__form-container">
+      <div className="detail-page__content detail-page__content--with-sidebar">
+        <div className="detail-page__main">
           <ZoneForm
             initialData={{
               code: zone.code,
@@ -128,8 +124,7 @@ export function ZoneDetails() {
           />
         </div>
 
-        {/* Actions sidebar */}
-        <aside className="zone-details__sidebar">
+        <aside className="detail-page__sidebar">
           <section className="sidebar-section">
             <h3 className="sidebar-section__title">{t('zone.statistics', 'Statistics')}</h3>
             <div className="sidebar-section__content">
@@ -168,7 +163,7 @@ export function ZoneDetails() {
                 {t('zone.deleteZone', 'Delete Zone')}
               </button>
               {zone.locationCount > 0 && (
-                <p className="sidebar-section__text" style={{ marginTop: '8px', fontSize: '0.75rem' }}>
+                <p className="sidebar-section__hint">
                   {t('zone.cannotDeleteWithLocations', 'Cannot delete zone with locations.')}
                 </p>
               )}
@@ -177,7 +172,6 @@ export function ZoneDetails() {
         </aside>
       </div>
 
-      {/* Delete Confirmation Modal */}
       <FullscreenModal
         open={deleteConfirmOpen}
         onClose={() => setDeleteConfirmOpen(false)}

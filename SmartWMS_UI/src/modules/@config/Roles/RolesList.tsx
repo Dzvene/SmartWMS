@@ -91,10 +91,15 @@ export function RolesList() {
   };
 
   return (
-    <div className="roles">
-      <header className="roles__header">
-        <div className="roles__title-section">
-          <h1 className="roles__title">{t('roles.title', 'Roles')}</h1>
+    <div className="page">
+      <header className="page__header">
+        <div className="page__title-section">
+          <h1 className="page__title">{t('roles.title', 'Roles')}</h1>
+        </div>
+        <div className="page__actions">
+          <button className="btn btn--primary" onClick={handleAddRole}>
+            {t('roles.addRole', 'Add Role')}
+          </button>
         </div>
       </header>
 
@@ -108,14 +113,9 @@ export function RolesList() {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <div className="page-actions">
-          <button className="btn btn-primary" onClick={handleAddRole}>
-            {t('roles.addRole', 'Add Role')}
-          </button>
-        </div>
       </div>
 
-      <div className="roles__content">
+      <div className="page__content">
         <DataTable
           data={filteredData}
           columns={columns}

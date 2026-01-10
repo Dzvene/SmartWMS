@@ -52,46 +52,39 @@ export function Productivity() {
   };
 
   return (
-    <div className="productivity-page">
-      <header className="productivity-page__header">
-        <div className="productivity-page__title-section">
-          <h1 className="productivity-page__title">{t('operations.productivity.title', 'Productivity')}</h1>
-          <p className="productivity-page__subtitle">{t('operations.productivity.subtitle', 'Operator performance metrics')}</p>
+    <div className="page">
+      <header className="page__header">
+        <div className="page__title-section">
+          <h1 className="page__title">{t('operations.productivity.title', 'Productivity')}</h1>
+          <p className="page__subtitle">{t('operations.productivity.subtitle', 'Operator performance metrics')}</p>
         </div>
       </header>
 
-      <div className="productivity-page__filters">
-        <div className="productivity-page__filter">
-          <label>{t('reports.warehouse', 'Warehouse')}</label>
+      <div className="page-toolbar">
+        <div className="page-filters">
           <select
             value={warehouseId}
             onChange={(e) => setWarehouseId(e.target.value)}
-            className="productivity-page__select"
+            className="page-filter__select"
           >
-            <option value="">{t('common.all', 'All Warehouses')}</option>
+            <option value="">{t('common.allWarehouses', 'All Warehouses')}</option>
             {warehouses.map((wh) => (
               <option key={wh.id} value={wh.id}>
                 {wh.name}
               </option>
             ))}
           </select>
-        </div>
-        <div className="productivity-page__filter">
-          <label>{t('reports.dateFrom', 'From')}</label>
           <input
             type="date"
             value={dateFrom}
             onChange={(e) => setDateFrom(e.target.value)}
-            className="productivity-page__input"
+            className="page-filter__input"
           />
-        </div>
-        <div className="productivity-page__filter">
-          <label>{t('reports.dateTo', 'To')}</label>
           <input
             type="date"
             value={dateTo}
             onChange={(e) => setDateTo(e.target.value)}
-            className="productivity-page__input"
+            className="page-filter__input"
           />
         </div>
       </div>

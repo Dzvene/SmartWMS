@@ -3,13 +3,20 @@
   "app.tagline": "Warehouse Management System",
 
   "nav.dashboard": "Dashboard",
+  "nav.orders": "Orders",
   "nav.inbound": "Inbound",
   "nav.outbound": "Outbound",
   "nav.inventory": "Inventory",
   "nav.warehouse": "Warehouse",
+  "nav.operations": "Operations",
   "nav.config": "Configuration",
-  "nav.monitoring": "Monitoring",
   "nav.reports": "Reports",
+  "nav.monitoring": "Monitoring",
+
+  "nav.orders.salesOrders": "Sales Orders",
+  "nav.orders.purchaseOrders": "Purchase Orders",
+  "nav.orders.customers": "Customers",
+  "nav.orders.suppliers": "Suppliers",
 
   "nav.inbound.purchaseOrders": "Purchase Orders",
   "nav.inbound.receiving": "Receiving",
@@ -41,6 +48,12 @@
   "nav.config.reasonCodes": "Reason Codes",
   "nav.config.notifications": "Notifications",
   "nav.config.automation": "Automation",
+
+  "nav.operations.hub": "Operation Hub",
+  "nav.operations.tasks": "Tasks",
+  "nav.operations.productivity": "Productivity",
+
+  "nav.reports.analytics": "Analytics",
 
   "nav.monitoring.syncStatus": "Sync Status",
   "nav.monitoring.activityLog": "Activity Log",

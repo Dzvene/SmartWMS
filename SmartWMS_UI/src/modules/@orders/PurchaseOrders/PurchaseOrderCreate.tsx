@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { ORDERS } from '@/constants/routes';
 import { PurchaseOrderForm, type PurchaseOrderFormData } from './PurchaseOrderForm';
 import { useCreatePurchaseOrderMutation } from '@/api/modules/orders';
-import './PurchaseOrderDetails.scss';
 
 export function PurchaseOrderCreate() {
   const { formatMessage } = useIntl();

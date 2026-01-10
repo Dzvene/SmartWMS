@@ -95,10 +95,15 @@ export function ProductCatalog() {
   };
 
   return (
-    <div className="product-catalog">
-      <header className="product-catalog__header">
-        <div className="product-catalog__title-section">
-          <h1 className="product-catalog__title">{t('products.title', 'Product Catalog')}</h1>
+    <div className="page">
+      <header className="page__header">
+        <div className="page__title-section">
+          <h1 className="page__title">{t('products.title', 'Product Catalog')}</h1>
+        </div>
+        <div className="page__actions">
+          <button className="btn btn--primary" onClick={handleAddProduct}>
+            {t('products.addProduct', 'Add Product')}
+          </button>
         </div>
       </header>
 
@@ -112,14 +117,9 @@ export function ProductCatalog() {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <div className="page-actions">
-          <button className="btn btn-primary" onClick={handleAddProduct}>
-            {t('products.addProduct', 'Add Product')}
-          </button>
-        </div>
       </div>
 
-      <div className="product-catalog__content">
+      <div className="page__content">
         <DataTable
           data={products}
           columns={columns}

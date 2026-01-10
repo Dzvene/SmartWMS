@@ -116,32 +116,32 @@ export function Picking() {
   };
 
   return (
-    <div className="picking">
-      <header className="picking__header">
-        <div className="picking__title-section">
-          <h1 className="picking__title">{t('picking.title', 'Picking')}</h1>
-          <p className="picking__subtitle">{t('picking.subtitle', 'Manage pick tasks')}</p>
+    <div className="page">
+      <header className="page__header">
+        <div className="page__title-section">
+          <h1 className="page__title">{t('picking.title', 'Picking')}</h1>
+          <p className="page__subtitle">{t('picking.subtitle', 'Manage pick tasks')}</p>
         </div>
-        <div className="picking__actions">
+        <div className="page__actions">
           <button className="btn btn--secondary">
             {t('common.refresh', 'Refresh')}
           </button>
         </div>
       </header>
 
-      <div className="picking__toolbar">
-        <div className="picking__search">
+      <div className="page-toolbar">
+        <div className="page-search">
           <input
-            type="search"
-            className="picking__search-input"
+            type="text"
+            className="page-search__input"
             placeholder={t('common.search', 'Search...')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <div className="picking__filters">
+        <div className="page-filters">
           <select
-            className="select"
+            className="page-filter__select"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as PickTaskStatus | '')}
           >
@@ -156,7 +156,7 @@ export function Picking() {
         </div>
       </div>
 
-      <div className="picking__content">
+      <div className="page__content">
         <DataTable
           data={tasks}
           columns={columns}

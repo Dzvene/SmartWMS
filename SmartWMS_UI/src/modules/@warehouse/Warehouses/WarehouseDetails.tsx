@@ -9,7 +9,6 @@ import {
   useUpdateWarehouseMutation,
   useDeleteWarehouseMutation,
 } from '@/api/modules/warehouses';
-import './Warehouses.scss';
 
 export function WarehouseDetails() {
   const { formatMessage } = useIntl();
@@ -69,19 +68,19 @@ export function WarehouseDetails() {
 
   if (isLoadingWarehouse) {
     return (
-      <div className="warehouse-details">
-        <div className="warehouse-details__loading">Loading...</div>
+      <div className="detail-page">
+        <div className="detail-page__loading">{t('common.loading', 'Loading...')}</div>
       </div>
     );
   }
 
   if (!warehouse) {
     return (
-      <div className="warehouse-details">
-        <div className="warehouse-details__not-found">
-          <h2>Warehouse not found</h2>
+      <div className="detail-page">
+        <div className="detail-page__error">
+          <h2>{t('warehouse.notFound', 'Warehouse not found')}</h2>
           <button className="btn btn-secondary" onClick={handleBack}>
-            Back to Warehouses
+            {t('warehouse.backToList', 'Back to Warehouses')}
           </button>
         </div>
       </div>
@@ -89,29 +88,29 @@ export function WarehouseDetails() {
   }
 
   return (
-    <div className="warehouse-details">
-      {/* Header with back button */}
-      <header className="warehouse-details__header">
-        <div className="warehouse-details__header-left">
+    <div className="detail-page">
+      <header className="detail-page__header">
+        <div className="detail-page__header-left">
           <button className="btn btn-ghost" onClick={handleBack}>
             <span className="btn__icon">&larr;</span>
             {t('common.back', 'Back')}
           </button>
-          <div className="warehouse-details__title-section">
-            <h1 className="warehouse-details__title">{warehouse.name}</h1>
-            {warehouse.isPrimary && (
-              <span className="badge badge--primary">{t('warehouse.primary', 'Primary')}</span>
-            )}
-            <span className={`status-badge status-badge--${warehouse.isActive ? 'active' : 'inactive'}`}>
-              {warehouse.isActive ? t('status.active', 'Active') : t('status.inactive', 'Inactive')}
-            </span>
+          <div className="detail-page__title-section">
+            <h1 className="detail-page__title">{warehouse.name}</h1>
+            <div className="detail-page__meta">
+              {warehouse.isPrimary && (
+                <span className="status-badge status-badge--primary">{t('warehouse.primary', 'Primary')}</span>
+              )}
+              <span className={`status-badge status-badge--${warehouse.isActive ? 'success' : 'neutral'}`}>
+                {warehouse.isActive ? t('status.active', 'Active') : t('status.inactive', 'Inactive')}
+              </span>
+            </div>
           </div>
         </div>
       </header>
 
-      {/* Main content */}
-      <div className="warehouse-details__content">
-        <div className="warehouse-details__form-container">
+      <div className="detail-page__content detail-page__content--with-sidebar">
+        <div className="detail-page__main">
           <WarehouseForm
             initialData={{
               code: warehouse.code,
@@ -133,8 +132,7 @@ export function WarehouseDetails() {
           />
         </div>
 
-        {/* Actions sidebar */}
-        <aside className="warehouse-details__sidebar">
+        <aside className="detail-page__sidebar">
           <section className="sidebar-section">
             <h3 className="sidebar-section__title">{t('warehouse.statistics', 'Statistics')}</h3>
             <div className="sidebar-section__content">
@@ -169,7 +167,7 @@ export function WarehouseDetails() {
                 {t('warehouse.deleteWarehouse', 'Delete Warehouse')}
               </button>
               {warehouse.isPrimary && (
-                <p className="sidebar-section__text" style={{ marginTop: '8px', fontSize: '0.75rem' }}>
+                <p className="sidebar-section__hint">
                   {t('warehouse.cannotDeletePrimary', 'Primary warehouse cannot be deleted.')}
                 </p>
               )}
@@ -178,7 +176,6 @@ export function WarehouseDetails() {
         </aside>
       </div>
 
-      {/* Delete Confirmation Modal */}
       <FullscreenModal
         open={deleteConfirmOpen}
         onClose={() => setDeleteConfirmOpen(false)}

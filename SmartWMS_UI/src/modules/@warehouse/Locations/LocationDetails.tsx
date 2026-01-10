@@ -11,7 +11,6 @@ import { useGetZonesQuery } from '@/api/modules/zones';
 import { WAREHOUSE } from '@/constants/routes';
 import { LocationForm, type LocationFormData } from './LocationForm';
 import { FullscreenModal, ModalSection } from '@/components/FullscreenModal';
-import './Locations.scss';
 
 export function LocationDetails() {
   const { formatMessage } = useIntl();
@@ -21,14 +20,12 @@ export function LocationDetails() {
 
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
-  // tenantId is automatically injected by baseApi
   const { data: locationResponse, isLoading: isLoadingLocation } = useGetLocationByIdQuery(
     id || '',
     { skip: !id }
   );
 
   const { data: warehousesResponse } = useGetWarehouseOptionsQuery();
-
   const { data: zonesResponse } = useGetZonesQuery({ pageSize: 1000 });
 
   const [updateLocation, { isLoading: isUpdating }] = useUpdateLocationMutation();
@@ -94,19 +91,19 @@ export function LocationDetails() {
 
   if (isLoadingLocation) {
     return (
-      <div className="location-details">
-        <div className="location-details__loading">Loading...</div>
+      <div className="detail-page">
+        <div className="detail-page__loading">{t('common.loading', 'Loading...')}</div>
       </div>
     );
   }
 
   if (!location) {
     return (
-      <div className="location-details">
-        <div className="location-details__not-found">
-          <h2>Location not found</h2>
+      <div className="detail-page">
+        <div className="detail-page__error">
+          <h2>{t('location.notFound', 'Location not found')}</h2>
           <button className="btn btn-secondary" onClick={handleBack}>
-            Back to Locations
+            {t('location.backToList', 'Back to Locations')}
           </button>
         </div>
       </div>
@@ -114,29 +111,29 @@ export function LocationDetails() {
   }
 
   return (
-    <div className="location-details">
-      {/* Header with back button */}
-      <header className="location-details__header">
-        <div className="location-details__header-left">
+    <div className="detail-page">
+      <header className="detail-page__header">
+        <div className="detail-page__header-left">
           <button className="btn btn-ghost" onClick={handleBack}>
             <span className="btn__icon">&larr;</span>
             {t('common.back', 'Back')}
           </button>
-          <div className="location-details__title-section">
-            <h1 className="location-details__title">{location.code}</h1>
-            <span className={`location-type-badge location-type-badge--${location.locationType.toLowerCase()}`}>
-              {location.locationType}
-            </span>
-            <span className={`status-badge status-badge--${location.isActive ? 'active' : 'inactive'}`}>
-              {location.isActive ? t('status.active', 'Active') : t('status.inactive', 'Inactive')}
-            </span>
+          <div className="detail-page__title-section">
+            <h1 className="detail-page__title">{location.code}</h1>
+            <div className="detail-page__meta">
+              <span className={`status-badge status-badge--info`}>
+                {location.locationType}
+              </span>
+              <span className={`status-badge status-badge--${location.isActive ? 'success' : 'neutral'}`}>
+                {location.isActive ? t('status.active', 'Active') : t('status.inactive', 'Inactive')}
+              </span>
+            </div>
           </div>
         </div>
       </header>
 
-      {/* Main content */}
-      <div className="location-details__content">
-        <div className="location-details__form-container">
+      <div className="detail-page__content detail-page__content--with-sidebar">
+        <div className="detail-page__main">
           <LocationForm
             initialData={{
               code: location.code,
@@ -169,8 +166,7 @@ export function LocationDetails() {
           />
         </div>
 
-        {/* Actions sidebar */}
-        <aside className="location-details__sidebar">
+        <aside className="detail-page__sidebar">
           <section className="sidebar-section">
             <h3 className="sidebar-section__title">{t('location.info', 'Information')}</h3>
             <div className="sidebar-section__content">
@@ -198,19 +194,11 @@ export function LocationDetails() {
           <section className="sidebar-section">
             <h3 className="sidebar-section__title">{t('location.flags', 'Flags')}</h3>
             <div className="sidebar-section__content">
-              <div className="location-flags">
-                {location.isPickLocation && (
-                  <span className="location-flag location-flag--pick">Pick</span>
-                )}
-                {location.isPutawayLocation && (
-                  <span className="location-flag location-flag--putaway">Putaway</span>
-                )}
-                {location.isReceivingDock && (
-                  <span className="location-flag location-flag--receiving">Receiving</span>
-                )}
-                {location.isShippingDock && (
-                  <span className="location-flag location-flag--shipping">Shipping</span>
-                )}
+              <div className="tag-list">
+                {location.isPickLocation && <span className="tag tag--info">Pick</span>}
+                {location.isPutawayLocation && <span className="tag tag--info">Putaway</span>}
+                {location.isReceivingDock && <span className="tag tag--info">Receiving</span>}
+                {location.isShippingDock && <span className="tag tag--info">Shipping</span>}
               </div>
             </div>
           </section>
@@ -229,7 +217,7 @@ export function LocationDetails() {
                 {t('location.deleteLocation', 'Delete Location')}
               </button>
               {location.stockLevelCount > 0 && (
-                <p className="sidebar-section__text" style={{ marginTop: '8px', fontSize: '0.75rem' }}>
+                <p className="sidebar-section__hint">
                   {t('location.cannotDeleteWithStock', 'Cannot delete location with stock.')}
                 </p>
               )}
@@ -238,7 +226,6 @@ export function LocationDetails() {
         </aside>
       </div>
 
-      {/* Delete Confirmation Modal */}
       <FullscreenModal
         open={deleteConfirmOpen}
         onClose={() => setDeleteConfirmOpen(false)}

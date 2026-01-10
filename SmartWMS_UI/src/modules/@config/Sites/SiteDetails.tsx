@@ -5,7 +5,6 @@ import { useGetSiteByIdQuery, useUpdateSiteMutation, useDeleteSiteMutation } fro
 import { CONFIG } from '@/constants/routes';
 import { SiteForm, type SiteFormData } from './SiteForm';
 import { FullscreenModal, ModalSection } from '@/components/FullscreenModal';
-import './Sites.scss';
 
 export function SiteDetails() {
   const { formatMessage } = useIntl();
@@ -15,7 +14,6 @@ export function SiteDetails() {
 
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
-  // tenantId is automatically injected by baseApi
   const { data: siteResponse, isLoading: isLoadingSite } = useGetSiteByIdQuery(
     id || '',
     { skip: !id }
@@ -55,19 +53,19 @@ export function SiteDetails() {
 
   if (isLoadingSite) {
     return (
-      <div className="site-details">
-        <div className="site-details__loading">Loading...</div>
+      <div className="detail-page">
+        <div className="detail-page__loading">{t('common.loading', 'Loading...')}</div>
       </div>
     );
   }
 
   if (!site) {
     return (
-      <div className="site-details">
-        <div className="site-details__not-found">
-          <h2>Site not found</h2>
+      <div className="detail-page">
+        <div className="detail-page__error">
+          <h2>{t('site.notFound', 'Site not found')}</h2>
           <button className="btn btn-secondary" onClick={handleBack}>
-            Back to Sites
+            {t('site.backToList', 'Back to Sites')}
           </button>
         </div>
       </div>
@@ -75,29 +73,29 @@ export function SiteDetails() {
   }
 
   return (
-    <div className="site-details">
-      {/* Header with back button */}
-      <header className="site-details__header">
-        <div className="site-details__header-left">
+    <div className="detail-page">
+      <header className="detail-page__header">
+        <div className="detail-page__header-left">
           <button className="btn btn-ghost" onClick={handleBack}>
             <span className="btn__icon">&larr;</span>
             {t('common.back', 'Back')}
           </button>
-          <div className="site-details__title-section">
-            <h1 className="site-details__title">{site.name}</h1>
-            {site.isPrimary && (
-              <span className="badge badge--primary">{t('site.primary', 'Primary')}</span>
-            )}
-            <span className={`status-badge status-badge--${site.isActive ? 'active' : 'inactive'}`}>
-              {site.isActive ? t('status.active', 'Active') : t('status.inactive', 'Inactive')}
-            </span>
+          <div className="detail-page__title-section">
+            <h1 className="detail-page__title">{site.name}</h1>
+            <div className="detail-page__meta">
+              {site.isPrimary && (
+                <span className="status-badge status-badge--primary">{t('site.primary', 'Primary')}</span>
+              )}
+              <span className={`status-badge status-badge--${site.isActive ? 'success' : 'neutral'}`}>
+                {site.isActive ? t('status.active', 'Active') : t('status.inactive', 'Inactive')}
+              </span>
+            </div>
           </div>
         </div>
       </header>
 
-      {/* Main content */}
-      <div className="site-details__content">
-        <div className="site-details__form-container">
+      <div className="detail-page__content detail-page__content--with-sidebar">
+        <div className="detail-page__main">
           <SiteForm
             initialData={{
               code: site.code,
@@ -119,8 +117,7 @@ export function SiteDetails() {
           />
         </div>
 
-        {/* Actions sidebar */}
-        <aside className="site-details__sidebar">
+        <aside className="detail-page__sidebar">
           <section className="sidebar-section">
             <h3 className="sidebar-section__title">{t('site.statistics', 'Statistics')}</h3>
             <div className="sidebar-section__content">
@@ -151,7 +148,7 @@ export function SiteDetails() {
                 {t('site.deleteSite', 'Delete Site')}
               </button>
               {site.isPrimary && (
-                <p className="sidebar-section__text" style={{ marginTop: '8px', fontSize: '0.75rem' }}>
+                <p className="sidebar-section__hint">
                   {t('site.cannotDeletePrimary', 'Primary site cannot be deleted.')}
                 </p>
               )}
@@ -160,7 +157,6 @@ export function SiteDetails() {
         </aside>
       </div>
 
-      {/* Delete Confirmation Modal */}
       <FullscreenModal
         open={deleteConfirmOpen}
         onClose={() => setDeleteConfirmOpen(false)}

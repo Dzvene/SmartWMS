@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { ORDERS } from '@/constants/routes';
 import { SalesOrderForm, type SalesOrderFormData } from './SalesOrderForm';
 import { useCreateSalesOrderMutation } from '@/api/modules/orders';
-import './SalesOrderDetails.scss';
 
 export function SalesOrderCreate() {
   const { formatMessage } = useIntl();

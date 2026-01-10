@@ -14,12 +14,12 @@ export function PurchaseOrders() {
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
-    <div className="purchase-orders">
-      <header className="purchase-orders__header">
-        <div className="purchase-orders__title-section">
-          <h1 className="purchase-orders__title">{t('orders.purchase.title')}</h1>
+    <div className="page">
+      <header className="page__header">
+        <div className="page__title-section">
+          <h1 className="page__title">{t('orders.purchase.title')}</h1>
         </div>
-        <div className="purchase-orders__actions">
+        <div className="page__actions">
           <button className="btn btn-secondary">
             {t('common.import')}
           </button>
@@ -29,24 +29,24 @@ export function PurchaseOrders() {
         </div>
       </header>
 
-      <div className="purchase-orders__toolbar">
-        <div className="purchase-orders__search">
+      <div className="page-toolbar">
+        <div className="page-search">
           <input
-            type="search"
-            className="purchase-orders__search-input"
+            type="text"
+            className="page-search__input"
             placeholder={t('common.search')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <div className="purchase-orders__filters">
+        <div className="page-filters">
           <button className="btn btn-secondary">
             {t('common.filter')}
           </button>
         </div>
       </div>
 
-      <div className="purchase-orders__content">
+      <div className="page__content">
         <div className="purchase-orders__table-container">
           <table className="purchase-orders__table">
             <thead>

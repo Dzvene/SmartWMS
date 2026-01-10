@@ -143,8 +143,8 @@ export function Equipment() {
 
   return (
     <div className="page">
-      <div className="page__header">
-        <div>
+      <header className="page__header">
+        <div className="page__title-section">
           <h1 className="page__title">{t('nav.warehouse.equipment', 'Equipment')}</h1>
           <p className="page__subtitle">{t('equipment.subtitle', 'Manage warehouse equipment and devices')}</p>
         </div>
@@ -153,52 +153,56 @@ export function Equipment() {
             {t('equipment.addEquipment', 'Add Equipment')}
           </button>
         </div>
-      </div>
+      </header>
 
-      <div className="page__filters">
-        <input
-          type="text"
-          className="input"
-          placeholder={t('common.search', 'Search...')}
-          value={filters.search}
-          onChange={(e) => handleSearch(e.target.value)}
-        />
-        <select
-          className="select"
-          value={filters.type || ''}
-          onChange={(e) =>
-            setFilters((prev) => ({
-              ...prev,
-              type: (e.target.value || undefined) as EquipmentType | undefined,
-              page: 1,
-            }))
-          }
-        >
-          <option value="">{t('equipment.allTypes', 'All Types')}</option>
-          {Object.entries(TYPE_LABELS).map(([key, label]) => (
-            <option key={key} value={key}>
-              {label}
-            </option>
-          ))}
-        </select>
-        <select
-          className="select"
-          value={filters.status || ''}
-          onChange={(e) =>
-            setFilters((prev) => ({
-              ...prev,
-              status: (e.target.value || undefined) as EquipmentStatus | undefined,
-              page: 1,
-            }))
-          }
-        >
-          <option value="">{t('equipment.allStatuses', 'All Statuses')}</option>
-          {Object.entries(STATUS_LABELS).map(([key, label]) => (
-            <option key={key} value={key}>
-              {label}
-            </option>
-          ))}
-        </select>
+      <div className="page-toolbar">
+        <div className="page-search">
+          <input
+            type="text"
+            className="page-search__input"
+            placeholder={t('common.search', 'Search...')}
+            value={filters.search}
+            onChange={(e) => handleSearch(e.target.value)}
+          />
+        </div>
+        <div className="page-filters">
+          <select
+            className="page-filter__select"
+            value={filters.type || ''}
+            onChange={(e) =>
+              setFilters((prev) => ({
+                ...prev,
+                type: (e.target.value || undefined) as EquipmentType | undefined,
+                page: 1,
+              }))
+            }
+          >
+            <option value="">{t('equipment.allTypes', 'All Types')}</option>
+            {Object.entries(TYPE_LABELS).map(([key, label]) => (
+              <option key={key} value={key}>
+                {label}
+              </option>
+            ))}
+          </select>
+          <select
+            className="page-filter__select"
+            value={filters.status || ''}
+            onChange={(e) =>
+              setFilters((prev) => ({
+                ...prev,
+                status: (e.target.value || undefined) as EquipmentStatus | undefined,
+                page: 1,
+              }))
+            }
+          >
+            <option value="">{t('equipment.allStatuses', 'All Statuses')}</option>
+            {Object.entries(STATUS_LABELS).map(([key, label]) => (
+              <option key={key} value={key}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <div className="page__content">

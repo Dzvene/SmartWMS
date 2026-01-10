@@ -138,8 +138,8 @@ export function Returns() {
 
   return (
     <div className="page">
-      <div className="page__header">
-        <div>
+      <header className="page__header">
+        <div className="page__title-section">
           <h1 className="page__title">{t('returns.title', 'Returns')}</h1>
           <p className="page__subtitle">{t('returns.subtitle', 'Manage return orders and RMA processing')}</p>
         </div>
@@ -148,29 +148,33 @@ export function Returns() {
             {t('returns.createRMA', 'Create RMA')}
           </button>
         </div>
-      </div>
+      </header>
 
-      <div className="page__filters">
-        <input
-          type="text"
-          className="input"
-          placeholder={t('returns.searchRMA', 'Search by RMA #...')}
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        <select
-          className="select"
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value as ReturnOrderStatus | '')}
-        >
-          <option value="">{t('returns.allStatuses', 'All Statuses')}</option>
-          <option value="Pending">Pending</option>
-          <option value="InTransit">In Transit</option>
-          <option value="Received">Received</option>
-          <option value="InProgress">In Progress</option>
-          <option value="Complete">Complete</option>
-          <option value="Cancelled">Cancelled</option>
-        </select>
+      <div className="page-toolbar">
+        <div className="page-search">
+          <input
+            type="text"
+            className="page-search__input"
+            placeholder={t('returns.searchRMA', 'Search by RMA #...')}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+        <div className="page-filters">
+          <select
+            className="page-filter__select"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value as ReturnOrderStatus | '')}
+          >
+            <option value="">{t('returns.allStatuses', 'All Statuses')}</option>
+            <option value="Pending">Pending</option>
+            <option value="InTransit">In Transit</option>
+            <option value="Received">Received</option>
+            <option value="InProgress">In Progress</option>
+            <option value="Complete">Complete</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+        </div>
       </div>
 
       <div className="page__content">

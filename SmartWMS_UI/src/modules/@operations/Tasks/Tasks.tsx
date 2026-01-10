@@ -125,52 +125,45 @@ export function Tasks() {
   );
 
   return (
-    <div className="tasks-page">
-      <header className="tasks-page__header">
-        <div className="tasks-page__title-section">
-          <h1 className="tasks-page__title">{t('operations.tasks.title', 'Task Queue')}</h1>
-          <p className="tasks-page__subtitle">{t('operations.tasks.subtitle', 'Manage all warehouse tasks')}</p>
+    <div className="page">
+      <header className="page__header">
+        <div className="page__title-section">
+          <h1 className="page__title">{t('operations.tasks.title', 'Task Queue')}</h1>
+          <p className="page__subtitle">{t('operations.tasks.subtitle', 'Manage all warehouse tasks')}</p>
         </div>
       </header>
 
-      <div className="tasks-page__filters">
-        <div className="tasks-page__filter">
-          <label>{t('reports.warehouse', 'Warehouse')}</label>
+      <div className="page-toolbar">
+        <div className="page-filters">
           <select
             value={warehouseId}
             onChange={(e) => setWarehouseId(e.target.value)}
-            className="tasks-page__select"
+            className="page-filter__select"
           >
-            <option value="">{t('common.all', 'All')}</option>
+            <option value="">{t('common.allWarehouses', 'All Warehouses')}</option>
             {warehouses.map((wh) => (
               <option key={wh.id} value={wh.id}>
                 {wh.name}
               </option>
             ))}
           </select>
-        </div>
-        <div className="tasks-page__filter">
-          <label>{t('operations.taskType', 'Task Type')}</label>
           <select
             value={taskType}
             onChange={(e) => setTaskType(e.target.value)}
-            className="tasks-page__select"
+            className="page-filter__select"
           >
-            <option value="">{t('common.all', 'All')}</option>
+            <option value="">{t('common.allTypes', 'All Types')}</option>
             <option value="Pick">Pick</option>
             <option value="Pack">Pack</option>
             <option value="Putaway">Putaway</option>
             <option value="CycleCount">Cycle Count</option>
           </select>
-        </div>
-        <div className="tasks-page__filter">
-          <label>{t('operations.status', 'Status')}</label>
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
-            className="tasks-page__select"
+            className="page-filter__select"
           >
-            <option value="">{t('common.all', 'All')}</option>
+            <option value="">{t('common.allStatuses', 'All Statuses')}</option>
             <option value="Pending">Pending</option>
             <option value="Assigned">Assigned</option>
             <option value="InProgress">In Progress</option>
@@ -179,7 +172,7 @@ export function Tasks() {
         </div>
       </div>
 
-      <div className="tasks-page__content">
+      <div className="page__content">
         <DataTable
           data={tasks}
           columns={columns}

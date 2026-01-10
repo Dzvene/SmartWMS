@@ -9,14 +9,7 @@ import {
 import { CONFIG } from '../../../constants/routes';
 import { RoleForm, type RoleFormData } from './RoleForm';
 import { FullscreenModal, ModalSection } from '../../../components/FullscreenModal';
-import './Roles.scss';
 
-/**
- * RoleDetails - Container for editing existing role
- *
- * Fetches role data from API and passes to RoleForm.
- * Handles update and delete mutations.
- */
 export function RoleDetails() {
   const { formatMessage } = useIntl();
   const t = (id: string, defaultMessage?: string) => formatMessage({ id, defaultMessage });
@@ -25,13 +18,11 @@ export function RoleDetails() {
 
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
-  // Fetch role data
   const { data: roleResponse, isLoading: isLoadingRole } = useGetRoleByIdQuery(
     id!,
     { skip: !id }
   );
 
-  // Mutations
   const [updateRole, { isLoading: isUpdating }] = useUpdateRoleMutation();
   const [deleteRole, { isLoading: isDeleting }] = useDeleteRoleMutation();
 
@@ -65,19 +56,19 @@ export function RoleDetails() {
 
   if (isLoadingRole) {
     return (
-      <div className="role-details">
-        <div className="role-details__loading">Loading...</div>
+      <div className="detail-page">
+        <div className="detail-page__loading">{t('common.loading', 'Loading...')}</div>
       </div>
     );
   }
 
   if (!role) {
     return (
-      <div className="role-details">
-        <div className="role-details__not-found">
-          <h2>Role not found</h2>
+      <div className="detail-page">
+        <div className="detail-page__error">
+          <h2>{t('roles.notFound', 'Role not found')}</h2>
           <button className="btn btn-secondary" onClick={handleBack}>
-            Back to Roles
+            {t('roles.backToList', 'Back to Roles')}
           </button>
         </div>
       </div>
@@ -85,26 +76,26 @@ export function RoleDetails() {
   }
 
   return (
-    <div className="role-details">
-      {/* Header with back button */}
-      <header className="role-details__header">
-        <div className="role-details__header-left">
+    <div className="detail-page">
+      <header className="detail-page__header">
+        <div className="detail-page__header-left">
           <button className="btn btn-ghost" onClick={handleBack}>
             <span className="btn__icon">&larr;</span>
             {t('common.back', 'Back')}
           </button>
-          <div className="role-details__title-section">
-            <h1 className="role-details__title">{role.name}</h1>
-            {role.isSystemRole && (
-              <span className="badge badge--system">{t('roles.system', 'System')}</span>
-            )}
+          <div className="detail-page__title-section">
+            <h1 className="detail-page__title">{role.name}</h1>
+            <div className="detail-page__meta">
+              {role.isSystemRole && (
+                <span className="status-badge status-badge--info">{t('roles.system', 'System')}</span>
+              )}
+            </div>
           </div>
         </div>
       </header>
 
-      {/* Main content */}
-      <div className="role-details__content">
-        <div className="role-details__form-container">
+      <div className="detail-page__content detail-page__content--with-sidebar">
+        <div className="detail-page__main">
           <RoleForm
             initialData={{
               name: role.name,
@@ -118,8 +109,7 @@ export function RoleDetails() {
           />
         </div>
 
-        {/* Actions sidebar */}
-        <aside className="role-details__sidebar">
+        <aside className="detail-page__sidebar">
           <section className="sidebar-section">
             <h3 className="sidebar-section__title">{t('roles.info', 'Information')}</h3>
             <div className="sidebar-section__content">
@@ -156,7 +146,6 @@ export function RoleDetails() {
         </aside>
       </div>
 
-      {/* Delete Confirmation Modal */}
       <FullscreenModal
         open={deleteConfirmOpen}
         onClose={() => setDeleteConfirmOpen(false)}
@@ -167,7 +156,7 @@ export function RoleDetails() {
         loading={isDeleting}
         maxWidth="sm"
       >
-        <ModalSection title={t('roles.confirmDelete', 'Confirm Delete')}>
+        <ModalSection title="">
           <p>{t('roles.deleteConfirmText', 'Are you sure you want to delete this role? This action cannot be undone.')}</p>
         </ModalSection>
       </FullscreenModal>

@@ -13,14 +13,7 @@ import {
 import { CONFIG } from '../../../constants/routes';
 import { UserForm, type UserFormData } from './UserForm';
 import { FullscreenModal, ModalSection } from '../../../components/FullscreenModal';
-import './Users.scss';
 
-/**
- * UserDetails - Container for editing existing user
- *
- * Fetches user data from API and passes to UserForm.
- * Handles update mutations.
- */
 export function UserDetails() {
   const { formatMessage } = useIntl();
   const t = (id: string, defaultMessage?: string) => formatMessage({ id, defaultMessage });
@@ -31,13 +24,11 @@ export function UserDetails() {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [newPassword, setNewPassword] = useState('');
 
-  // Fetch user data - tenantId is automatically injected by baseApi
   const { data: userResponse, isLoading: isLoadingUser } = useGetUserByIdQuery(
     id!,
     { skip: !id }
   );
 
-  // Mutations
   const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation();
   const [deactivateUser, { isLoading: isDeactivating }] = useDeactivateUserMutation();
   const [activateUser, { isLoading: isActivating }] = useActivateUserMutation();
@@ -93,19 +84,19 @@ export function UserDetails() {
 
   if (isLoadingUser) {
     return (
-      <div className="user-details">
-        <div className="user-details__loading">Loading...</div>
+      <div className="detail-page">
+        <div className="detail-page__loading">{t('common.loading', 'Loading...')}</div>
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="user-details">
-        <div className="user-details__not-found">
-          <h2>User not found</h2>
+      <div className="detail-page">
+        <div className="detail-page__error">
+          <h2>{t('users.notFound', 'User not found')}</h2>
           <button className="btn btn-secondary" onClick={handleBack}>
-            Back to Users
+            {t('users.backToList', 'Back to Users')}
           </button>
         </div>
       </div>
@@ -113,28 +104,28 @@ export function UserDetails() {
   }
 
   return (
-    <div className="user-details">
-      {/* Header with back button */}
-      <header className="user-details__header">
-        <div className="user-details__header-left">
+    <div className="detail-page">
+      <header className="detail-page__header">
+        <div className="detail-page__header-left">
           <button className="btn btn-ghost" onClick={handleBack}>
             <span className="btn__icon">&larr;</span>
             {t('common.back', 'Back')}
           </button>
-          <div className="user-details__title-section">
-            <h1 className="user-details__title">
+          <div className="detail-page__title-section">
+            <h1 className="detail-page__title">
               {user.firstName} {user.lastName}
             </h1>
-            <span className={`status-badge status-badge--${user.isActive ? 'active' : 'inactive'}`}>
-              {user.isActive ? t('status.active', 'Active') : t('status.inactive', 'Inactive')}
-            </span>
+            <div className="detail-page__meta">
+              <span className={`status-badge status-badge--${user.isActive ? 'success' : 'neutral'}`}>
+                {user.isActive ? t('status.active', 'Active') : t('status.inactive', 'Inactive')}
+              </span>
+            </div>
           </div>
         </div>
       </header>
 
-      {/* Main content */}
-      <div className="user-details__content">
-        <div className="user-details__form-container">
+      <div className="detail-page__content detail-page__content--with-sidebar">
+        <div className="detail-page__main">
           <UserForm
             initialData={{
               email: user.email,
@@ -148,8 +139,7 @@ export function UserDetails() {
           />
         </div>
 
-        {/* Actions sidebar */}
-        <aside className="user-details__sidebar">
+        <aside className="detail-page__sidebar">
           <section className="sidebar-section">
             <h3 className="sidebar-section__title">{t('users.actions', 'Actions')}</h3>
             <div className="sidebar-section__content">
@@ -203,7 +193,6 @@ export function UserDetails() {
         </aside>
       </div>
 
-      {/* Reset Password Modal */}
       <FullscreenModal
         open={resetPasswordModalOpen}
         onClose={() => {
@@ -233,7 +222,6 @@ export function UserDetails() {
         </ModalSection>
       </FullscreenModal>
 
-      {/* Delete Confirmation Modal */}
       <FullscreenModal
         open={deleteConfirmOpen}
         onClose={() => setDeleteConfirmOpen(false)}
@@ -244,7 +232,7 @@ export function UserDetails() {
         loading={isDeleting}
         maxWidth="sm"
       >
-        <ModalSection title={t('users.confirmDelete', 'Confirm Delete')}>
+        <ModalSection title="">
           <p>{t('users.deleteConfirmText', 'Are you sure you want to delete this user? This action cannot be undone.')}</p>
         </ModalSection>
       </FullscreenModal>

@@ -13,7 +13,6 @@ import {
 } from '@/api/modules/orders';
 import type { SalesOrderStatus } from '@/api/modules/orders/orders.types';
 import { Modal } from '@/components';
-import './SalesOrderDetails.scss';
 
 const STATUS_COLORS: Record<SalesOrderStatus, string> = {
   Draft: 'neutral',
@@ -151,8 +150,8 @@ export function SalesOrderDetails() {
 
   if (isLoadingOrder) {
     return (
-      <div className="sales-order-details">
-        <div className="sales-order-details__loading">
+      <div className="detail-page">
+        <div className="detail-page__loading">
           {t('common.loading', 'Loading...')}
         </div>
       </div>
@@ -161,8 +160,8 @@ export function SalesOrderDetails() {
 
   if (!order) {
     return (
-      <div className="sales-order-details">
-        <div className="sales-order-details__error">
+      <div className="detail-page">
+        <div className="detail-page__error">
           {t('orders.orderNotFound', 'Order not found')}
           <button className="btn btn-primary" onClick={handleBack}>
             {t('common.backToList', 'Back to List')}
@@ -176,29 +175,29 @@ export function SalesOrderDetails() {
   const canDelete = order.status === 'Draft';
 
   return (
-    <div className="sales-order-details">
-      <header className="sales-order-details__header">
-        <div className="sales-order-details__header-left">
+    <div className="detail-page">
+      <header className="detail-page__header">
+        <div className="detail-page__header-left">
           <button className="btn btn-ghost" onClick={handleBack}>
             <span>&larr;</span>
             {t('common.back', 'Back')}
           </button>
-          <div className="sales-order-details__title-section">
-            <h1 className="sales-order-details__title">
+          <div className="detail-page__title-section">
+            <h1 className="detail-page__title">
               {t('orders.salesOrder', 'Sales Order')} #{order.orderNumber}
             </h1>
-            <div className="sales-order-details__meta">
+            <div className="detail-page__meta">
               <span className={`status-badge status-badge--${STATUS_COLORS[order.status]}`}>
                 {order.status}
               </span>
-              <span className="sales-order-details__customer">
+              <span className="detail-page__subtitle">
                 {order.customerName}
               </span>
             </div>
           </div>
         </div>
 
-        <div className="sales-order-details__header-actions">
+        <div className="detail-page__header-actions">
           <button
             className="btn btn-secondary"
             onClick={() => setStatusModalOpen(true)}
@@ -216,7 +215,7 @@ export function SalesOrderDetails() {
         </div>
       </header>
 
-      <div className="sales-order-details__content">
+      <div className="detail-page__content">
         {canEdit ? (
           <SalesOrderForm
             initialData={order}
@@ -225,15 +224,17 @@ export function SalesOrderDetails() {
             isEditMode={true}
           />
         ) : (
-          <div className="sales-order-details__readonly">
-            <div className="readonly-notice">
+          <div className="detail-page__sections">
+            <div className="detail-page__notice">
               {t('orders.readonlyNotice', 'This order cannot be edited in its current status.')}
             </div>
             {/* Display read-only order info */}
-            <div className="order-summary">
-              <div className="order-summary__section">
-                <h3>{t('orders.orderInfo', 'Order Information')}</h3>
-                <dl>
+            <div className="detail-section">
+              <div className="detail-section__header">
+                <h3 className="detail-section__title">{t('orders.orderInfo', 'Order Information')}</h3>
+              </div>
+              <div className="detail-section__content">
+                <dl className="info-list">
                   <dt>{t('orders.orderNumber', 'Order Number')}</dt>
                   <dd>{order.orderNumber}</dd>
                   <dt>{t('orders.customer', 'Customer')}</dt>
@@ -252,37 +253,45 @@ export function SalesOrderDetails() {
                   )}
                 </dl>
               </div>
+            </div>
 
-              <div className="order-summary__section">
-                <h3>{t('orders.progress', 'Progress')}</h3>
-                <div className="progress-stats">
-                  <div className="progress-stat">
-                    <span className="progress-stat__label">{t('orders.totalLines', 'Lines')}</span>
-                    <span className="progress-stat__value">{order.totalLines}</span>
+            <div className="detail-section">
+              <div className="detail-section__header">
+                <h3 className="detail-section__title">{t('orders.progress', 'Progress')}</h3>
+              </div>
+              <div className="detail-section__content">
+                <div className="stats-grid">
+                  <div className="stat-item">
+                    <span className="stat-item__label">{t('orders.totalLines', 'Lines')}</span>
+                    <span className="stat-item__value">{order.totalLines}</span>
                   </div>
-                  <div className="progress-stat">
-                    <span className="progress-stat__label">{t('orders.ordered', 'Ordered')}</span>
-                    <span className="progress-stat__value">{order.totalQuantity}</span>
+                  <div className="stat-item">
+                    <span className="stat-item__label">{t('orders.ordered', 'Ordered')}</span>
+                    <span className="stat-item__value">{order.totalQuantity}</span>
                   </div>
-                  <div className="progress-stat">
-                    <span className="progress-stat__label">{t('orders.allocated', 'Allocated')}</span>
-                    <span className="progress-stat__value">{order.allocatedQuantity}</span>
+                  <div className="stat-item">
+                    <span className="stat-item__label">{t('orders.allocated', 'Allocated')}</span>
+                    <span className="stat-item__value">{order.allocatedQuantity}</span>
                   </div>
-                  <div className="progress-stat">
-                    <span className="progress-stat__label">{t('orders.picked', 'Picked')}</span>
-                    <span className="progress-stat__value">{order.pickedQuantity}</span>
+                  <div className="stat-item">
+                    <span className="stat-item__label">{t('orders.picked', 'Picked')}</span>
+                    <span className="stat-item__value">{order.pickedQuantity}</span>
                   </div>
-                  <div className="progress-stat">
-                    <span className="progress-stat__label">{t('orders.shipped', 'Shipped')}</span>
-                    <span className="progress-stat__value">{order.shippedQuantity}</span>
+                  <div className="stat-item">
+                    <span className="stat-item__label">{t('orders.shipped', 'Shipped')}</span>
+                    <span className="stat-item__value">{order.shippedQuantity}</span>
                   </div>
                 </div>
               </div>
+            </div>
 
-              {order.lines && order.lines.length > 0 && (
-                <div className="order-summary__section">
-                  <h3>{t('orders.orderLines', 'Order Lines')}</h3>
-                  <table className="lines-table">
+            {order.lines && order.lines.length > 0 && (
+              <div className="detail-section">
+                <div className="detail-section__header">
+                  <h3 className="detail-section__title">{t('orders.orderLines', 'Order Lines')}</h3>
+                </div>
+                <div className="detail-section__content">
+                  <table className="data-table">
                     <thead>
                       <tr>
                         <th>{t('orders.sku', 'SKU')}</th>
@@ -307,8 +316,8 @@ export function SalesOrderDetails() {
                     </tbody>
                   </table>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -319,7 +328,7 @@ export function SalesOrderDetails() {
         onClose={() => setDeleteConfirmOpen(false)}
         title={t('orders.deleteOrder', 'Delete Order')}
       >
-        <div className="modal-body">
+        <div className="modal__body">
           <p>
             {t(
               'orders.deleteConfirmation',
@@ -327,7 +336,7 @@ export function SalesOrderDetails() {
             )}
           </p>
         </div>
-        <div className="modal-actions">
+        <div className="modal__actions">
           <button className="btn btn-ghost" onClick={() => setDeleteConfirmOpen(false)}>
             {t('common.cancel', 'Cancel')}
           </button>
@@ -343,7 +352,7 @@ export function SalesOrderDetails() {
         onClose={() => setStatusModalOpen(false)}
         title={t('orders.changeStatus', 'Change Status')}
       >
-        <div className="modal-body">
+        <div className="modal__body">
           <div className="form-field">
             <label className="form-field__label">{t('orders.newStatus', 'New Status')}</label>
             <select
@@ -359,7 +368,7 @@ export function SalesOrderDetails() {
             </select>
           </div>
         </div>
-        <div className="modal-actions">
+        <div className="modal__actions">
           <button className="btn btn-ghost" onClick={() => setStatusModalOpen(false)}>
             {t('common.cancel', 'Cancel')}
           </button>

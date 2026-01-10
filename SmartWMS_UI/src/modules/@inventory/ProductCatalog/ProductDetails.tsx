@@ -9,7 +9,6 @@ import {
   useUpdateProductMutation,
   useDeleteProductMutation,
 } from '@/api/modules/products';
-import './ProductCatalog.scss';
 
 /**
  * ProductDetails - Edit existing product
@@ -84,16 +83,16 @@ export function ProductDetails() {
 
   if (isLoadingProduct) {
     return (
-      <div className="product-details">
-        <div className="product-details__loading">{t('common.loading', 'Loading...')}</div>
+      <div className="detail-page">
+        <div className="detail-page__loading">{t('common.loading', 'Loading...')}</div>
       </div>
     );
   }
 
   if (!product) {
     return (
-      <div className="product-details">
-        <div className="product-details__not-found">
+      <div className="detail-page">
+        <div className="detail-page__error">
           <h2>{t('products.notFound', 'Product not found')}</h2>
           <button className="btn btn-secondary" onClick={handleBack}>
             {t('products.backToList', 'Back to Products')}
@@ -104,27 +103,27 @@ export function ProductDetails() {
   }
 
   return (
-    <div className="product-details">
-      {/* Header with back button */}
-      <header className="product-details__header">
-        <div className="product-details__header-left">
+    <div className="detail-page">
+      <header className="detail-page__header">
+        <div className="detail-page__header-left">
           <button className="btn btn-ghost" onClick={handleBack}>
             <span className="btn__icon">&larr;</span>
             {t('common.back', 'Back')}
           </button>
-          <div className="product-details__title-section">
-            <h1 className="product-details__title">{product.name}</h1>
-            <span className="product-details__sku">{product.sku}</span>
-            <span className={`status-badge status-badge--${product.isActive ? 'active' : 'inactive'}`}>
-              {product.isActive ? t('status.active', 'Active') : t('status.inactive', 'Inactive')}
-            </span>
+          <div className="detail-page__title-section">
+            <h1 className="detail-page__title">{product.name}</h1>
+            <div className="detail-page__meta">
+              <span className="detail-page__subtitle">{product.sku}</span>
+              <span className={`status-badge status-badge--${product.isActive ? 'success' : 'neutral'}`}>
+                {product.isActive ? t('status.active', 'Active') : t('status.inactive', 'Inactive')}
+              </span>
+            </div>
           </div>
         </div>
       </header>
 
-      {/* Main content */}
-      <div className="product-details__content">
-        <div className="product-details__form-container">
+      <div className="detail-page__content detail-page__content--with-sidebar">
+        <div className="detail-page__main">
           <ProductForm
             initialData={{
               sku: product.sku,
@@ -154,8 +153,7 @@ export function ProductDetails() {
           />
         </div>
 
-        {/* Actions sidebar */}
-        <aside className="product-details__sidebar">
+        <aside className="detail-page__sidebar">
           <section className="sidebar-section">
             <h3 className="sidebar-section__title">{t('products.statistics', 'Stock Information')}</h3>
             <div className="sidebar-section__content">
@@ -194,7 +192,7 @@ export function ProductDetails() {
                 {t('products.deleteProduct', 'Delete Product')}
               </button>
               {product.stockLevelCount > 0 && (
-                <p className="sidebar-section__text" style={{ marginTop: '8px', fontSize: '0.75rem' }}>
+                <p className="sidebar-section__hint">
                   {t('products.cannotDeleteWithStock', 'Product with stock cannot be deleted.')}
                 </p>
               )}
@@ -203,7 +201,6 @@ export function ProductDetails() {
         </aside>
       </div>
 
-      {/* Delete Confirmation Modal */}
       <FullscreenModal
         open={deleteConfirmOpen}
         onClose={() => setDeleteConfirmOpen(false)}

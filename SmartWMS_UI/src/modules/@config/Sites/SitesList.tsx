@@ -76,12 +76,19 @@ export function SitesList() {
   };
 
   return (
-    <div className="sites">
-      <header className="page-header">
-        <h1 className="page-header__title">{t('site.title', 'Sites')}</h1>
-        <p className="page-header__subtitle">
-          {t('site.subtitle', 'Manage company sites and their settings')}
-        </p>
+    <div className="page">
+      <header className="page__header">
+        <div className="page__title-section">
+          <h1 className="page__title">{t('site.title', 'Sites')}</h1>
+          <p className="page__subtitle">
+            {t('site.subtitle', 'Manage company sites and their settings')}
+          </p>
+        </div>
+        <div className="page__actions">
+          <button className="btn btn--primary" onClick={handleAddSite}>
+            {t('site.addSite', 'Add Site')}
+          </button>
+        </div>
       </header>
 
       <div className="page-toolbar">
@@ -94,14 +101,9 @@ export function SitesList() {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <div className="page-actions">
-          <button className="btn btn-primary" onClick={handleAddSite}>
-            {t('site.addSite', 'Add Site')}
-          </button>
-        </div>
       </div>
 
-      <div className="sites__content">
+      <div className="page__content">
         <DataTable
           data={sites}
           columns={columns}

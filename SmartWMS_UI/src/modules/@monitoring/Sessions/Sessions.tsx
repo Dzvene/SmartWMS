@@ -85,30 +85,34 @@ export function Sessions() {
 
   return (
     <div className="page">
-      <div className="page__header">
-        <div>
+      <header className="page__header">
+        <div className="page__title-section">
           <h1 className="page__title">{t('sessions.title', 'Login Activity')}</h1>
           <p className="page__subtitle">{t('sessions.subtitle', 'Monitor login attempts and user sessions')}</p>
         </div>
-      </div>
+      </header>
 
-      <div className="page__filters">
-        <input
-          type="text"
-          className="input"
-          placeholder={t('sessions.searchUser', 'Search by username...')}
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        <select
-          className="select"
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value as 'all' | 'success' | 'failed')}
-        >
-          <option value="all">{t('sessions.allAttempts', 'All Attempts')}</option>
-          <option value="success">{t('sessions.successOnly', 'Successful Only')}</option>
-          <option value="failed">{t('sessions.failedOnly', 'Failed Only')}</option>
-        </select>
+      <div className="page-toolbar">
+        <div className="page-search">
+          <input
+            type="text"
+            className="page-search__input"
+            placeholder={t('sessions.searchUser', 'Search by username...')}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+        <div className="page-filters">
+          <select
+            className="page-filter__select"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value as 'all' | 'success' | 'failed')}
+          >
+            <option value="all">{t('sessions.allAttempts', 'All Attempts')}</option>
+            <option value="success">{t('sessions.successOnly', 'Successful Only')}</option>
+            <option value="failed">{t('sessions.failedOnly', 'Failed Only')}</option>
+          </select>
+        </div>
       </div>
 
       <div className="page__content">

@@ -106,36 +106,36 @@ export function StockLevels() {
   ], [t]);
 
   return (
-    <div className="stock-levels">
-      <header className="stock-levels__header">
-        <div className="stock-levels__title-section">
-          <h1 className="stock-levels__title">{t('stock.title')}</h1>
+    <div className="page">
+      <header className="page__header">
+        <div className="page__title-section">
+          <h1 className="page__title">{t('stock.title')}</h1>
         </div>
-        <div className="stock-levels__actions">
+        <div className="page__actions">
           <button className="btn btn-secondary">
             {t('common.export')}
           </button>
         </div>
       </header>
 
-      <div className="stock-levels__toolbar">
-        <div className="stock-levels__search">
+      <div className="page-toolbar">
+        <div className="page-search">
           <input
-            type="search"
-            className="stock-levels__search-input"
+            type="text"
+            className="page-search__input"
             placeholder={t('common.search')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <div className="stock-levels__filters">
+        <div className="page-filters">
           <button className="btn btn-secondary">
             {t('common.filter')}
           </button>
         </div>
       </div>
 
-      <div className="stock-levels__content">
+      <div className="page__content">
         <DataTable
           data={stockLevels}
           columns={columns}

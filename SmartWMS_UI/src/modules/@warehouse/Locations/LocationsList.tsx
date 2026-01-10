@@ -117,12 +117,19 @@ export function LocationsList() {
   };
 
   return (
-    <div className="locations">
-      <header className="page-header">
-        <h1 className="page-header__title">{t('location.title', 'Locations')}</h1>
-        <p className="page-header__subtitle">
-          {t('location.subtitle', 'Manage storage locations within your warehouse zones')}
-        </p>
+    <div className="page">
+      <header className="page__header">
+        <div className="page__title-section">
+          <h1 className="page__title">{t('location.title', 'Locations')}</h1>
+          <p className="page__subtitle">
+            {t('location.subtitle', 'Manage storage locations within your warehouse zones')}
+          </p>
+        </div>
+        <div className="page__actions">
+          <button className="btn btn--primary" onClick={handleAddLocation}>
+            {t('location.addLocation', 'Add Location')}
+          </button>
+        </div>
       </header>
 
       <div className="page-toolbar">
@@ -135,14 +142,9 @@ export function LocationsList() {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <div className="page-actions">
-          <button className="btn btn-primary" onClick={handleAddLocation}>
-            {t('location.addLocation', 'Add Location')}
-          </button>
-        </div>
       </div>
 
-      <div className="locations__content">
+      <div className="page__content">
         <DataTable
           data={locations}
           columns={columns}
