@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SmartWMS.API.Infrastructure.Identity;
 using SmartWMS.API.Modules.Companies.Models;
 using SmartWMS.API.Modules.Inventory.Models;
+using SmartWMS.API.Modules.Orders.Models;
 using SmartWMS.API.Modules.Sites.Models;
 
 namespace SmartWMS.API.Infrastructure.Data;
@@ -34,6 +35,7 @@ public class DatabaseSeeder
         await SeedTestTenantAsync();
         await SeedAdminUserAsync();
         await SeedProductCategoriesAndProductsAsync();
+        await SeedCustomersAsync();
     }
 
     private async Task SeedRolesAsync()
@@ -915,6 +917,253 @@ public class DatabaseSeeder
         };
 
         _context.Products.AddRange(products);
+        await _context.SaveChangesAsync();
+    }
+
+    private async Task SeedCustomersAsync()
+    {
+        var tenantId = Guid.Parse("e9006ab8-257f-4021-b60a-cbba785bad46");
+
+        // Skip if customers already exist
+        if (await _context.Customers.AnyAsync(c => c.TenantId == tenantId))
+        {
+            return;
+        }
+
+        var customers = new List<Customer>
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Code = "CUST001",
+                Name = "Acme Corporation",
+                ContactName = "John Smith",
+                Email = "john.smith@acme.com",
+                Phone = "+1 555 123 4567",
+                AddressLine1 = "123 Business Park",
+                AddressLine2 = "Suite 100",
+                City = "New York",
+                Region = "NY",
+                PostalCode = "10001",
+                CountryCode = "US",
+                TaxId = "12-3456789",
+                PaymentTerms = "Net 30",
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Code = "CUST002",
+                Name = "TechStart AB",
+                ContactName = "Erik Johansson",
+                Email = "erik@techstart.se",
+                Phone = "+46 8 123 45 67",
+                AddressLine1 = "Drottninggatan 50",
+                City = "Stockholm",
+                Region = "Stockholm",
+                PostalCode = "111 21",
+                CountryCode = "SE",
+                TaxId = "SE556677889901",
+                PaymentTerms = "Net 15",
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Code = "CUST003",
+                Name = "Global Logistics GmbH",
+                ContactName = "Hans Mueller",
+                Email = "h.mueller@globallogistics.de",
+                Phone = "+49 30 987654",
+                AddressLine1 = "Industriestrasse 42",
+                City = "Berlin",
+                Region = "Berlin",
+                PostalCode = "10115",
+                CountryCode = "DE",
+                TaxId = "DE123456789",
+                PaymentTerms = "Net 45",
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Code = "CUST004",
+                Name = "Nordic Supplies",
+                ContactName = "Anna Lindgren",
+                Email = "anna@nordicsupplies.no",
+                Phone = "+47 22 33 44 55",
+                AddressLine1 = "Storgata 15",
+                City = "Oslo",
+                Region = "Oslo",
+                PostalCode = "0154",
+                CountryCode = "NO",
+                TaxId = "NO987654321MVA",
+                PaymentTerms = "Net 30",
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Code = "CUST005",
+                Name = "Pacific Trading Co",
+                ContactName = "Sarah Chen",
+                Email = "s.chen@pacifictrading.com",
+                Phone = "+1 415 555 0199",
+                AddressLine1 = "888 Market Street",
+                AddressLine2 = "Floor 12",
+                City = "San Francisco",
+                Region = "CA",
+                PostalCode = "94102",
+                CountryCode = "US",
+                TaxId = "94-7654321",
+                PaymentTerms = "Net 60",
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Code = "CUST006",
+                Name = "EuroMart Distribution",
+                ContactName = "Pierre Dubois",
+                Email = "pdubois@euromart.fr",
+                Phone = "+33 1 42 68 53 00",
+                AddressLine1 = "25 Rue de la Paix",
+                City = "Paris",
+                Region = "Île-de-France",
+                PostalCode = "75002",
+                CountryCode = "FR",
+                TaxId = "FR12345678901",
+                PaymentTerms = "Net 30",
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Code = "CUST007",
+                Name = "British Retail Ltd",
+                ContactName = "James Wilson",
+                Email = "j.wilson@britishretail.co.uk",
+                Phone = "+44 20 7946 0958",
+                AddressLine1 = "100 Oxford Street",
+                City = "London",
+                Region = "Greater London",
+                PostalCode = "W1D 1LL",
+                CountryCode = "GB",
+                TaxId = "GB123456789",
+                PaymentTerms = "Net 30",
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Code = "CUST008",
+                Name = "Helsinki Electronics Oy",
+                ContactName = "Mika Virtanen",
+                Email = "mika@helsinkielectronics.fi",
+                Phone = "+358 9 123 4567",
+                AddressLine1 = "Mannerheimintie 10",
+                City = "Helsinki",
+                Region = "Uusimaa",
+                PostalCode = "00100",
+                CountryCode = "FI",
+                TaxId = "FI12345678",
+                PaymentTerms = "Net 14",
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Code = "CUST009",
+                Name = "Mediterranean Foods",
+                ContactName = "Marco Rossi",
+                Email = "m.rossi@medfoods.it",
+                Phone = "+39 06 1234567",
+                AddressLine1 = "Via Roma 25",
+                City = "Rome",
+                Region = "Lazio",
+                PostalCode = "00184",
+                CountryCode = "IT",
+                TaxId = "IT12345678901",
+                PaymentTerms = "Net 45",
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Code = "CUST010",
+                Name = "Danish Design ApS",
+                ContactName = "Lars Nielsen",
+                Email = "lars@danishdesign.dk",
+                Phone = "+45 33 12 34 56",
+                AddressLine1 = "Strøget 55",
+                City = "Copenhagen",
+                Region = "Capital Region",
+                PostalCode = "1160",
+                CountryCode = "DK",
+                TaxId = "DK12345678",
+                PaymentTerms = "Net 30",
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Code = "CUST011",
+                Name = "Inactive Corp",
+                ContactName = "Old Contact",
+                Email = "old@inactive.com",
+                Phone = "+1 555 000 0000",
+                AddressLine1 = "Closed Business Park",
+                City = "Nowhere",
+                Region = "NA",
+                PostalCode = "00000",
+                CountryCode = "US",
+                PaymentTerms = "Net 30",
+                IsActive = false,
+                CreatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Code = "CUST012",
+                Name = "Warsaw Wholesale Sp. z o.o.",
+                ContactName = "Piotr Kowalski",
+                Email = "p.kowalski@warsawwholesale.pl",
+                Phone = "+48 22 123 45 67",
+                AddressLine1 = "ul. Marszałkowska 100",
+                City = "Warsaw",
+                Region = "Mazovia",
+                PostalCode = "00-026",
+                CountryCode = "PL",
+                TaxId = "PL1234567890",
+                PaymentTerms = "Net 30",
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            }
+        };
+
+        _context.Customers.AddRange(customers);
         await _context.SaveChangesAsync();
     }
 }

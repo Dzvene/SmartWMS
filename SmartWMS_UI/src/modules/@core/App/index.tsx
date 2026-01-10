@@ -45,6 +45,8 @@ import {
   PurchaseOrderCreate as OrdersPurchaseOrderCreate,
   PurchaseOrderDetails as OrdersPurchaseOrderDetails,
   Customers,
+  CustomerCreate,
+  CustomerDetails,
   Suppliers,
 } from '../../@orders';
 import {
@@ -113,6 +115,8 @@ function App() {
                   <Route path={ORDERS.PURCHASE_ORDER_CREATE} element={<OrdersPurchaseOrderCreate />} />
                   <Route path={ORDERS.PURCHASE_ORDER_DETAILS} element={<OrdersPurchaseOrderDetails />} />
                   <Route path={ORDERS.CUSTOMERS} element={<Customers />} />
+                  <Route path={ORDERS.CUSTOMER_CREATE} element={<CustomerCreate />} />
+                  <Route path={ORDERS.CUSTOMER_DETAILS} element={<CustomerDetails />} />
                   <Route path={ORDERS.SUPPLIERS} element={<Suppliers />} />
 
                   {/* Inventory */}

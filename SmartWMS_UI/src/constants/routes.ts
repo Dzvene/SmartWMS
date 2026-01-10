@@ -30,6 +30,8 @@ export const ORDERS = {
   PURCHASE_ORDER_CREATE: '/orders/purchase/new',
   PURCHASE_ORDER_DETAILS: '/orders/purchase/:id',
   CUSTOMERS: '/orders/customers',
+  CUSTOMER_CREATE: '/orders/customers/new',
+  CUSTOMER_DETAILS: '/orders/customers/:id',
   SUPPLIERS: '/orders/suppliers',
 } as const;
 
