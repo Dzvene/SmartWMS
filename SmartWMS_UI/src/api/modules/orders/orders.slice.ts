@@ -48,20 +48,20 @@ export const ordersApi = baseApi.injectEndpoints({
 
     getSalesOrders: builder.query<SalesOrderListResponse, SalesOrderFilters | void>({
       query: (params) => ({
-        url: '/orders/sales',
+        url: '/sales-orders',
         params: params || {},
       }),
       providesTags: ['SalesOrders'],
     }),
 
     getSalesOrderById: builder.query<SalesOrderResponse, string>({
-      query: (id) => `/orders/sales/${id}`,
+      query: (id) => `/sales-orders/${id}`,
       providesTags: (_result, _error, id) => [{ type: 'SalesOrders', id }],
     }),
 
     createSalesOrder: builder.mutation<SalesOrderResponse, CreateSalesOrderRequest>({
       query: (body) => ({
-        url: '/orders/sales',
+        url: '/sales-orders',
         method: 'POST',
         body,
       }),
@@ -70,7 +70,7 @@ export const ordersApi = baseApi.injectEndpoints({
 
     updateSalesOrder: builder.mutation<SalesOrderResponse, { id: string; body: UpdateSalesOrderRequest }>({
       query: ({ id, body }) => ({
-        url: `/orders/sales/${id}`,
+        url: `/sales-orders/${id}`,
         method: 'PUT',
         body,
       }),
@@ -79,7 +79,7 @@ export const ordersApi = baseApi.injectEndpoints({
 
     updateSalesOrderStatus: builder.mutation<SalesOrderResponse, { id: string; body: UpdateSalesOrderStatusRequest }>({
       query: ({ id, body }) => ({
-        url: `/orders/sales/${id}/status`,
+        url: `/sales-orders/${id}/status`,
         method: 'PUT',
         body,
       }),
@@ -88,7 +88,7 @@ export const ordersApi = baseApi.injectEndpoints({
 
     deleteSalesOrder: builder.mutation<void, string>({
       query: (id) => ({
-        url: `/orders/sales/${id}`,
+        url: `/sales-orders/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['SalesOrders'],
@@ -97,7 +97,7 @@ export const ordersApi = baseApi.injectEndpoints({
     // Sales Order Lines
     addSalesOrderLine: builder.mutation<SalesOrderLineResponse, { orderId: string; body: AddSalesOrderLineRequest }>({
       query: ({ orderId, body }) => ({
-        url: `/orders/sales/${orderId}/lines`,
+        url: `/sales-orders/${orderId}/lines`,
         method: 'POST',
         body,
       }),
@@ -106,7 +106,7 @@ export const ordersApi = baseApi.injectEndpoints({
 
     updateSalesOrderLine: builder.mutation<SalesOrderLineResponse, { orderId: string; lineId: string; body: UpdateSalesOrderLineRequest }>({
       query: ({ orderId, lineId, body }) => ({
-        url: `/orders/sales/${orderId}/lines/${lineId}`,
+        url: `/sales-orders/${orderId}/lines/${lineId}`,
         method: 'PUT',
         body,
       }),
@@ -115,7 +115,7 @@ export const ordersApi = baseApi.injectEndpoints({
 
     deleteSalesOrderLine: builder.mutation<void, { orderId: string; lineId: string }>({
       query: ({ orderId, lineId }) => ({
-        url: `/orders/sales/${orderId}/lines/${lineId}`,
+        url: `/sales-orders/${orderId}/lines/${lineId}`,
         method: 'DELETE',
       }),
       invalidatesTags: (_result, _error, { orderId }) => [{ type: 'SalesOrders', id: orderId }],
@@ -124,7 +124,7 @@ export const ordersApi = baseApi.injectEndpoints({
     // Sales Order Actions
     allocateSalesOrder: builder.mutation<SalesOrderResponse, string>({
       query: (id) => ({
-        url: `/orders/sales/${id}/allocate`,
+        url: `/sales-orders/${id}/allocate`,
         method: 'POST',
       }),
       invalidatesTags: (_result, _error, id) => [{ type: 'SalesOrders', id }, 'SalesOrders'],
@@ -132,7 +132,7 @@ export const ordersApi = baseApi.injectEndpoints({
 
     releaseSalesOrder: builder.mutation<SalesOrderResponse, string>({
       query: (id) => ({
-        url: `/orders/sales/${id}/release`,
+        url: `/sales-orders/${id}/release`,
         method: 'POST',
       }),
       invalidatesTags: (_result, _error, id) => [{ type: 'SalesOrders', id }, 'SalesOrders'],
@@ -140,7 +140,7 @@ export const ordersApi = baseApi.injectEndpoints({
 
     cancelSalesOrder: builder.mutation<SalesOrderResponse, { id: string; reason?: string }>({
       query: ({ id, reason }) => ({
-        url: `/orders/sales/${id}/cancel`,
+        url: `/sales-orders/${id}/cancel`,
         method: 'POST',
         body: { reason },
       }),
@@ -153,20 +153,20 @@ export const ordersApi = baseApi.injectEndpoints({
 
     getPurchaseOrders: builder.query<PurchaseOrderListResponse, PurchaseOrderFilters | void>({
       query: (params) => ({
-        url: '/orders/purchase',
+        url: '/purchase-orders',
         params: params || {},
       }),
       providesTags: ['PurchaseOrders'],
     }),
 
     getPurchaseOrderById: builder.query<PurchaseOrderResponse, string>({
-      query: (id) => `/orders/purchase/${id}`,
+      query: (id) => `/purchase-orders/${id}`,
       providesTags: (_result, _error, id) => [{ type: 'PurchaseOrders', id }],
     }),
 
     createPurchaseOrder: builder.mutation<PurchaseOrderResponse, CreatePurchaseOrderRequest>({
       query: (body) => ({
-        url: '/orders/purchase',
+        url: '/purchase-orders',
         method: 'POST',
         body,
       }),
@@ -175,7 +175,7 @@ export const ordersApi = baseApi.injectEndpoints({
 
     updatePurchaseOrder: builder.mutation<PurchaseOrderResponse, { id: string; body: UpdatePurchaseOrderRequest }>({
       query: ({ id, body }) => ({
-        url: `/orders/purchase/${id}`,
+        url: `/purchase-orders/${id}`,
         method: 'PUT',
         body,
       }),
@@ -184,7 +184,7 @@ export const ordersApi = baseApi.injectEndpoints({
 
     updatePurchaseOrderStatus: builder.mutation<PurchaseOrderResponse, { id: string; body: UpdatePurchaseOrderStatusRequest }>({
       query: ({ id, body }) => ({
-        url: `/orders/purchase/${id}/status`,
+        url: `/purchase-orders/${id}/status`,
         method: 'PUT',
         body,
       }),
@@ -193,7 +193,7 @@ export const ordersApi = baseApi.injectEndpoints({
 
     deletePurchaseOrder: builder.mutation<void, string>({
       query: (id) => ({
-        url: `/orders/purchase/${id}`,
+        url: `/purchase-orders/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['PurchaseOrders'],
@@ -202,7 +202,7 @@ export const ordersApi = baseApi.injectEndpoints({
     // Purchase Order Lines
     addPurchaseOrderLine: builder.mutation<PurchaseOrderLineResponse, { orderId: string; body: AddPurchaseOrderLineRequest }>({
       query: ({ orderId, body }) => ({
-        url: `/orders/purchase/${orderId}/lines`,
+        url: `/purchase-orders/${orderId}/lines`,
         method: 'POST',
         body,
       }),
@@ -211,7 +211,7 @@ export const ordersApi = baseApi.injectEndpoints({
 
     updatePurchaseOrderLine: builder.mutation<PurchaseOrderLineResponse, { orderId: string; lineId: string; body: UpdatePurchaseOrderLineRequest }>({
       query: ({ orderId, lineId, body }) => ({
-        url: `/orders/purchase/${orderId}/lines/${lineId}`,
+        url: `/purchase-orders/${orderId}/lines/${lineId}`,
         method: 'PUT',
         body,
       }),
@@ -220,7 +220,7 @@ export const ordersApi = baseApi.injectEndpoints({
 
     deletePurchaseOrderLine: builder.mutation<void, { orderId: string; lineId: string }>({
       query: ({ orderId, lineId }) => ({
-        url: `/orders/purchase/${orderId}/lines/${lineId}`,
+        url: `/purchase-orders/${orderId}/lines/${lineId}`,
         method: 'DELETE',
       }),
       invalidatesTags: (_result, _error, { orderId }) => [{ type: 'PurchaseOrders', id: orderId }],
@@ -228,7 +228,7 @@ export const ordersApi = baseApi.injectEndpoints({
 
     receivePurchaseOrderLine: builder.mutation<PurchaseOrderLineResponse, { orderId: string; lineId: string; body: ReceivePurchaseOrderLineRequest }>({
       query: ({ orderId, lineId, body }) => ({
-        url: `/orders/purchase/${orderId}/lines/${lineId}/receive`,
+        url: `/purchase-orders/${orderId}/lines/${lineId}/receive`,
         method: 'POST',
         body,
       }),
@@ -238,7 +238,7 @@ export const ordersApi = baseApi.injectEndpoints({
     // Purchase Order Actions
     confirmPurchaseOrder: builder.mutation<PurchaseOrderResponse, string>({
       query: (id) => ({
-        url: `/orders/purchase/${id}/confirm`,
+        url: `/purchase-orders/${id}/confirm`,
         method: 'POST',
       }),
       invalidatesTags: (_result, _error, id) => [{ type: 'PurchaseOrders', id }, 'PurchaseOrders'],
@@ -246,7 +246,7 @@ export const ordersApi = baseApi.injectEndpoints({
 
     cancelPurchaseOrder: builder.mutation<PurchaseOrderResponse, { id: string; reason?: string }>({
       query: ({ id, reason }) => ({
-        url: `/orders/purchase/${id}/cancel`,
+        url: `/purchase-orders/${id}/cancel`,
         method: 'POST',
         body: { reason },
       }),
