@@ -33,6 +33,8 @@ export const ORDERS = {
   CUSTOMER_CREATE: '/orders/customers/new',
   CUSTOMER_DETAILS: '/orders/customers/:id',
   SUPPLIERS: '/orders/suppliers',
+  SUPPLIER_CREATE: '/orders/suppliers/new',
+  SUPPLIER_DETAILS: '/orders/suppliers/:id',
 } as const;
 
 // ============================================

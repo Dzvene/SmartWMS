@@ -48,6 +48,8 @@ import {
   CustomerCreate,
   CustomerDetails,
   Suppliers,
+  SupplierCreate,
+  SupplierDetails,
 } from '../../@orders';
 import {
   AUTH,
@@ -118,6 +120,8 @@ function App() {
                   <Route path={ORDERS.CUSTOMER_CREATE} element={<CustomerCreate />} />
                   <Route path={ORDERS.CUSTOMER_DETAILS} element={<CustomerDetails />} />
                   <Route path={ORDERS.SUPPLIERS} element={<Suppliers />} />
+                  <Route path={ORDERS.SUPPLIER_CREATE} element={<SupplierCreate />} />
+                  <Route path={ORDERS.SUPPLIER_DETAILS} element={<SupplierDetails />} />
 
                   {/* Inventory */}
                   <Route path={INVENTORY.SKU_CATALOG} element={<ProductCatalog />} />

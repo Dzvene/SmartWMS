@@ -36,6 +36,7 @@ public class DatabaseSeeder
         await SeedAdminUserAsync();
         await SeedProductCategoriesAndProductsAsync();
         await SeedCustomersAsync();
+        await SeedSuppliersAsync();
     }
 
     private async Task SeedRolesAsync()
@@ -1164,6 +1165,223 @@ public class DatabaseSeeder
         };
 
         _context.Customers.AddRange(customers);
+        await _context.SaveChangesAsync();
+    }
+
+    private async Task SeedSuppliersAsync()
+    {
+        var tenantId = Guid.Parse("e9006ab8-257f-4021-b60a-cbba785bad46");
+
+        // Skip if suppliers already exist
+        if (await _context.Suppliers.AnyAsync(s => s.TenantId == tenantId))
+        {
+            return;
+        }
+
+        var suppliers = new List<Supplier>
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Code = "SUPP001",
+                Name = "TechSupply Inc",
+                ContactName = "Michael Johnson",
+                Email = "m.johnson@techsupply.com",
+                Phone = "+1 555 987 6543",
+                AddressLine1 = "500 Industrial Blvd",
+                City = "Chicago",
+                Region = "IL",
+                PostalCode = "60601",
+                CountryCode = "US",
+                TaxId = "36-1234567",
+                PaymentTerms = "Net 30",
+                LeadTimeDays = 7,
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Code = "SUPP002",
+                Name = "Nordic Components AB",
+                ContactName = "Anna Svensson",
+                Email = "anna@nordiccomp.se",
+                Phone = "+46 8 555 1234",
+                AddressLine1 = "Industrivägen 25",
+                City = "Gothenburg",
+                Region = "Västra Götaland",
+                PostalCode = "411 04",
+                CountryCode = "SE",
+                TaxId = "SE556677889902",
+                PaymentTerms = "Net 45",
+                LeadTimeDays = 14,
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Code = "SUPP003",
+                Name = "Deutsche Elektronik GmbH",
+                ContactName = "Klaus Weber",
+                Email = "k.weber@deutschelektronik.de",
+                Phone = "+49 89 12345678",
+                AddressLine1 = "Münchner Straße 100",
+                City = "Munich",
+                Region = "Bavaria",
+                PostalCode = "80331",
+                CountryCode = "DE",
+                TaxId = "DE987654321",
+                PaymentTerms = "Net 30",
+                LeadTimeDays = 10,
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Code = "SUPP004",
+                Name = "Asian Manufacturing Ltd",
+                ContactName = "Li Wei",
+                Email = "l.wei@asianmfg.cn",
+                Phone = "+86 21 5555 8888",
+                AddressLine1 = "888 Pudong Avenue",
+                City = "Shanghai",
+                Region = "Shanghai",
+                PostalCode = "200120",
+                CountryCode = "CN",
+                TaxId = "CN912345678901234567",
+                PaymentTerms = "Net 60",
+                LeadTimeDays = 30,
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Code = "SUPP005",
+                Name = "UK Industrial Supplies",
+                ContactName = "David Brown",
+                Email = "d.brown@ukindustrial.co.uk",
+                Phone = "+44 121 555 7890",
+                AddressLine1 = "50 Birmingham Road",
+                City = "Birmingham",
+                Region = "West Midlands",
+                PostalCode = "B1 1AA",
+                CountryCode = "GB",
+                TaxId = "GB987654321",
+                PaymentTerms = "Net 30",
+                LeadTimeDays = 5,
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Code = "SUPP006",
+                Name = "French Parts SARL",
+                ContactName = "Marie Dupont",
+                Email = "m.dupont@frenchparts.fr",
+                Phone = "+33 4 91 55 66 77",
+                AddressLine1 = "15 Avenue de Marseille",
+                City = "Lyon",
+                Region = "Auvergne-Rhône-Alpes",
+                PostalCode = "69001",
+                CountryCode = "FR",
+                TaxId = "FR98765432101",
+                PaymentTerms = "Net 45",
+                LeadTimeDays = 12,
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Code = "SUPP007",
+                Name = "Italian Quality SpA",
+                ContactName = "Giuseppe Romano",
+                Email = "g.romano@italianquality.it",
+                Phone = "+39 02 555 1234",
+                AddressLine1 = "Via Milano 50",
+                City = "Milan",
+                Region = "Lombardy",
+                PostalCode = "20121",
+                CountryCode = "IT",
+                TaxId = "IT12345678901",
+                PaymentTerms = "Net 30",
+                LeadTimeDays = 8,
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Code = "SUPP008",
+                Name = "Polish Manufacturing Sp. z o.o.",
+                ContactName = "Jan Nowak",
+                Email = "j.nowak@polishmfg.pl",
+                Phone = "+48 22 555 6789",
+                AddressLine1 = "ul. Przemysłowa 200",
+                City = "Lodz",
+                Region = "Lodzkie",
+                PostalCode = "90-001",
+                CountryCode = "PL",
+                TaxId = "PL9876543210",
+                PaymentTerms = "Net 30",
+                LeadTimeDays = 7,
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Code = "SUPP009",
+                Name = "Inactive Supplier Co",
+                ContactName = "Old Contact",
+                Email = "old@inactive-supplier.com",
+                Phone = "+1 555 000 0001",
+                AddressLine1 = "Closed Factory",
+                City = "Nowhere",
+                Region = "NA",
+                PostalCode = "00001",
+                CountryCode = "US",
+                PaymentTerms = "Net 30",
+                LeadTimeDays = 0,
+                IsActive = false,
+                CreatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Code = "SUPP010",
+                Name = "Japan Electronics Co Ltd",
+                ContactName = "Takeshi Yamamoto",
+                Email = "t.yamamoto@japanelec.jp",
+                Phone = "+81 3 5555 6666",
+                AddressLine1 = "1-2-3 Akihabara",
+                City = "Tokyo",
+                Region = "Tokyo",
+                PostalCode = "101-0021",
+                CountryCode = "JP",
+                TaxId = "JP1234567890123",
+                PaymentTerms = "Net 60",
+                LeadTimeDays = 21,
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            }
+        };
+
+        _context.Suppliers.AddRange(suppliers);
         await _context.SaveChangesAsync();
     }
 }
