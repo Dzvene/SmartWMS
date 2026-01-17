@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
-import { useIntl } from 'react-intl';
 import { useNavigate } from 'react-router-dom';
+import { useTranslate } from '@/hooks';
 import { DataTable, createColumns } from '@/components/DataTable';
 import type { PaginationState, SortingState } from '@/components/DataTable';
 import { useGetSuppliersQuery } from '@/api/modules/orders';
@@ -9,8 +9,7 @@ import { ORDERS } from '@/constants/routes';
 import './Suppliers.scss';
 
 export function Suppliers() {
-  const { formatMessage } = useIntl();
-  const t = (id: string, defaultMessage?: string) => formatMessage({ id, defaultMessage });
+  const t = useTranslate();
   const navigate = useNavigate();
 
   const [searchQuery, setSearchQuery] = useState('');

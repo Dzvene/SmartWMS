@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
-import { useIntl } from 'react-intl';
 import { useForm } from 'react-hook-form';
+import { useTranslate } from '@/hooks';
 import { useGetPermissionsQuery } from '../../../api/modules/users';
 
 export interface RoleFormData {
@@ -24,11 +24,10 @@ interface RoleFormProps {
  * Knows nothing about data fetching or API calls.
  */
 export function RoleForm({ initialData, onSubmit, loading, isEditMode, isSystemRole }: RoleFormProps) {
-  const { formatMessage } = useIntl();
-  const t = (id: string, defaultMessage?: string) => formatMessage({ id, defaultMessage });
+  const t = useTranslate();
 
   const { data: permissionsResponse } = useGetPermissionsQuery();
-  const availablePermissions = permissionsResponse?.data || [];
+  const availablePermissions = useMemo(() => permissionsResponse?.data || [], [permissionsResponse?.data]);
 
   const {
     register,

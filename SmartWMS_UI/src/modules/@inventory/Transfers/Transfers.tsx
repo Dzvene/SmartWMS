@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
-import { useIntl } from 'react-intl';
 import type { ColumnDef } from '@tanstack/react-table';
+import { useTranslate } from '@/hooks';
 
 import { DataTable } from '@/components/DataTable';
 import { useGetTransfersQuery } from '@/api/modules/transfers';
@@ -32,8 +32,7 @@ const priorityClasses: Record<TransferPriority, string> = {
 };
 
 export function Transfers() {
-  const { formatMessage } = useIntl();
-  const t = (id: string) => formatMessage({ id });
+  const t = useTranslate();
   const [selectedTransfer, setSelectedTransfer] = useState<StockTransferSummaryDto | null>(null);
   const [paginationState, setPaginationState] = useState({ page: 1, pageSize: 25 });
 

@@ -36,6 +36,7 @@ public enum PickTaskStatus
     Assigned,
     InProgress,
     Complete,
+    Completed,
     ShortPicked,
     Cancelled
 }

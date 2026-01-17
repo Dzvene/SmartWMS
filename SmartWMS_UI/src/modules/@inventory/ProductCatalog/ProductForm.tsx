@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
-import { useIntl } from 'react-intl';
 import { useForm, useWatch } from 'react-hook-form';
+import { useTranslate } from '@/hooks';
 import { useGetProductCategoriesQuery, ProductCategoryResponse } from '@/api/modules/products';
 
 export interface ProductFormData {
@@ -57,15 +57,14 @@ const defaultValues: ProductFormData = {
 };
 
 export function ProductForm({ initialData, onSubmit, loading, isEditMode }: ProductFormProps) {
-  const { formatMessage } = useIntl();
-  const t = (id: string, defaultMessage?: string) => formatMessage({ id, defaultMessage });
+  const t = useTranslate();
 
   const { data: categoriesResponse } = useGetProductCategoriesQuery({
     pageSize: 100,
     isActive: true,
   });
 
-  const categories = categoriesResponse?.data?.items || [];
+  const categories = useMemo(() => categoriesResponse?.data?.items || [], [categoriesResponse?.data?.items]);
 
   const {
     register,

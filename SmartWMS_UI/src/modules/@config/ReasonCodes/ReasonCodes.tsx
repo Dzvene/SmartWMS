@@ -1,18 +1,11 @@
-import { useState, useMemo, useEffect } from 'react';
-import { useIntl } from 'react-intl';
-import { useForm } from 'react-hook-form';
-import type { ColumnDef } from '@tanstack/react-table';
-
-import { DataTable } from '@/components/DataTable';
-import { FullscreenModal, ModalSection } from '@/components/FullscreenModal';
-import { Modal } from '@/components';
-import {
-  useGetReasonCodesQuery,
-  useCreateReasonCodeMutation,
-  useUpdateReasonCodeMutation,
-  useDeleteReasonCodeMutation,
-} from '@/api/modules/configuration';
-import type { ReasonCodeDto, ReasonCodeType, CreateReasonCodeRequest, UpdateReasonCodeRequest } from '@/api/modules/configuration';
+import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslate } from '@/hooks';
+import { DataTable, createColumns } from '@/components/DataTable';
+import type { PaginationState, SortingState } from '@/components/DataTable';
+import { useGetReasonCodesQuery } from '@/api/modules/configuration';
+import type { ReasonCodeDto, ReasonCodeType } from '@/api/modules/configuration';
+import { CONFIG } from '@/constants/routes';
 
 const categoryLabels: Record<ReasonCodeType, string> = {
   Adjustment: 'Adjustment',
@@ -27,212 +20,132 @@ const categoryLabels: Record<ReasonCodeType, string> = {
   Other: 'Other',
 };
 
-const REASON_TYPES: ReasonCodeType[] = [
-  'Adjustment', 'Return', 'Damage', 'Expiry', 'QualityHold',
-  'Transfer', 'Scrap', 'Found', 'Lost', 'Other'
-];
-
-interface ReasonCodeFormData {
-  code: string;
-  name: string;
-  description: string;
-  reasonType: ReasonCodeType;
-  requiresNotes: boolean;
-  sortOrder: number;
-  isActive: boolean;
-}
-
 /**
  * Reason Codes Configuration Module
  *
  * Manages reason codes for inventory adjustments and returns.
  */
 export function ReasonCodes() {
-  const { formatMessage } = useIntl();
-  const t = (id: string, defaultMessage?: string) => formatMessage({ id, defaultMessage });
+  const t = useTranslate();
+  const navigate = useNavigate();
 
-  const [selectedCode, setSelectedCode] = useState<ReasonCodeDto | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-  const [paginationState, setPaginationState] = useState({ page: 1, pageSize: 25 });
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeFilter, setActiveFilter] = useState<'' | 'true' | 'false'>('');
+  const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 25 });
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  // API
-  const { data, isLoading } = useGetReasonCodesQuery({
-    page: paginationState.page,
-    pageSize: paginationState.pageSize,
+  const { data: response, isLoading } = useGetReasonCodesQuery({
+    page: pagination.pageIndex + 1,
+    pageSize: pagination.pageSize,
+    searchTerm: searchQuery || undefined,
+    isActive: activeFilter === '' ? undefined : activeFilter === 'true',
   });
 
-  const [createReasonCode, { isLoading: isCreating }] = useCreateReasonCodeMutation();
-  const [updateReasonCode, { isLoading: isUpdating }] = useUpdateReasonCodeMutation();
-  const [deleteReasonCode, { isLoading: isDeleting }] = useDeleteReasonCodeMutation();
+  const reasonCodes = response?.data?.items || [];
+  const totalRows = response?.data?.totalCount || 0;
 
-  const reasonCodes = data?.data?.items ?? [];
-  const totalRows = data?.data?.totalCount ?? 0;
+  const columnHelper = createColumns<ReasonCodeDto>();
 
-  // Form
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<ReasonCodeFormData>({
-    defaultValues: {
-      code: '',
-      name: '',
-      description: '',
-      reasonType: 'Adjustment',
-      requiresNotes: false,
-      sortOrder: 0,
-      isActive: true,
-    },
-  });
-
-  // Reset form when editing changes
-  useEffect(() => {
-    if (selectedCode) {
-      reset({
-        code: selectedCode.code,
-        name: selectedCode.name,
-        description: selectedCode.description || '',
-        reasonType: selectedCode.reasonType,
-        requiresNotes: selectedCode.requiresNotes,
-        sortOrder: selectedCode.sortOrder,
-        isActive: selectedCode.isActive,
-      });
-    } else {
-      reset({
-        code: '',
-        name: '',
-        description: '',
-        reasonType: 'Adjustment',
-        requiresNotes: false,
-        sortOrder: 0,
-        isActive: true,
-      });
-    }
-  }, [selectedCode, reset]);
-
-  const columns = useMemo<ColumnDef<ReasonCodeDto, unknown>[]>(
+  const columns = useMemo(
     () => [
-      {
-        accessorKey: 'code',
+      columnHelper.accessor('code', {
         header: t('reasonCodes.code', 'Code'),
         size: 100,
         cell: ({ getValue }) => (
-          <span className="code">{getValue() as string}</span>
+          <span className="reason-codes__code">{getValue()}</span>
         ),
-      },
-      {
-        accessorKey: 'name',
+      }),
+      columnHelper.accessor('name', {
         header: t('common.name', 'Name'),
         size: 160,
-      },
-      {
-        accessorKey: 'description',
+        cell: ({ getValue }) => (
+          <span className="reason-codes__name">{getValue()}</span>
+        ),
+      }),
+      columnHelper.accessor('description', {
         header: t('reasonCodes.description', 'Description'),
         size: 200,
-        cell: ({ getValue }) => getValue() || '—',
-      },
-      {
-        accessorKey: 'reasonType',
+        cell: ({ getValue }) => getValue() || '-',
+      }),
+      columnHelper.accessor('reasonType', {
         header: t('reasonCodes.category', 'Category'),
         size: 120,
         cell: ({ getValue }) => {
-          const type = getValue() as ReasonCodeType;
+          const type = getValue();
           return (
             <span className={`tag tag--${type.toLowerCase()}`}>
               {categoryLabels[type]}
             </span>
           );
         },
-      },
-      {
-        accessorKey: 'requiresNotes',
+      }),
+      columnHelper.accessor('requiresNotes', {
         header: t('reasonCodes.requiresNote', 'Requires Note'),
         size: 110,
         cell: ({ getValue }) => (getValue() ? 'Yes' : 'No'),
-      },
-      {
-        accessorKey: 'isActive',
+      }),
+      columnHelper.accessor('isActive', {
         header: t('common.status', 'Status'),
-        size: 80,
-        cell: ({ getValue }) => (
-          <span className={`status-badge status-badge--${getValue() ? 'active' : 'inactive'}`}>
-            {getValue() ? t('status.active', 'Active') : t('status.inactive', 'Inactive')}
-          </span>
-        ),
-      },
+        size: 100,
+        cell: ({ getValue }) => {
+          const isActive = getValue();
+          return (
+            <span className={`status-badge status-badge--${isActive ? 'success' : 'neutral'}`}>
+              {isActive ? t('common.active', 'Active') : t('common.inactive', 'Inactive')}
+            </span>
+          );
+        },
+      }),
     ],
-    [t]
+    [columnHelper, t]
   );
 
-  const handleRowClick = (code: ReasonCodeDto) => {
-    setSelectedCode(code);
-    setIsModalOpen(true);
+  const handleRowClick = (reasonCode: ReasonCodeDto) => {
+    setSelectedId(reasonCode.id);
+    navigate(`${CONFIG.REASON_CODES}/${reasonCode.id}`);
   };
 
-  const handleAddNew = () => {
-    setSelectedCode(null);
-    setIsModalOpen(true);
+  const handleCreateReasonCode = () => {
+    navigate(CONFIG.REASON_CODE_CREATE);
   };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedCode(null);
-  };
-
-  const onSubmit = async (data: ReasonCodeFormData) => {
-    try {
-      if (selectedCode) {
-        const updateData: UpdateReasonCodeRequest = {
-          code: data.code,
-          name: data.name,
-          description: data.description || undefined,
-          requiresNotes: data.requiresNotes,
-          sortOrder: data.sortOrder,
-          isActive: data.isActive,
-        };
-        await updateReasonCode({ id: selectedCode.id, data: updateData }).unwrap();
-      } else {
-        const createData: CreateReasonCodeRequest = {
-          code: data.code,
-          name: data.name,
-          description: data.description || undefined,
-          reasonType: data.reasonType,
-          requiresNotes: data.requiresNotes,
-          sortOrder: data.sortOrder,
-          isActive: data.isActive,
-        };
-        await createReasonCode(createData).unwrap();
-      }
-      handleCloseModal();
-    } catch (error) {
-      console.error('Failed to save reason code:', error);
-    }
-  };
-
-  const handleDelete = async () => {
-    if (!selectedCode) return;
-
-    try {
-      await deleteReasonCode(selectedCode.id).unwrap();
-      setDeleteConfirmOpen(false);
-      handleCloseModal();
-    } catch (error) {
-      console.error('Failed to delete reason code:', error);
-    }
-  };
-
-  const isSaving = isCreating || isUpdating;
 
   return (
     <div className="page">
-      <div className="page__header">
-        <h1 className="page__title">{t('reasonCodes.title', 'Reason Codes')}</h1>
+      <header className="page__header">
+        <div className="page__title-section">
+          <h1 className="page__title">{t('reasonCodes.title', 'Reason Codes')}</h1>
+          <p className="page__subtitle">
+            {t('reasonCodes.subtitle', 'Manage reason codes for inventory adjustments and returns')}
+          </p>
+        </div>
         <div className="page__actions">
-          <button className="btn btn--primary" onClick={handleAddNew}>
-            {t('reasonCodes.addCode', 'Add Reason Code')}
+          <button className="btn btn--primary" onClick={handleCreateReasonCode}>
+            {t('reasonCodes.createReasonCode', 'Create Reason Code')}
           </button>
+        </div>
+      </header>
+
+      <div className="page-toolbar">
+        <div className="page-search">
+          <input
+            type="text"
+            className="page-search__input"
+            placeholder={t('common.search', 'Search...')}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+        <div className="page-filters">
+          <select
+            className="page-filter__select"
+            value={activeFilter}
+            onChange={(e) => setActiveFilter(e.target.value as '' | 'true' | 'false')}
+          >
+            <option value="">{t('reasonCodes.allStatuses', 'All Statuses')}</option>
+            <option value="true">{t('common.active', 'Active')}</option>
+            <option value="false">{t('common.inactive', 'Inactive')}</option>
+          </select>
         </div>
       </div>
 
@@ -240,156 +153,18 @@ export function ReasonCodes() {
         <DataTable
           data={reasonCodes}
           columns={columns}
-          pagination={{
-            pageIndex: paginationState.page - 1,
-            pageSize: paginationState.pageSize,
-          }}
-          onPaginationChange={({ pageIndex, pageSize }) => {
-            setPaginationState({ page: pageIndex + 1, pageSize });
-          }}
+          pagination={pagination}
+          onPaginationChange={setPagination}
+          sorting={sorting}
+          onSortingChange={setSorting}
           totalRows={totalRows}
+          selectedRowId={selectedId}
           onRowClick={handleRowClick}
-          selectedRowId={selectedCode?.id}
           getRowId={(row) => row.id}
+          emptyMessage={t('reasonCodes.noReasonCodes', 'No reason codes found')}
           loading={isLoading}
-          emptyMessage={t('common.noData', 'No data found')}
         />
       </div>
-
-      {/* Reason Code Form Modal */}
-      <FullscreenModal
-        open={isModalOpen}
-        onClose={handleCloseModal}
-        title={selectedCode ? t('reasonCodes.editCode', 'Edit Reason Code') : t('reasonCodes.addCode', 'Add Reason Code')}
-        subtitle={selectedCode ? `${selectedCode.code} - ${selectedCode.name}` : undefined}
-        onSave={handleSubmit(onSubmit)}
-        saveLabel={isSaving ? t('common.saving', 'Saving...') : t('common.save', 'Save')}
-        saveDisabled={isSaving}
-      >
-        <form>
-          <ModalSection title={t('reasonCodes.details', 'Details')}>
-            <div className="form-grid">
-              <div className="form-field">
-                <label className="form-field__label">
-                  {t('reasonCodes.code', 'Code')} <span className="required">*</span>
-                </label>
-                <input
-                  type="text"
-                  className={`form-field__input ${errors.code ? 'form-field__input--error' : ''}`}
-                  placeholder="ADJ-01"
-                  {...register('code', { required: t('validation.required', 'Required') })}
-                />
-                {errors.code && <span className="form-field__error">{errors.code.message}</span>}
-              </div>
-              <div className="form-field">
-                <label className="form-field__label">
-                  {t('common.name', 'Name')} <span className="required">*</span>
-                </label>
-                <input
-                  type="text"
-                  className={`form-field__input ${errors.name ? 'form-field__input--error' : ''}`}
-                  placeholder="Inventory Adjustment"
-                  {...register('name', { required: t('validation.required', 'Required') })}
-                />
-                {errors.name && <span className="form-field__error">{errors.name.message}</span>}
-              </div>
-              <div className="form-field">
-                <label className="form-field__label">
-                  {t('reasonCodes.category', 'Category')} <span className="required">*</span>
-                </label>
-                <select
-                  className="form-field__select"
-                  disabled={!!selectedCode}
-                  {...register('reasonType', { required: true })}
-                >
-                  {REASON_TYPES.map((type) => (
-                    <option key={type} value={type}>
-                      {categoryLabels[type]}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="form-field">
-                <label className="form-field__label">{t('reasonCodes.sortOrder', 'Sort Order')}</label>
-                <input
-                  type="number"
-                  min="0"
-                  className="form-field__input"
-                  {...register('sortOrder', { valueAsNumber: true })}
-                />
-              </div>
-              <div className="form-field form-field--full">
-                <label className="form-field__label">{t('reasonCodes.description', 'Description')}</label>
-                <textarea
-                  className="form-field__textarea"
-                  rows={2}
-                  placeholder={t('reasonCodes.descriptionPlaceholder', 'Optional description...')}
-                  {...register('description')}
-                />
-              </div>
-            </div>
-          </ModalSection>
-
-          <ModalSection title={t('reasonCodes.settings', 'Settings')}>
-            <div className="form-grid">
-              <div className="form-field">
-                <label className="form-checkbox">
-                  <input type="checkbox" {...register('requiresNotes')} />
-                  <span>{t('reasonCodes.requiresNotes', 'Requires Notes')}</span>
-                </label>
-                <p className="form-field__hint">
-                  {t('reasonCodes.requiresNotesHint', 'When enabled, users must provide a note when using this reason code')}
-                </p>
-              </div>
-              <div className="form-field">
-                <label className="form-checkbox">
-                  <input type="checkbox" {...register('isActive')} />
-                  <span>{t('common.active', 'Active')}</span>
-                </label>
-              </div>
-            </div>
-          </ModalSection>
-
-          {selectedCode && (
-            <ModalSection title={t('common.dangerZone', 'Danger Zone')}>
-              <div className="danger-zone">
-                <p>{t('reasonCodes.deleteWarning', 'Deleting a reason code may affect historical records.')}</p>
-                <button
-                  type="button"
-                  className="btn btn--danger"
-                  onClick={() => setDeleteConfirmOpen(true)}
-                >
-                  {t('reasonCodes.deleteCode', 'Delete Reason Code')}
-                </button>
-              </div>
-            </ModalSection>
-          )}
-        </form>
-      </FullscreenModal>
-
-      {/* Delete Confirmation Modal */}
-      <Modal
-        open={deleteConfirmOpen}
-        onClose={() => setDeleteConfirmOpen(false)}
-        title={t('reasonCodes.deleteCode', 'Delete Reason Code')}
-      >
-        <div className="modal__body">
-          <p>
-            {t(
-              'reasonCodes.deleteConfirmation',
-              `Are you sure you want to delete "${selectedCode?.name}"? This action cannot be undone.`
-            )}
-          </p>
-        </div>
-        <div className="modal__actions">
-          <button className="btn btn-ghost" onClick={() => setDeleteConfirmOpen(false)}>
-            {t('common.cancel', 'Cancel')}
-          </button>
-          <button className="btn btn--danger" onClick={handleDelete} disabled={isDeleting}>
-            {isDeleting ? t('common.deleting', 'Deleting...') : t('common.delete', 'Delete')}
-          </button>
-        </div>
-      </Modal>
     </div>
   );
 }

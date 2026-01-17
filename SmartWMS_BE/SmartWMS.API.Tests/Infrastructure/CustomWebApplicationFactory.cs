@@ -14,6 +14,12 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
     // Use a fixed database name per factory instance so all scopes share the same database
     private readonly string _databaseName = "TestDb_" + Guid.NewGuid();
 
+    public CustomWebApplicationFactory()
+    {
+        // Set JWT secret key for tests before WebApplicationFactory builds the host
+        Environment.SetEnvironmentVariable("JWT_SECRET_KEY", "TestSecretKeyForIntegrationTests_AtLeast32Characters!");
+    }
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.ConfigureServices(services =>

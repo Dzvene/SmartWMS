@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
-import { useIntl } from 'react-intl';
 import { DataTable, createColumns } from '@/components/DataTable';
+import { useTranslate } from '@/hooks';
 import type { PaginationState, SortingState } from '@/components/DataTable';
 import { useGetActivityLogsQuery } from '@/api/modules/audit';
 import type { ActivityLogDto } from '@/api/modules/audit';
@@ -23,8 +23,7 @@ const MODULE_COLORS: Record<string, string> = {
  * System-wide activity and audit log.
  */
 export function ActivityLog() {
-  const { formatMessage } = useIntl();
-  const t = (id: string, defaultMessage?: string) => formatMessage({ id, defaultMessage });
+  const t = useTranslate();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 50 });

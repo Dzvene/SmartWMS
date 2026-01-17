@@ -182,3 +182,6 @@ secrets.json
 
 # Entity Framework migrations backup
 *.Designer.cs.bak
+
+# Claude Code
+.claude/

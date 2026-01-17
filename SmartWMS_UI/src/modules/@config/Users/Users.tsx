@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
-import { useIntl } from 'react-intl';
 import { useForm, Controller } from 'react-hook-form';
+import { useTranslate } from '@/hooks';
 import { DataTable, createColumns } from '../../../components/DataTable';
 import { FullscreenModal, ModalSection } from '../../../components/FullscreenModal';
 import type { PaginationState, SortingState } from '../../../components/DataTable';
@@ -33,8 +33,7 @@ interface UserFormData {
  * Connected to real backend API.
  */
 export function Users() {
-  const { formatMessage } = useIntl();
-  const t = (id: string, defaultMessage?: string) => formatMessage({ id, defaultMessage });
+  const t = useTranslate();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 25 });

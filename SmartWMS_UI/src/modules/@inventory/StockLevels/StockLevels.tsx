@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
-import { useIntl } from 'react-intl';
 import type { ColumnDef } from '@tanstack/react-table';
+import { useTranslate } from '@/hooks';
 
 import { DataTable } from '@/components/DataTable';
 import { useGetStockLevelsQuery } from '@/api/modules/stock';
@@ -14,8 +14,7 @@ import './StockLevels.scss';
  * Shows on-hand, reserved, and available quantities.
  */
 export function StockLevels() {
-  const { formatMessage } = useIntl();
-  const t = (id: string) => formatMessage({ id });
+  const t = useTranslate();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLevel, setSelectedLevel] = useState<StockLevelDto | null>(null);
   const [paginationState, setPaginationState] = useState({ page: 1, pageSize: 25 });

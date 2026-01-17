@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
-import { useIntl } from 'react-intl';
 import { useForm } from 'react-hook-form';
+import { useTranslate } from '@/hooks';
 import { DataTable, createColumns } from '../../../components/DataTable';
 import { FullscreenModal, ModalSection } from '../../../components/FullscreenModal';
 import type { PaginationState, SortingState } from '../../../components/DataTable';
@@ -27,8 +27,7 @@ interface RoleFormData {
  * Connected to real backend API.
  */
 export function Roles() {
-  const { formatMessage } = useIntl();
-  const t = (id: string, defaultMessage?: string) => formatMessage({ id, defaultMessage });
+  const t = useTranslate();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 25 });
@@ -48,8 +47,8 @@ export function Roles() {
   const [updateRole, { isLoading: isUpdating }] = useUpdateRoleMutation();
   const [deleteRole, { isLoading: isDeleting }] = useDeleteRoleMutation();
 
-  const roles = rolesResponse?.data || [];
-  const availablePermissions = permissionsResponse?.data || [];
+  const roles = useMemo(() => rolesResponse?.data || [], [rolesResponse?.data]);
+  const availablePermissions = useMemo(() => permissionsResponse?.data || [], [permissionsResponse?.data]);
 
   const {
     register,

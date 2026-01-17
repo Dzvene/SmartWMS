@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
-import { useIntl } from 'react-intl';
 import { DataTable, createColumns } from '@/components/DataTable';
+import { useTranslate } from '@/hooks';
 import type { PaginationState, SortingState } from '@/components/DataTable';
 import { useGetTaskQueueQuery, type UnifiedTaskDto } from '@/api/modules/operationHub';
 import { useGetWarehousesQuery } from '@/api/modules/warehouses';
@@ -12,8 +12,7 @@ import './Tasks.scss';
  * Full task queue management with filtering and sorting.
  */
 export function Tasks() {
-  const { formatMessage } = useIntl();
-  const t = (id: string, defaultMessage?: string) => formatMessage({ id, defaultMessage });
+  const t = useTranslate();
 
   const [warehouseId, setWarehouseId] = useState<string>('');
   const [taskType, setTaskType] = useState<string>('');

@@ -10,28 +10,27 @@ import { StockLevels } from '../../@inventory/StockLevels';
 import { CycleCount } from '../../@inventory/CycleCount';
 import { Adjustments } from '../../@inventory/Adjustments';
 import { Transfers } from '../../@inventory/Transfers';
-import { SalesOrders } from '../../@outbound/SalesOrders';
 import { Picking, PickTaskExecution } from '../../@outbound/Picking';
 import { Shipping } from '../../@outbound/Shipping';
-import { Packing, PackingTaskExecution } from '../../@outbound/Packing';
+import { Packing, PackingCreate, PackingTaskExecution } from '../../@outbound/Packing';
 import { Deliveries } from '../../@outbound/Deliveries';
 import { PurchaseOrders } from '../../@inbound/PurchaseOrders';
-import { Receiving, ReceivingExecution } from '../../@inbound/Receiving';
-import { Putaway, PutawayTaskExecution } from '../../@inbound/Putaway';
-import { Returns } from '../../@inbound/Returns';
+import { Receiving, ReceivingCreate, ReceivingExecution } from '../../@inbound/Receiving';
+import { Putaway, PutawayCreate, PutawayTaskExecution } from '../../@inbound/Putaway';
+import { Returns, ReturnsCreate } from '../../@inbound/Returns';
 import { LocationsList, LocationDetails, LocationCreate } from '../../@warehouse/Locations';
 import { ZonesList, ZoneDetails, ZoneCreate } from '../../@warehouse/Zones';
-import { Equipment } from '../../@warehouse/Equipment';
+import { Equipment, EquipmentCreate, EquipmentDetails } from '../../@warehouse/Equipment';
 import { WarehousesList, WarehouseDetails, WarehouseCreate } from '../../@warehouse/Warehouses';
 import { SitesList, SiteDetails, SiteCreate } from '../../@config/Sites';
 import { UsersList, UserDetails, UserCreate } from '../../@config/Users';
 import { RolesList, RoleDetails, RoleCreate } from '../../@config/Roles';
-import { Integrations } from '../../@config/Integrations';
-import { Barcodes } from '../../@config/Barcodes';
-import { Carriers } from '../../@config/Carriers';
-import { ReasonCodes } from '../../@config/ReasonCodes';
-import { Notifications } from '../../@config/Notifications';
-import { Automation } from '../../@config/Automation';
+import { Barcodes, BarcodeCreate, BarcodeDetails } from '../../@config/Barcodes';
+import { Carriers, CarrierCreate, CarrierDetails } from '../../@config/Carriers';
+import { ReasonCodes, ReasonCodeCreate, ReasonCodeDetails } from '../../@config/ReasonCodes';
+import { Notifications, NotificationCreate, NotificationDetails } from '../../@config/Notifications';
+import { Integrations, IntegrationCreate, IntegrationDetails } from '../../@config/Integrations';
+import { Automation, AutomationCreate, AutomationDetails } from '../../@config/Automation';
 import { SyncStatus } from '../../@monitoring/SyncStatus';
 import { ActivityLog } from '../../@monitoring/ActivityLog';
 import { Sessions } from '../../@monitoring/Sessions';
@@ -66,6 +65,33 @@ import {
   OPERATIONS,
 } from '../../../constants/routes';
 
+// Build timestamp injected by Vite at build time
+declare const __BUILD_TIME__: string;
+
+function DevBuildInfo() {
+  if (import.meta.env.PROD) return null;
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        bottom: 8,
+        right: 8,
+        background: 'rgba(0, 0, 0, 0.8)',
+        color: '#0f0',
+        padding: '4px 8px',
+        borderRadius: 4,
+        fontSize: 11,
+        fontFamily: 'monospace',
+        zIndex: 99999,
+        pointerEvents: 'none',
+      }}
+    >
+      DEV | {__BUILD_TIME__}
+    </div>
+  );
+}
+
 /**
  * Main Application Component
  *
@@ -93,9 +119,11 @@ function App() {
   }
 
   return (
-    <Routes>
-      {/* Redirect to dashboard if already authenticated and on login page */}
-      <Route path={AUTH.LOGIN} element={<Navigate to={DASHBOARD} replace />} />
+    <>
+      <DevBuildInfo />
+      <Routes>
+        {/* Redirect to dashboard if already authenticated and on login page */}
+        <Route path={AUTH.LOGIN} element={<Navigate to={DASHBOARD} replace />} />
 
       {/* Protected routes with layout */}
       <Route
@@ -133,10 +161,11 @@ function App() {
                   <Route path={INVENTORY.TRANSFERS} element={<Transfers />} />
 
                   {/* Outbound */}
-                  <Route path={OUTBOUND.SALES_ORDERS} element={<SalesOrders />} />
+                  <Route path={OUTBOUND.SALES_ORDERS} element={<OrdersSalesOrders />} />
                   <Route path={OUTBOUND.PICKING} element={<Picking />} />
                   <Route path={OUTBOUND.PICK_EXECUTION} element={<PickTaskExecution />} />
                   <Route path={OUTBOUND.PACKING} element={<Packing />} />
+                  <Route path={OUTBOUND.PACKING_CREATE} element={<PackingCreate />} />
                   <Route path={OUTBOUND.PACK_EXECUTION} element={<PackingTaskExecution />} />
                   <Route path={OUTBOUND.SHIPPING} element={<Shipping />} />
                   <Route path={OUTBOUND.DELIVERIES} element={<Deliveries />} />
@@ -144,10 +173,13 @@ function App() {
                   {/* Inbound */}
                   <Route path={INBOUND.PURCHASE_ORDERS} element={<PurchaseOrders />} />
                   <Route path={INBOUND.RECEIVING} element={<Receiving />} />
+                  <Route path={INBOUND.RECEIVING_CREATE} element={<ReceivingCreate />} />
                   <Route path={INBOUND.RECEIVING_EXECUTION} element={<ReceivingExecution />} />
                   <Route path={INBOUND.PUTAWAY} element={<Putaway />} />
+                  <Route path={INBOUND.PUTAWAY_CREATE} element={<PutawayCreate />} />
                   <Route path={INBOUND.PUTAWAY_EXECUTION} element={<PutawayTaskExecution />} />
                   <Route path={INBOUND.RETURNS} element={<Returns />} />
+                  <Route path={INBOUND.RETURNS_CREATE} element={<ReturnsCreate />} />
 
                   {/* Warehouse */}
                   <Route path={WAREHOUSE.WAREHOUSES} element={<WarehousesList />} />
@@ -160,6 +192,8 @@ function App() {
                   <Route path={`${WAREHOUSE.LOCATIONS}/new`} element={<LocationCreate />} />
                   <Route path={`${WAREHOUSE.LOCATIONS}/:id`} element={<LocationDetails />} />
                   <Route path={WAREHOUSE.EQUIPMENT} element={<Equipment />} />
+                  <Route path={WAREHOUSE.EQUIPMENT_CREATE} element={<EquipmentCreate />} />
+                  <Route path={WAREHOUSE.EQUIPMENT_DETAILS} element={<EquipmentDetails />} />
 
                   {/* Configuration */}
                   <Route path={CONFIG.SITES} element={<SitesList />} />
@@ -173,10 +207,23 @@ function App() {
                   <Route path={`${CONFIG.ROLES}/:id`} element={<RoleDetails />} />
                   <Route path={CONFIG.INTEGRATIONS} element={<Integrations />} />
                   <Route path={CONFIG.BARCODES} element={<Barcodes />} />
+                  <Route path={CONFIG.BARCODE_CREATE} element={<BarcodeCreate />} />
+                  <Route path={CONFIG.BARCODE_DETAILS} element={<BarcodeDetails />} />
                   <Route path={CONFIG.CARRIERS} element={<Carriers />} />
+                  <Route path={CONFIG.CARRIER_CREATE} element={<CarrierCreate />} />
+                  <Route path={CONFIG.CARRIER_DETAILS} element={<CarrierDetails />} />
                   <Route path={CONFIG.REASON_CODES} element={<ReasonCodes />} />
+                  <Route path={CONFIG.REASON_CODE_CREATE} element={<ReasonCodeCreate />} />
+                  <Route path={CONFIG.REASON_CODE_DETAILS} element={<ReasonCodeDetails />} />
                   <Route path={CONFIG.NOTIFICATIONS} element={<Notifications />} />
+                  <Route path={CONFIG.NOTIFICATION_CREATE} element={<NotificationCreate />} />
+                  <Route path={CONFIG.NOTIFICATION_DETAILS} element={<NotificationDetails />} />
+                  <Route path={CONFIG.INTEGRATIONS} element={<Integrations />} />
+                  <Route path={CONFIG.INTEGRATION_CREATE} element={<IntegrationCreate />} />
+                  <Route path={CONFIG.INTEGRATION_DETAILS} element={<IntegrationDetails />} />
                   <Route path={CONFIG.AUTOMATION} element={<Automation />} />
+                  <Route path={CONFIG.AUTOMATION_CREATE} element={<AutomationCreate />} />
+                  <Route path={CONFIG.AUTOMATION_DETAILS} element={<AutomationDetails />} />
 
                   {/* Reports */}
                   <Route path={REPORTS.ANALYTICS} element={<Reports />} />
@@ -198,7 +245,8 @@ function App() {
           </div>
         }
       />
-    </Routes>
+      </Routes>
+    </>
   );
 }
 

@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
-import { useIntl } from 'react-intl';
 import { DataTable, createColumns } from '@/components/DataTable';
+import { useTranslate } from '@/hooks';
 import type { PaginationState, SortingState } from '@/components/DataTable';
 import { useGetShipmentsQuery } from '@/api/modules/fulfillment';
 import type { ShipmentDto, ShipmentStatus } from '@/api/modules/fulfillment';
@@ -20,8 +20,7 @@ const STATUS_COLORS: Record<ShipmentStatus, string> = {
  * Manages outbound shipments and carrier integration.
  */
 export function Shipping() {
-  const { formatMessage } = useIntl();
-  const t = (id: string, defaultMessage?: string) => formatMessage({ id, defaultMessage });
+  const t = useTranslate();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<ShipmentStatus | ''>('');

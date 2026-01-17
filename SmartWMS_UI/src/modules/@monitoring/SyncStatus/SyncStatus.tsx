@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
-import { useIntl } from 'react-intl';
 import { DataTable, createColumns } from '@/components/DataTable';
+import { useTranslate } from '@/hooks';
 import { useGetSyncJobsQuery } from '@/api/modules/integrations';
 import type { SyncJobDto, SyncStatus as SyncStatusType, SyncDirection } from '@/api/modules/integrations';
 import './SyncStatus.scss';
@@ -25,8 +25,7 @@ const directionLabels: Record<SyncDirection, string> = {
  * Monitors integration sync jobs and their status.
  */
 export function SyncStatus() {
-  const { formatMessage } = useIntl();
-  const t = (id: string) => formatMessage({ id });
+  const t = useTranslate();
 
   const [paginationState, setPaginationState] = useState({ page: 1, pageSize: 25 });
 

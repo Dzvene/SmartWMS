@@ -232,9 +232,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
     {
-        policy.AllowAnyOrigin()
+        policy.WithOrigins(configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>())
               .AllowAnyMethod()
-              .AllowAnyHeader();
+              .AllowAnyHeader()
+              .AllowCredentials();
     });
 
     options.AddPolicy("Production", policy =>
@@ -258,6 +259,9 @@ builder.Services.AddSwaggerGen(c =>
         Version = "v1",
         Description = "Warehouse Management System API - Built with .NET 8"
     });
+
+    // Use full type names to avoid schema conflicts between modules
+    c.CustomSchemaIds(type => type.FullName?.Replace("+", "."));
 
     // JWT Authentication in Swagger
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme

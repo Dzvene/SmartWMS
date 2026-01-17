@@ -7,7 +7,7 @@ using SmartWMS.API.Modules.Fulfillment.Services;
 namespace SmartWMS.API.Modules.Fulfillment.Controllers;
 
 [ApiController]
-[Route("api/v1/tenant/{tenantId}/shipments")]
+[Route("api/v1/tenant/{tenantId}/fulfillment/shipments")]
 [Authorize]
 public class ShipmentsController : ControllerBase
 {

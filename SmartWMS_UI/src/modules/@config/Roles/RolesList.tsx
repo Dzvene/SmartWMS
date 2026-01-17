@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
-import { useIntl } from 'react-intl';
 import { useNavigate } from 'react-router-dom';
+import { useTranslate } from '@/hooks';
 import { DataTable, createColumns } from '../../../components/DataTable';
 import type { PaginationState, SortingState } from '../../../components/DataTable';
 import { useGetRolesQuery, type RoleResponse } from '../../../api/modules/users';
@@ -13,8 +13,7 @@ import './Roles.scss';
  * Clicking a row navigates to /config/roles/:id
  */
 export function RolesList() {
-  const { formatMessage } = useIntl();
-  const t = (id: string, defaultMessage?: string) => formatMessage({ id, defaultMessage });
+  const t = useTranslate();
   const navigate = useNavigate();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -24,7 +23,7 @@ export function RolesList() {
 
   const { data: rolesResponse, isLoading } = useGetRolesQuery();
 
-  const roles = rolesResponse?.data || [];
+  const roles = useMemo(() => rolesResponse?.data || [], [rolesResponse?.data]);
 
   const columnHelper = createColumns<RoleResponse>();
 

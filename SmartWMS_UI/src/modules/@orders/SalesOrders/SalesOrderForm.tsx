@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useIntl } from 'react-intl';
 import { useForm, useFieldArray } from 'react-hook-form';
+import { useTranslate } from '@/hooks';
 import { useGetCustomersQuery } from '@/api/modules/orders';
 import { useGetWarehousesQuery } from '@/api/modules/warehouses';
 import { useGetProductsQuery } from '@/api/modules/products';
@@ -46,14 +46,13 @@ interface SalesOrderFormProps {
 const PRIORITY_OPTIONS: OrderPriority[] = ['Low', 'Normal', 'High', 'Urgent'];
 
 export function SalesOrderForm({ initialData, onSubmit, loading, isEditMode }: SalesOrderFormProps) {
-  const { formatMessage } = useIntl();
-  const t = (id: string, defaultMessage?: string) => formatMessage({ id, defaultMessage });
+  const t = useTranslate();
 
   const [useCustomAddress, setUseCustomAddress] = useState(false);
 
   // Fetch customers
   const { data: customersResponse } = useGetCustomersQuery({ pageSize: 100, isActive: true });
-  const customers = customersResponse?.data?.items || [];
+  const customers = useMemo(() => customersResponse?.data?.items || [], [customersResponse?.data?.items]);
 
   // Fetch warehouses
   const { data: warehousesResponse } = useGetWarehousesQuery({ pageSize: 100 });

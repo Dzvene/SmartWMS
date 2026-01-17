@@ -14,6 +14,12 @@ import { resolve } from 'path';
  * - SVG as React components support
  */
 export default defineConfig({
+  define: {
+    __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
+  },
+
+  cacheDir: 'node_modules/.vite_' + Date.now(),
+
   plugins: [
     react(),
     svgr({
@@ -24,6 +30,10 @@ export default defineConfig({
       },
     }),
   ],
+
+  optimizeDeps: {
+    force: true,
+  },
 
   resolve: {
     alias: {
@@ -42,8 +52,14 @@ export default defineConfig({
 
   server: {
     port: 3000,
+    strictPort: true,
     open: true,
     host: true,
+    headers: {
+      'Cache-Control': 'no-store, no-cache, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+    },
   },
 
   build: {

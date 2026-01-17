@@ -7,7 +7,7 @@ using SmartWMS.API.Modules.Fulfillment.Services;
 namespace SmartWMS.API.Modules.Fulfillment.Controllers;
 
 [ApiController]
-[Route("api/v1/tenant/{tenantId}/pick-tasks")]
+[Route("api/v1/tenant/{tenantId}/fulfillment/pick-tasks")]
 [Authorize]
 public class PickTasksController : ControllerBase
 {

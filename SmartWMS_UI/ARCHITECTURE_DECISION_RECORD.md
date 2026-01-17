@@ -1,7 +1,7 @@
 # SmartWMS UI - Architecture Decision Record
 
 > **Document Version:** 1.0
-> **Created:** December 2024
+> **Created:** December 2025
 > **Author:** AI Architecture Agent
 > **Status:** Approved for Implementation
 

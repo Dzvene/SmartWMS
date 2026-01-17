@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
-import { useIntl } from 'react-intl';
 import { useNavigate } from 'react-router-dom';
+import { useTranslate } from '@/hooks';
 import { DataTable, createColumns } from '@/components/DataTable';
 import type { PaginationState, SortingState } from '@/components/DataTable';
 import { useGetProductsQuery, type ProductResponse } from '@/api/modules/products';
@@ -13,8 +13,7 @@ import './ProductCatalog.scss';
  * Clicking a row navigates to /inventory/catalog/:id
  */
 export function ProductCatalog() {
-  const { formatMessage } = useIntl();
-  const t = (id: string, defaultMessage?: string) => formatMessage({ id, defaultMessage });
+  const t = useTranslate();
   const navigate = useNavigate();
 
   const [searchQuery, setSearchQuery] = useState('');

@@ -1,6 +1,6 @@
-@import './reset';
-@import './variables';
-@import './fonts';
+@use './reset';
+@use './variables';
+@use './fonts';
 
 #root {
   width: 100%;

@@ -1,6 +1,6 @@
 import * as signalR from '@microsoft/signalr';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
 
 let connection: signalR.HubConnection | null = null;
 
@@ -54,20 +54,19 @@ export const signalRService = {
     });
 
     connection.onreconnecting(() => {
-      console.log('[SignalR] Reconnecting...');
+      console.warn('[SignalR] Reconnecting...');
     });
 
     connection.onreconnected(() => {
-      console.log('[SignalR] Reconnected');
+      console.warn('[SignalR] Reconnected');
     });
 
     connection.onclose(() => {
-      console.log('[SignalR] Connection closed');
+      console.warn('[SignalR] Connection closed');
     });
 
     try {
       await connection.start();
-      console.log('[SignalR] Connected');
     } catch (err) {
       console.error('[SignalR] Connection failed:', err);
       throw err;

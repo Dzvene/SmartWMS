@@ -1,12 +1,11 @@
-import { useIntl } from 'react-intl';
 import { useNavigate } from 'react-router-dom';
+import { useTranslate } from '@/hooks';
 import { WAREHOUSE } from '@/constants/routes';
 import { WarehouseForm, type WarehouseFormData } from './WarehouseForm';
 import './Warehouses.scss';
 
 export function WarehouseCreate() {
-  const { formatMessage } = useIntl();
-  const t = (id: string, defaultMessage?: string) => formatMessage({ id, defaultMessage });
+  const t = useTranslate();
   const navigate = useNavigate();
 
   // TODO: Replace with useCreateWarehouseMutation
@@ -16,9 +15,8 @@ export function WarehouseCreate() {
     navigate(WAREHOUSE.WAREHOUSES);
   };
 
-  const handleSubmit = async (data: WarehouseFormData) => {
+  const handleSubmit = async (_data: WarehouseFormData) => {
     // TODO: Call createWarehouse mutation
-    console.log('Create warehouse:', data);
     navigate(WAREHOUSE.WAREHOUSES);
   };
 

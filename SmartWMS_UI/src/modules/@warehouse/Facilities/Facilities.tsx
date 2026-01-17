@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
-import { useIntl } from 'react-intl';
 import type { ColumnDef } from '@tanstack/react-table';
+import { useTranslate } from '@/hooks';
 
 import { DataTable } from '@/components/DataTable';
 import { FullscreenModal } from '@/components/FullscreenModal';
@@ -8,8 +8,7 @@ import { useGetSitesQuery } from '@/api/modules/sites';
 import type { SiteDto } from '@/api/modules/sites';
 
 export function Facilities() {
-  const { formatMessage } = useIntl();
-  const t = (id: string) => formatMessage({ id });
+  const t = useTranslate();
   const [selectedFacility, setSelectedFacility] = useState<SiteDto | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [paginationState, setPaginationState] = useState({ page: 1, pageSize: 25 });

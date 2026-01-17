@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
-import { useIntl } from 'react-intl';
 import { useForm } from 'react-hook-form';
+import { useTranslate } from '@/hooks';
 import type { ColumnDef } from '@tanstack/react-table';
 
 import { DataTable } from '@/components/DataTable';
@@ -57,8 +57,7 @@ interface AdjustmentFormData {
 }
 
 export function Adjustments() {
-  const { formatMessage } = useIntl();
-  const t = (id: string, defaultMessage?: string) => formatMessage({ id, defaultMessage });
+  const t = useTranslate();
 
   const [selectedAdjustment, setSelectedAdjustment] = useState<StockAdjustmentSummaryDto | null>(null);
   const [paginationState, setPaginationState] = useState({ page: 1, pageSize: 25 });

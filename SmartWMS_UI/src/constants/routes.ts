@@ -44,10 +44,14 @@ export const INBOUND = {
   ROOT: '/inbound',
   PURCHASE_ORDERS: '/inbound/purchase-orders',
   RECEIVING: '/inbound/receiving',
+  RECEIVING_CREATE: '/inbound/receiving/new',
   RECEIVING_EXECUTION: '/inbound/receiving/:id',
   PUTAWAY: '/inbound/putaway',
+  PUTAWAY_CREATE: '/inbound/putaway/new',
   PUTAWAY_EXECUTION: '/inbound/putaway/:id',
   RETURNS: '/inbound/returns',
+  RETURNS_CREATE: '/inbound/returns/new',
+  RETURNS_DETAILS: '/inbound/returns/:id',
 } as const;
 
 // ============================================
@@ -59,6 +63,7 @@ export const OUTBOUND = {
   PICKING: '/outbound/picking',
   PICK_EXECUTION: '/outbound/picking/:id',
   PACKING: '/outbound/packing',
+  PACKING_CREATE: '/outbound/packing/new',
   PACK_EXECUTION: '/outbound/packing/:id',
   SHIPPING: '/outbound/shipping',
   DELIVERIES: '/outbound/deliveries',
@@ -85,6 +90,8 @@ export const WAREHOUSE = {
   ZONES: '/warehouse/zones',
   LOCATIONS: '/warehouse/locations',
   EQUIPMENT: '/warehouse/equipment',
+  EQUIPMENT_CREATE: '/warehouse/equipment/new',
+  EQUIPMENT_DETAILS: '/warehouse/equipment/:id',
 } as const;
 
 // ============================================
@@ -93,14 +100,32 @@ export const WAREHOUSE = {
 export const CONFIG = {
   ROOT: '/config',
   SITES: '/config/sites',
+  SITE_CREATE: '/config/sites/new',
+  SITE_DETAILS: '/config/sites/:id',
   USERS: '/config/users',
+  USER_CREATE: '/config/users/new',
+  USER_DETAILS: '/config/users/:id',
   ROLES: '/config/roles',
+  ROLE_CREATE: '/config/roles/new',
+  ROLE_DETAILS: '/config/roles/:id',
   INTEGRATIONS: '/config/integrations',
+  INTEGRATION_CREATE: '/config/integrations/new',
+  INTEGRATION_DETAILS: '/config/integrations/:id',
   BARCODES: '/config/barcodes',
+  BARCODE_CREATE: '/config/barcodes/new',
+  BARCODE_DETAILS: '/config/barcodes/:id',
   CARRIERS: '/config/carriers',
+  CARRIER_CREATE: '/config/carriers/new',
+  CARRIER_DETAILS: '/config/carriers/:id',
   REASON_CODES: '/config/reason-codes',
+  REASON_CODE_CREATE: '/config/reason-codes/new',
+  REASON_CODE_DETAILS: '/config/reason-codes/:id',
   NOTIFICATIONS: '/config/notifications',
+  NOTIFICATION_CREATE: '/config/notifications/new',
+  NOTIFICATION_DETAILS: '/config/notifications/:id',
   AUTOMATION: '/config/automation',
+  AUTOMATION_CREATE: '/config/automation/new',
+  AUTOMATION_DETAILS: '/config/automation/:id',
 } as const;
 
 // ============================================

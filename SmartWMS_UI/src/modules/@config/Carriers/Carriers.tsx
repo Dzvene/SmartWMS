@@ -1,23 +1,11 @@
-import { useState, useMemo, useEffect } from 'react';
-import { useIntl } from 'react-intl';
-import { useForm } from 'react-hook-form';
-import type { ColumnDef } from '@tanstack/react-table';
-
-import { DataTable } from '@/components/DataTable';
-import { FullscreenModal, ModalSection } from '@/components/FullscreenModal';
-import { Modal } from '@/components';
-import {
-  useGetCarriersQuery,
-  useCreateCarrierMutation,
-  useUpdateCarrierMutation,
-  useDeleteCarrierMutation,
-} from '@/api/modules/carriers';
-import type {
-  CarrierListDto,
-  CarrierIntegrationType,
-  CreateCarrierRequest,
-  UpdateCarrierRequest,
-} from '@/api/modules/carriers';
+import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslate } from '@/hooks';
+import { DataTable, createColumns } from '@/components/DataTable';
+import type { PaginationState, SortingState } from '@/components/DataTable';
+import { useGetCarriersQuery } from '@/api/modules/carriers';
+import type { CarrierListDto, CarrierIntegrationType } from '@/api/modules/carriers';
+import { CONFIG } from '@/constants/routes';
 
 const INTEGRATION_LABELS: Record<CarrierIntegrationType, string> = {
   Manual: 'Manual',
@@ -26,245 +14,98 @@ const INTEGRATION_LABELS: Record<CarrierIntegrationType, string> = {
   File: 'File Import',
 };
 
-const INTEGRATION_TYPES: CarrierIntegrationType[] = ['Manual', 'API', 'EDI', 'File'];
-
-interface CarrierFormData {
-  code: string;
-  name: string;
-  description: string;
-  contactName: string;
-  phone: string;
-  email: string;
-  website: string;
-  accountNumber: string;
-  integrationType: CarrierIntegrationType;
-  defaultServiceCode: string;
-  notes: string;
-  isActive: boolean;
-}
-
-/**
- * Carriers Configuration Module
- *
- * Manages shipping carriers and their services.
- */
 export function Carriers() {
-  const { formatMessage } = useIntl();
-  const t = (id: string, defaultMessage?: string) => formatMessage({ id, defaultMessage });
+  const t = useTranslate();
+  const navigate = useNavigate();
 
-  const [filters, setFilters] = useState({
-    page: 1,
-    pageSize: 20,
-    search: '',
-    isActive: undefined as boolean | undefined,
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeFilter, setActiveFilter] = useState<'' | 'true' | 'false'>('');
+  const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 25 });
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  const { data: response, isLoading } = useGetCarriersQuery({
+    page: pagination.pageIndex + 1,
+    pageSize: pagination.pageSize,
+    search: searchQuery || undefined,
+    isActive: activeFilter === '' ? undefined : activeFilter === 'true',
   });
 
-  const { data: response, isLoading } = useGetCarriersQuery(filters);
   const carriers = response?.data?.items || [];
-  const totalCount = response?.data?.totalCount || 0;
+  const totalRows = response?.data?.totalCount || 0;
 
-  const [selectedCarrier, setSelectedCarrier] = useState<CarrierListDto | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const columnHelper = createColumns<CarrierListDto>();
 
-  // API mutations
-  const [createCarrier, { isLoading: isCreating }] = useCreateCarrierMutation();
-  const [updateCarrier, { isLoading: isUpdating }] = useUpdateCarrierMutation();
-  const [deleteCarrier, { isLoading: isDeleting }] = useDeleteCarrierMutation();
-
-  // Form
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<CarrierFormData>({
-    defaultValues: {
-      code: '',
-      name: '',
-      description: '',
-      contactName: '',
-      phone: '',
-      email: '',
-      website: '',
-      accountNumber: '',
-      integrationType: 'Manual',
-      defaultServiceCode: '',
-      notes: '',
-      isActive: true,
-    },
-  });
-
-  // Reset form when editing changes
-  useEffect(() => {
-    if (selectedCarrier) {
-      reset({
-        code: selectedCarrier.code,
-        name: selectedCarrier.name,
-        description: '',
-        contactName: '',
-        phone: '',
-        email: '',
-        website: '',
-        accountNumber: '',
-        integrationType: selectedCarrier.integrationType,
-        defaultServiceCode: '',
-        notes: '',
-        isActive: selectedCarrier.isActive,
-      });
-    } else {
-      reset({
-        code: '',
-        name: '',
-        description: '',
-        contactName: '',
-        phone: '',
-        email: '',
-        website: '',
-        accountNumber: '',
-        integrationType: 'Manual',
-        defaultServiceCode: '',
-        notes: '',
-        isActive: true,
-      });
-    }
-  }, [selectedCarrier, reset]);
-
-  const columns = useMemo<ColumnDef<CarrierListDto, unknown>[]>(
+  const columns = useMemo(
     () => [
-      {
-        accessorKey: 'code',
+      columnHelper.accessor('code', {
         header: t('carriers.carrierCode', 'Code'),
         size: 100,
         cell: ({ getValue }) => (
-          <span className="code">{getValue() as string}</span>
+          <span className="carriers__code">{getValue()}</span>
         ),
-      },
-      {
-        accessorKey: 'name',
+      }),
+      columnHelper.accessor('name', {
         header: t('carriers.carrierName', 'Name'),
         size: 180,
-      },
-      {
-        accessorKey: 'integrationType',
+        cell: ({ getValue }) => (
+          <span className="carriers__name">{getValue()}</span>
+        ),
+      }),
+      columnHelper.accessor('integrationType', {
         header: t('carriers.integrationType', 'Integration'),
         size: 120,
         cell: ({ getValue }) => {
-          const type = getValue() as CarrierIntegrationType;
+          const type = getValue();
           return INTEGRATION_LABELS[type] || type;
         },
-      },
-      {
-        accessorKey: 'serviceCount',
+      }),
+      columnHelper.accessor('serviceCount', {
         header: t('carriers.services', 'Services'),
         size: 100,
         cell: ({ getValue }) => `${getValue()} services`,
-      },
-      {
-        accessorKey: 'isActive',
+      }),
+      columnHelper.accessor('isActive', {
         header: t('common.status', 'Status'),
-        size: 80,
-        cell: ({ getValue }) => (
-          <span className={`status-badge status-badge--${getValue() ? 'active' : 'inactive'}`}>
-            {getValue() ? t('status.active', 'Active') : t('status.inactive', 'Inactive')}
-          </span>
-        ),
-      },
-      {
-        accessorKey: 'createdAt',
+        size: 100,
+        cell: ({ getValue }) => {
+          const isActive = getValue();
+          return (
+            <span className={`status-badge status-badge--${isActive ? 'success' : 'neutral'}`}>
+              {isActive ? t('common.active', 'Active') : t('common.inactive', 'Inactive')}
+            </span>
+          );
+        },
+      }),
+      columnHelper.accessor('createdAt', {
         header: t('common.createdAt', 'Created'),
         size: 110,
-        cell: ({ getValue }) => new Date(getValue() as string).toLocaleDateString(),
-      },
+        cell: ({ getValue }) => new Date(getValue()).toLocaleDateString(),
+      }),
     ],
-    [t]
+    [columnHelper, t]
   );
 
   const handleRowClick = (carrier: CarrierListDto) => {
-    setSelectedCarrier(carrier);
-    setIsModalOpen(true);
+    setSelectedId(carrier.id);
+    navigate(`${CONFIG.CARRIERS}/${carrier.id}`);
   };
 
-  const handleAddNew = () => {
-    setSelectedCarrier(null);
-    setIsModalOpen(true);
+  const handleCreateCarrier = () => {
+    navigate(CONFIG.CARRIER_CREATE);
   };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedCarrier(null);
-  };
-
-  const handlePageChange = (page: number) => {
-    setFilters((prev) => ({ ...prev, page }));
-  };
-
-  const handleSearch = (value: string) => {
-    setFilters((prev) => ({ ...prev, search: value, page: 1 }));
-  };
-
-  const onSubmit = async (data: CarrierFormData) => {
-    try {
-      if (selectedCarrier) {
-        const updateData: UpdateCarrierRequest = {
-          name: data.name,
-          description: data.description || undefined,
-          contactName: data.contactName || undefined,
-          phone: data.phone || undefined,
-          email: data.email || undefined,
-          website: data.website || undefined,
-          accountNumber: data.accountNumber || undefined,
-          integrationType: data.integrationType,
-          defaultServiceCode: data.defaultServiceCode || undefined,
-          notes: data.notes || undefined,
-          isActive: data.isActive,
-        };
-        await updateCarrier({ id: selectedCarrier.id, body: updateData }).unwrap();
-      } else {
-        const createData: CreateCarrierRequest = {
-          code: data.code,
-          name: data.name,
-          description: data.description || undefined,
-          contactName: data.contactName || undefined,
-          phone: data.phone || undefined,
-          email: data.email || undefined,
-          website: data.website || undefined,
-          accountNumber: data.accountNumber || undefined,
-          integrationType: data.integrationType,
-          defaultServiceCode: data.defaultServiceCode || undefined,
-          notes: data.notes || undefined,
-        };
-        await createCarrier(createData).unwrap();
-      }
-      handleCloseModal();
-    } catch (error) {
-      console.error('Failed to save carrier:', error);
-    }
-  };
-
-  const handleDelete = async () => {
-    if (!selectedCarrier) return;
-
-    try {
-      await deleteCarrier(selectedCarrier.id).unwrap();
-      setDeleteConfirmOpen(false);
-      handleCloseModal();
-    } catch (error) {
-      console.error('Failed to delete carrier:', error);
-    }
-  };
-
-  const isSaving = isCreating || isUpdating;
 
   return (
     <div className="page">
       <header className="page__header">
         <div className="page__title-section">
           <h1 className="page__title">{t('carriers.title', 'Carriers')}</h1>
-          <p className="page__subtitle">{t('carriers.subtitle', 'Manage shipping carriers and services')}</p>
+          <p className="page__subtitle">
+            {t('carriers.subtitle', 'Manage shipping carriers and services')}
+          </p>
         </div>
         <div className="page__actions">
-          <button className="btn btn--primary" onClick={handleAddNew}>
+          <button className="btn btn--primary" onClick={handleCreateCarrier}>
             {t('carriers.addCarrier', 'Add Carrier')}
           </button>
         </div>
@@ -276,25 +117,19 @@ export function Carriers() {
             type="text"
             className="page-search__input"
             placeholder={t('common.search', 'Search...')}
-            value={filters.search}
-            onChange={(e) => handleSearch(e.target.value)}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
         <div className="page-filters">
           <select
             className="page-filter__select"
-            value={filters.isActive === undefined ? '' : filters.isActive.toString()}
-            onChange={(e) =>
-              setFilters((prev) => ({
-                ...prev,
-                isActive: e.target.value === '' ? undefined : e.target.value === 'true',
-                page: 1,
-              }))
-            }
+            value={activeFilter}
+            onChange={(e) => setActiveFilter(e.target.value as '' | 'true' | 'false')}
           >
-            <option value="">{t('carriers.allStatuses', 'All')}</option>
-            <option value="true">{t('status.active', 'Active')}</option>
-            <option value="false">{t('status.inactive', 'Inactive')}</option>
+            <option value="">{t('carriers.allStatuses', 'All Statuses')}</option>
+            <option value="true">{t('common.active', 'Active')}</option>
+            <option value="false">{t('common.inactive', 'Inactive')}</option>
           </select>
         </div>
       </div>
@@ -303,200 +138,18 @@ export function Carriers() {
         <DataTable
           data={carriers}
           columns={columns}
-          pagination={{
-            pageIndex: filters.page - 1,
-            pageSize: filters.pageSize,
-          }}
-          onPaginationChange={({ pageIndex }) => handlePageChange(pageIndex + 1)}
-          totalRows={totalCount}
+          pagination={pagination}
+          onPaginationChange={setPagination}
+          sorting={sorting}
+          onSortingChange={setSorting}
+          totalRows={totalRows}
+          selectedRowId={selectedId}
           onRowClick={handleRowClick}
-          selectedRowId={selectedCarrier?.id}
           getRowId={(row) => row.id}
           emptyMessage={t('carriers.noCarriers', 'No carriers found')}
           loading={isLoading}
         />
       </div>
-
-      {/* Carrier Form Modal */}
-      <FullscreenModal
-        open={isModalOpen}
-        onClose={handleCloseModal}
-        title={selectedCarrier ? t('carriers.editCarrier', 'Edit Carrier') : t('carriers.addCarrier', 'Add Carrier')}
-        subtitle={selectedCarrier ? `${selectedCarrier.code} - ${selectedCarrier.name}` : undefined}
-        onSave={handleSubmit(onSubmit)}
-        saveLabel={isSaving ? t('common.saving', 'Saving...') : t('common.save', 'Save')}
-        saveDisabled={isSaving}
-        maxWidth="lg"
-      >
-        <form>
-          <ModalSection title={t('carriers.basicInfo', 'Basic Information')}>
-            <div className="form-grid">
-              <div className="form-field">
-                <label className="form-field__label">
-                  {t('carriers.carrierCode', 'Code')} <span className="required">*</span>
-                </label>
-                <input
-                  type="text"
-                  className={`form-field__input ${errors.code ? 'form-field__input--error' : ''}`}
-                  placeholder="UPS"
-                  disabled={!!selectedCarrier}
-                  {...register('code', { required: t('validation.required', 'Required') })}
-                />
-                {errors.code && <span className="form-field__error">{errors.code.message}</span>}
-              </div>
-              <div className="form-field">
-                <label className="form-field__label">
-                  {t('carriers.carrierName', 'Name')} <span className="required">*</span>
-                </label>
-                <input
-                  type="text"
-                  className={`form-field__input ${errors.name ? 'form-field__input--error' : ''}`}
-                  placeholder="United Parcel Service"
-                  {...register('name', { required: t('validation.required', 'Required') })}
-                />
-                {errors.name && <span className="form-field__error">{errors.name.message}</span>}
-              </div>
-              <div className="form-field">
-                <label className="form-field__label">{t('carriers.integrationType', 'Integration Type')}</label>
-                <select className="form-field__select" {...register('integrationType')}>
-                  {INTEGRATION_TYPES.map((type) => (
-                    <option key={type} value={type}>
-                      {INTEGRATION_LABELS[type]}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="form-field">
-                <label className="form-field__label">{t('carriers.accountNumber', 'Account Number')}</label>
-                <input
-                  type="text"
-                  className="form-field__input"
-                  placeholder="123456789"
-                  {...register('accountNumber')}
-                />
-              </div>
-              <div className="form-field form-field--full">
-                <label className="form-field__label">{t('carriers.description', 'Description')}</label>
-                <textarea
-                  className="form-field__textarea"
-                  rows={2}
-                  placeholder={t('carriers.descriptionPlaceholder', 'Optional description...')}
-                  {...register('description')}
-                />
-              </div>
-              <div className="form-field">
-                <label className="form-checkbox">
-                  <input type="checkbox" {...register('isActive')} />
-                  <span>{t('common.active', 'Active')}</span>
-                </label>
-              </div>
-            </div>
-          </ModalSection>
-
-          <ModalSection title={t('carriers.contactInfo', 'Contact Information')} collapsible defaultExpanded>
-            <div className="form-grid">
-              <div className="form-field">
-                <label className="form-field__label">{t('carriers.contactName', 'Contact Name')}</label>
-                <input
-                  type="text"
-                  className="form-field__input"
-                  placeholder="John Doe"
-                  {...register('contactName')}
-                />
-              </div>
-              <div className="form-field">
-                <label className="form-field__label">{t('carriers.phone', 'Phone')}</label>
-                <input
-                  type="tel"
-                  className="form-field__input"
-                  placeholder="+1 800 742 5877"
-                  {...register('phone')}
-                />
-              </div>
-              <div className="form-field">
-                <label className="form-field__label">{t('carriers.email', 'Email')}</label>
-                <input
-                  type="email"
-                  className="form-field__input"
-                  placeholder="support@carrier.com"
-                  {...register('email')}
-                />
-              </div>
-              <div className="form-field">
-                <label className="form-field__label">{t('carriers.website', 'Website')}</label>
-                <input
-                  type="url"
-                  className="form-field__input"
-                  placeholder="https://www.ups.com"
-                  {...register('website')}
-                />
-              </div>
-            </div>
-          </ModalSection>
-
-          <ModalSection title={t('carriers.settings', 'Settings')} collapsible defaultExpanded={false}>
-            <div className="form-grid">
-              <div className="form-field">
-                <label className="form-field__label">{t('carriers.defaultService', 'Default Service Code')}</label>
-                <input
-                  type="text"
-                  className="form-field__input"
-                  placeholder="GROUND"
-                  {...register('defaultServiceCode')}
-                />
-              </div>
-              <div className="form-field form-field--full">
-                <label className="form-field__label">{t('carriers.notes', 'Notes')}</label>
-                <textarea
-                  className="form-field__textarea"
-                  rows={3}
-                  placeholder={t('carriers.notesPlaceholder', 'Internal notes...')}
-                  {...register('notes')}
-                />
-              </div>
-            </div>
-          </ModalSection>
-
-          {selectedCarrier && (
-            <ModalSection title={t('common.dangerZone', 'Danger Zone')}>
-              <div className="danger-zone">
-                <p>{t('carriers.deleteWarning', 'Deleting a carrier will remove all associated services.')}</p>
-                <button
-                  type="button"
-                  className="btn btn--danger"
-                  onClick={() => setDeleteConfirmOpen(true)}
-                >
-                  {t('carriers.deleteCarrier', 'Delete Carrier')}
-                </button>
-              </div>
-            </ModalSection>
-          )}
-        </form>
-      </FullscreenModal>
-
-      {/* Delete Confirmation Modal */}
-      <Modal
-        open={deleteConfirmOpen}
-        onClose={() => setDeleteConfirmOpen(false)}
-        title={t('carriers.deleteCarrier', 'Delete Carrier')}
-      >
-        <div className="modal__body">
-          <p>
-            {t(
-              'carriers.deleteConfirmation',
-              `Are you sure you want to delete "${selectedCarrier?.name}"? This will also remove all associated services.`
-            )}
-          </p>
-        </div>
-        <div className="modal__actions">
-          <button className="btn btn-ghost" onClick={() => setDeleteConfirmOpen(false)}>
-            {t('common.cancel', 'Cancel')}
-          </button>
-          <button className="btn btn--danger" onClick={handleDelete} disabled={isDeleting}>
-            {isDeleting ? t('common.deleting', 'Deleting...') : t('common.delete', 'Delete')}
-          </button>
-        </div>
-      </Modal>
     </div>
   );
 }

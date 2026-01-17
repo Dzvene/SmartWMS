@@ -9,7 +9,7 @@ export * from './routes';
  * API configuration
  */
 export const API = {
-  BASE_URL: import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5064/api',
+  BASE_URL: import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5050/api',
   TIMEOUT: 30000,
 } as const;
 

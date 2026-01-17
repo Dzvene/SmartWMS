@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using SmartWMS.API.Common.Enums;
 using SmartWMS.API.Infrastructure.Data;
+using SmartWMS.API.Modules.Automation.Services;
 using SmartWMS.API.Modules.Inventory.DTOs;
 using SmartWMS.API.Modules.Inventory.Models;
 using SmartWMS.API.Modules.Inventory.Services;
@@ -11,6 +13,8 @@ namespace SmartWMS.API.Tests.Unit.Inventory;
 
 public class StockServiceTests
 {
+    private readonly Mock<IAutomationEventPublisher> _automationEventsMock = new();
+
     private ApplicationDbContext CreateContext(string dbName)
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -18,6 +22,11 @@ public class StockServiceTests
             .Options;
 
         return new ApplicationDbContext(options);
+    }
+
+    private StockService CreateService(ApplicationDbContext context)
+    {
+        return new StockService(context, _automationEventsMock.Object);
     }
 
     private async Task<(Guid tenantId, Guid warehouseId, Guid zoneId, Guid locationId, Guid productId)> SeedTestDataAsync(ApplicationDbContext context)
@@ -121,7 +130,7 @@ public class StockServiceTests
     {
         // Arrange
         var context = CreateContext(nameof(GetStockLevelsAsync_ReturnsEmptyWhenNoStock));
-        var service = new StockService(context);
+        var service = CreateService(context);
         var tenantId = Guid.NewGuid();
 
         // Act
@@ -139,7 +148,7 @@ public class StockServiceTests
         // Arrange
         var context = CreateContext(nameof(GetStockLevelsAsync_ReturnsStockWithFilters));
         var (tenantId, warehouseId, zoneId, locationId, productId) = await SeedTestDataAsync(context);
-        var service = new StockService(context);
+        var service = CreateService(context);
 
         // Add stock level
         context.StockLevels.Add(CreateStockLevel(tenantId, productId, locationId, 100, 20));
@@ -163,7 +172,7 @@ public class StockServiceTests
     {
         // Arrange
         var context = CreateContext(nameof(GetStockLevelByIdAsync_ReturnsNotFoundForInvalidId));
-        var service = new StockService(context);
+        var service = CreateService(context);
         var tenantId = Guid.NewGuid();
 
         // Act
@@ -180,7 +189,7 @@ public class StockServiceTests
         // Arrange
         var context = CreateContext(nameof(GetProductStockSummaryAsync_ReturnsAggregatedData));
         var (tenantId, warehouseId, zoneId, locationId, productId) = await SeedTestDataAsync(context);
-        var service = new StockService(context);
+        var service = CreateService(context);
 
         // Add second location
         var location2Id = Guid.NewGuid();
@@ -222,7 +231,7 @@ public class StockServiceTests
         // Arrange
         var context = CreateContext(nameof(GetLowStockProductsAsync_ReturnsProductsBelowMinimum));
         var (tenantId, warehouseId, zoneId, locationId, productId) = await SeedTestDataAsync(context);
-        var service = new StockService(context);
+        var service = CreateService(context);
 
         // Add stock below minimum (minimum is 10)
         context.StockLevels.Add(CreateStockLevel(tenantId, productId, locationId, 5));
@@ -234,7 +243,7 @@ public class StockServiceTests
         // Assert
         Assert.True(result.Success);
         Assert.Single(result.Data!);
-        Assert.Equal(5, result.Data.First().TotalOnHand);
+        Assert.Equal(5, result.Data!.First().TotalOnHand);
     }
 
     [Fact]
@@ -243,7 +252,7 @@ public class StockServiceTests
         // Arrange
         var context = CreateContext(nameof(GetAvailableQuantityAsync_ReturnsCorrectQuantity));
         var (tenantId, warehouseId, zoneId, locationId, productId) = await SeedTestDataAsync(context);
-        var service = new StockService(context);
+        var service = CreateService(context);
 
         context.StockLevels.Add(CreateStockLevel(tenantId, productId, locationId, 100, 25));
         await context.SaveChangesAsync();
@@ -266,7 +275,7 @@ public class StockServiceTests
         // Arrange
         var context = CreateContext(nameof(ReceiveStockAsync_CreatesNewStockLevel));
         var (tenantId, warehouseId, zoneId, locationId, productId) = await SeedTestDataAsync(context);
-        var service = new StockService(context);
+        var service = CreateService(context);
 
         var request = new ReceiveStockRequest
         {
@@ -297,7 +306,7 @@ public class StockServiceTests
         // Arrange
         var context = CreateContext(nameof(ReceiveStockAsync_UpdatesExistingStockLevel));
         var (tenantId, warehouseId, zoneId, locationId, productId) = await SeedTestDataAsync(context);
-        var service = new StockService(context);
+        var service = CreateService(context);
 
         // Add existing stock
         context.StockLevels.Add(CreateStockLevel(tenantId, productId, locationId, 30, 0, "BATCH001"));
@@ -327,7 +336,7 @@ public class StockServiceTests
         // Arrange
         var context = CreateContext(nameof(ReceiveStockAsync_FailsWithZeroQuantity));
         var (tenantId, warehouseId, zoneId, locationId, productId) = await SeedTestDataAsync(context);
-        var service = new StockService(context);
+        var service = CreateService(context);
 
         // Act
         var result = await service.ReceiveStockAsync(tenantId, new ReceiveStockRequest
@@ -348,7 +357,7 @@ public class StockServiceTests
         // Arrange
         var context = CreateContext(nameof(IssueStockAsync_DeductsFromStockLevel));
         var (tenantId, warehouseId, zoneId, locationId, productId) = await SeedTestDataAsync(context);
-        var service = new StockService(context);
+        var service = CreateService(context);
 
         context.StockLevels.Add(CreateStockLevel(tenantId, productId, locationId, 100));
         await context.SaveChangesAsync();
@@ -379,7 +388,7 @@ public class StockServiceTests
         // Arrange
         var context = CreateContext(nameof(IssueStockAsync_FailsWhenInsufficientStock));
         var (tenantId, warehouseId, zoneId, locationId, productId) = await SeedTestDataAsync(context);
-        var service = new StockService(context);
+        var service = CreateService(context);
 
         context.StockLevels.Add(CreateStockLevel(tenantId, productId, locationId, 10));
         await context.SaveChangesAsync();
@@ -403,7 +412,7 @@ public class StockServiceTests
         // Arrange
         var context = CreateContext(nameof(TransferStockAsync_MovesStockBetweenLocations));
         var (tenantId, warehouseId, zoneId, locationId, productId) = await SeedTestDataAsync(context);
-        var service = new StockService(context);
+        var service = CreateService(context);
 
         // Add destination location
         var toLocationId = Guid.NewGuid();
@@ -454,7 +463,7 @@ public class StockServiceTests
         // Arrange
         var context = CreateContext(nameof(TransferStockAsync_FailsWhenSameLocation));
         var (tenantId, warehouseId, zoneId, locationId, productId) = await SeedTestDataAsync(context);
-        var service = new StockService(context);
+        var service = CreateService(context);
 
         // Add source stock
         context.StockLevels.Add(CreateStockLevel(tenantId, productId, locationId, 100));
@@ -480,7 +489,7 @@ public class StockServiceTests
         // Arrange
         var context = CreateContext(nameof(AdjustStockAsync_IncreasesQuantity));
         var (tenantId, warehouseId, zoneId, locationId, productId) = await SeedTestDataAsync(context);
-        var service = new StockService(context);
+        var service = CreateService(context);
 
         context.StockLevels.Add(CreateStockLevel(tenantId, productId, locationId, 50));
         await context.SaveChangesAsync();
@@ -512,7 +521,7 @@ public class StockServiceTests
         // Arrange
         var context = CreateContext(nameof(AdjustStockAsync_DecreasesQuantity));
         var (tenantId, warehouseId, zoneId, locationId, productId) = await SeedTestDataAsync(context);
-        var service = new StockService(context);
+        var service = CreateService(context);
 
         context.StockLevels.Add(CreateStockLevel(tenantId, productId, locationId, 50));
         await context.SaveChangesAsync();
@@ -540,7 +549,7 @@ public class StockServiceTests
         // Arrange
         var context = CreateContext(nameof(AdjustStockAsync_FailsWithNegativeQuantity));
         var (tenantId, warehouseId, zoneId, locationId, productId) = await SeedTestDataAsync(context);
-        var service = new StockService(context);
+        var service = CreateService(context);
 
         // Add existing stock
         context.StockLevels.Add(CreateStockLevel(tenantId, productId, locationId, 50));
@@ -569,7 +578,7 @@ public class StockServiceTests
         // Arrange
         var context = CreateContext(nameof(ReserveStockAsync_IncreasesReservedQuantity));
         var (tenantId, warehouseId, zoneId, locationId, productId) = await SeedTestDataAsync(context);
-        var service = new StockService(context);
+        var service = CreateService(context);
 
         context.StockLevels.Add(CreateStockLevel(tenantId, productId, locationId, 100));
         await context.SaveChangesAsync();
@@ -599,7 +608,7 @@ public class StockServiceTests
         // Arrange
         var context = CreateContext(nameof(ReserveStockAsync_FailsWhenInsufficientAvailable));
         var (tenantId, warehouseId, zoneId, locationId, productId) = await SeedTestDataAsync(context);
-        var service = new StockService(context);
+        var service = CreateService(context);
 
         context.StockLevels.Add(CreateStockLevel(tenantId, productId, locationId, 50, 40));
         await context.SaveChangesAsync();
@@ -623,7 +632,7 @@ public class StockServiceTests
         // Arrange
         var context = CreateContext(nameof(ReleaseReservationAsync_DecreasesReservedQuantity));
         var (tenantId, warehouseId, zoneId, locationId, productId) = await SeedTestDataAsync(context);
-        var service = new StockService(context);
+        var service = CreateService(context);
 
         context.StockLevels.Add(CreateStockLevel(tenantId, productId, locationId, 100, 30));
         await context.SaveChangesAsync();
@@ -651,7 +660,7 @@ public class StockServiceTests
         // Arrange
         var context = CreateContext(nameof(ReleaseReservationAsync_FailsWhenReleasingMoreThanReserved));
         var (tenantId, warehouseId, zoneId, locationId, productId) = await SeedTestDataAsync(context);
-        var service = new StockService(context);
+        var service = CreateService(context);
 
         context.StockLevels.Add(CreateStockLevel(tenantId, productId, locationId, 100, 10));
         await context.SaveChangesAsync();
@@ -679,7 +688,7 @@ public class StockServiceTests
         // Arrange
         var context = CreateContext(nameof(GetStockMovementsAsync_ReturnsFilteredMovements));
         var (tenantId, warehouseId, zoneId, locationId, productId) = await SeedTestDataAsync(context);
-        var service = new StockService(context);
+        var service = CreateService(context);
 
         // Add movements
         context.StockMovements.AddRange(
@@ -730,7 +739,7 @@ public class StockServiceTests
         // Arrange
         var context = CreateContext(nameof(GetProductMovementHistoryAsync_ReturnsOrderedHistory));
         var (tenantId, warehouseId, zoneId, locationId, productId) = await SeedTestDataAsync(context);
-        var service = new StockService(context);
+        var service = CreateService(context);
 
         // Add movements at different times
         context.StockMovements.AddRange(
@@ -785,7 +794,7 @@ public class StockServiceTests
         Assert.Equal(3, result.Data!.Count());
 
         // Should be ordered by date descending (newest first)
-        var items = result.Data.ToList();
+        var items = result.Data!.ToList();
         Assert.Equal("SM-003", items[0].MovementNumber);
         Assert.Equal("SM-002", items[1].MovementNumber);
         Assert.Equal("SM-001", items[2].MovementNumber);

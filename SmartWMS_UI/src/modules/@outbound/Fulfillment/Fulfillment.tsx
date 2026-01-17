@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
-import { useIntl } from 'react-intl';
 import { DataTable, createColumns } from '@/components/DataTable';
+import { useTranslate } from '@/hooks';
 import type { PaginationState, SortingState } from '@/components/DataTable';
 import { useGetBatchesQuery } from '@/api/modules/fulfillment';
 import type { FulfillmentBatchDto, BatchStatus } from '@/api/modules/fulfillment';
@@ -18,8 +18,7 @@ const STATUS_COLORS: Record<BatchStatus, string> = {
  * Manages fulfillment batches - groups of orders processed together.
  */
 export function Fulfillment() {
-  const { formatMessage } = useIntl();
-  const t = (id: string, defaultMessage?: string) => formatMessage({ id, defaultMessage });
+  const t = useTranslate();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<BatchStatus | ''>('');

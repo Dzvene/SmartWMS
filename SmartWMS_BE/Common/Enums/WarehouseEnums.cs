@@ -8,12 +8,15 @@ public enum LocationType
 {
     Bulk,
     Pick,
+    Picking,
+    Packing,
     Staging,
     Receiving,
     Shipping,
     Returns,
     Quarantine,
-    Reserve
+    Reserve,
+    Storage
 }
 
 /// <summary>

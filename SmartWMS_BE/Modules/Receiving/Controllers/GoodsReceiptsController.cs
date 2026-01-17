@@ -7,7 +7,7 @@ using SmartWMS.API.Modules.Receiving.Services;
 namespace SmartWMS.API.Modules.Receiving.Controllers;
 
 [ApiController]
-[Route("api/v1/tenant/{tenantId}/goods-receipts")]
+[Route("api/v1/tenant/{tenantId}/receiving/goods-receipts")]
 [Authorize]
 public class GoodsReceiptsController : ControllerBase
 {

@@ -1,7 +1,9 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using SmartWMS.API.Common.Enums;
 using SmartWMS.API.Infrastructure.Data;
+using SmartWMS.API.Modules.Automation.Services;
 using SmartWMS.API.Modules.Companies.Models;
 using SmartWMS.API.Modules.Inventory.Models;
 using SmartWMS.API.Modules.Orders.DTOs;
@@ -14,6 +16,7 @@ public class SalesOrdersServiceTests : IDisposable
 {
     private readonly ApplicationDbContext _context;
     private readonly SalesOrdersService _salesOrdersService;
+    private readonly Mock<IAutomationEventPublisher> _automationEventsMock = new();
     private readonly Guid _tenantId = Guid.NewGuid();
     private readonly Guid _customerId = Guid.NewGuid();
     private readonly Guid _warehouseId = Guid.NewGuid();
@@ -27,7 +30,7 @@ public class SalesOrdersServiceTests : IDisposable
             .Options;
 
         _context = new ApplicationDbContext(options);
-        _salesOrdersService = new SalesOrdersService(_context);
+        _salesOrdersService = new SalesOrdersService(_context, _automationEventsMock.Object);
 
         SeedTestData();
     }
