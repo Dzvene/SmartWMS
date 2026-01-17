@@ -22,6 +22,7 @@ import type {
   RoleDetailResponse,
   CreateRoleRequest,
   UpdateRoleRequest,
+  PermissionsResponse,
 } from './users.types';
 
 export const usersApi = baseApi.injectEndpoints({
@@ -166,7 +167,7 @@ export const usersApi = baseApi.injectEndpoints({
       invalidatesTags: ['User'],
     }),
 
-    getPermissions: builder.query<ApiResponse<string[]>, void>({
+    getPermissions: builder.query<PermissionsResponse, void>({
       query: () => `/roles/permissions`,
     }),
   }),

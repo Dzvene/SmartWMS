@@ -82,6 +82,30 @@ export interface UpdateRoleRequest {
 }
 
 // ============================================================================
+// Permission Types
+// ============================================================================
+
+export interface PermissionDto {
+  code: string;
+  name: string;
+  description?: string;
+  module: string;
+  category: string;
+}
+
+export interface PermissionCategoryDto {
+  category: string;
+  categoryName: string;
+  permissions: PermissionDto[];
+}
+
+export interface PermissionGroupDto {
+  module: string;
+  moduleName: string;
+  categories: PermissionCategoryDto[];
+}
+
+// ============================================================================
 // Response Types
 // ============================================================================
 
@@ -89,3 +113,4 @@ export type UsersListResponse = ApiResponse<PaginatedResponse<UserResponse>>;
 export type UserDetailResponse = ApiResponse<UserResponse>;
 export type RolesListResponse = ApiResponse<RoleResponse[]>;
 export type RoleDetailResponse = ApiResponse<RoleResponse>;
+export type PermissionsResponse = ApiResponse<PermissionGroupDto[]>;

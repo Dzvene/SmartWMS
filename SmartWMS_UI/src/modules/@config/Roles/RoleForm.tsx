@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslate } from '@/hooks';
-import { useGetPermissionsQuery } from '../../../api/modules/users';
+import { useGetPermissionsQuery, type PermissionGroupDto } from '../../../api/modules/users';
 
 export interface RoleFormData {
   name: string;
@@ -27,13 +27,25 @@ export function RoleForm({ initialData, onSubmit, loading, isEditMode, isSystemR
   const t = useTranslate();
 
   const { data: permissionsResponse } = useGetPermissionsQuery();
-  const availablePermissions = useMemo(() => {
-    const data = permissionsResponse?.data || [];
-    // Handle both string[] and object[] responses
-    return data.map((perm: unknown) =>
-      typeof perm === 'string' ? perm : (perm as { name?: string; permission?: string })?.name || (perm as { name?: string; permission?: string })?.permission || ''
-    ).filter(Boolean);
+
+  // Parse the nested permission structure from the API
+  // Backend returns: [{ module, moduleName, categories: [{ category, categoryName, permissions: [{ code, name, ... }] }] }]
+  const permissionModules = useMemo((): PermissionGroupDto[] => {
+    return (permissionsResponse?.data || []) as PermissionGroupDto[];
   }, [permissionsResponse?.data]);
+
+  // Flatten all permission codes for lookups
+  const availablePermissions = useMemo(() => {
+    const perms: string[] = [];
+    permissionModules.forEach((mod) => {
+      mod.categories?.forEach((cat) => {
+        cat.permissions?.forEach((perm) => {
+          perms.push(perm.code);
+        });
+      });
+    });
+    return perms;
+  }, [permissionModules]);
 
   const {
     register,
@@ -63,21 +75,20 @@ export function RoleForm({ initialData, onSubmit, loading, isEditMode, isSystemR
     }
   }, [initialData, reset]);
 
-  // Group permissions by category
+  // Use the permission modules structure directly for rendering
   const permissionGroups = useMemo(() => {
-    const groups: Record<string, string[]> = {};
-    availablePermissions.forEach((perm) => {
-      const [category] = perm.split('.');
-      if (!groups[category]) {
-        groups[category] = [];
-      }
-      groups[category].push(perm);
-    });
-    return Object.entries(groups).map(([group, permissions]) => ({
-      group: group.charAt(0).toUpperCase() + group.slice(1),
-      permissions,
+    return permissionModules.map((mod) => ({
+      moduleName: mod.moduleName,
+      categories: mod.categories.map((cat) => ({
+        categoryName: cat.categoryName,
+        permissions: cat.permissions.map((perm) => ({
+          code: perm.code,
+          name: perm.name,
+          description: perm.description,
+        })),
+      })),
     }));
-  }, [availablePermissions]);
+  }, [permissionModules]);
 
   const handleFormSubmit = handleSubmit(async (data) => {
     await onSubmit(data);
@@ -92,14 +103,33 @@ export function RoleForm({ initialData, onSubmit, loading, isEditMode, isSystemR
     }
   };
 
-  const toggleGroup = (groupPermissions: string[]) => {
+  const toggleCategory = (categoryPermissions: Array<{ code: string }>) => {
     const current = selectedPermissions || [];
-    const allSelected = groupPermissions.every((p) => current.includes(p));
+    const codes = categoryPermissions.map((p) => p.code);
+    const allSelected = codes.every((p) => current.includes(p));
 
     if (allSelected) {
-      setValue('permissions', current.filter((p) => !groupPermissions.includes(p)), { shouldDirty: true });
+      setValue('permissions', current.filter((p) => !codes.includes(p)), { shouldDirty: true });
     } else {
-      const newPerms = new Set([...current, ...groupPermissions]);
+      const newPerms = new Set([...current, ...codes]);
+      setValue('permissions', Array.from(newPerms), { shouldDirty: true });
+    }
+  };
+
+  const toggleModule = (module: typeof permissionGroups[0]) => {
+    const current = selectedPermissions || [];
+    const allCodes: string[] = [];
+    module.categories.forEach((cat) => {
+      cat.permissions.forEach((perm) => {
+        allCodes.push(perm.code);
+      });
+    });
+    const allSelected = allCodes.every((p) => current.includes(p));
+
+    if (allSelected) {
+      setValue('permissions', current.filter((p) => !allCodes.includes(p)), { shouldDirty: true });
+    } else {
+      const newPerms = new Set([...current, ...allCodes]);
       setValue('permissions', Array.from(newPerms), { shouldDirty: true });
     }
   };
@@ -145,39 +175,62 @@ export function RoleForm({ initialData, onSubmit, loading, isEditMode, isSystemR
           <p className="form-section__description">{t('roles.permissionsDesc', 'Select permissions for this role')}</p>
         </div>
         <div className="form-section__content">
-          <div className="permissions-grid">
-            {permissionGroups.map((group) => {
-              const allSelected = group.permissions.every((p) => selectedPermissions.includes(p));
+          <div className="permissions-modules">
+            {permissionGroups.map((mod) => {
+              const allModulePerms: string[] = [];
+              mod.categories.forEach((cat) => {
+                cat.permissions.forEach((perm) => allModulePerms.push(perm.code));
+              });
+              const allModuleSelected = allModulePerms.every((p) => selectedPermissions.includes(p));
 
               return (
-                <div key={group.group} className="permission-group">
-                  <div className="permission-group__header">
-                    <label className="permission-checkbox permission-checkbox--group">
+                <div key={mod.moduleName} className="permission-module">
+                  <div className="permission-module__header">
+                    <label className="permission-checkbox permission-checkbox--module">
                       <input
                         type="checkbox"
-                        checked={allSelected}
-                        onChange={() => toggleGroup(group.permissions)}
+                        checked={allModuleSelected}
+                        onChange={() => toggleModule(mod)}
                         disabled={isSystemRole}
                       />
                       <span className="permission-checkbox__label">
-                        <strong>{group.group}</strong>
+                        <strong>{mod.moduleName}</strong>
                       </span>
                     </label>
                   </div>
-                  <div className="permission-group__items">
-                    {group.permissions.map((perm) => (
-                      <label key={perm} className="permission-checkbox">
-                        <input
-                          type="checkbox"
-                          checked={selectedPermissions.includes(perm)}
-                          onChange={() => togglePermission(perm)}
-                          disabled={isSystemRole}
-                        />
-                        <span className="permission-checkbox__label">
-                          {perm.split('.')[1]}
-                        </span>
-                      </label>
-                    ))}
+                  <div className="permission-module__categories">
+                    {mod.categories.map((cat) => {
+                      const allCatSelected = cat.permissions.every((p) => selectedPermissions.includes(p.code));
+
+                      return (
+                        <div key={cat.categoryName} className="permission-category">
+                          <div className="permission-category__header">
+                            <label className="permission-checkbox permission-checkbox--category">
+                              <input
+                                type="checkbox"
+                                checked={allCatSelected}
+                                onChange={() => toggleCategory(cat.permissions)}
+                                disabled={isSystemRole}
+                              />
+                              <span className="permission-checkbox__label">{cat.categoryName}</span>
+                            </label>
+                          </div>
+                          <div className="permission-category__items">
+                            {cat.permissions.map((perm) => (
+                              <label key={perm.code} className="permission-checkbox" title={perm.description}>
+                                <input
+                                  type="checkbox"
+                                  checked={selectedPermissions.includes(perm.code)}
+                                  onChange={() => togglePermission(perm.code)}
+                                  disabled={isSystemRole}
+                                />
+                                <span className="permission-checkbox__label">{perm.name}</span>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               );
