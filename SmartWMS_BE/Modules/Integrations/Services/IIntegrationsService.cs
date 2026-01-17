@@ -45,4 +45,10 @@ public interface IIntegrationsService
     Task<ApiResponse<WebhookEndpointDto>> UpdateWebhookAsync(Guid tenantId, Guid webhookId, UpdateWebhookRequest request);
     Task<ApiResponse<bool>> DeleteWebhookAsync(Guid tenantId, Guid webhookId);
     Task<ApiResponse<bool>> TestWebhookAsync(Guid tenantId, Guid webhookId);
+
+    // Sync Jobs
+    Task<ApiResponse<PaginatedResult<SyncJobDto>>> GetSyncJobsAsync(Guid tenantId, SyncJobQueryParams query);
+    Task<ApiResponse<SyncJobDto>> GetSyncJobByIdAsync(Guid tenantId, Guid syncJobId);
+    Task<ApiResponse<bool>> CancelSyncJobAsync(Guid tenantId, Guid syncJobId);
+    Task<ApiResponse<SyncJobDto>> RetrySyncJobAsync(Guid tenantId, Guid syncJobId);
 }

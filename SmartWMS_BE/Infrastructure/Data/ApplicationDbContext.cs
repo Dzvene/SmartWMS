@@ -131,6 +131,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<IntegrationLog> IntegrationLogs => Set<IntegrationLog>();
     public DbSet<IntegrationMapping> IntegrationMappings => Set<IntegrationMapping>();
     public DbSet<WebhookEndpoint> WebhookEndpoints => Set<WebhookEndpoint>();
+    public DbSet<SyncJob> SyncJobs => Set<SyncJob>();
 
     // Sessions
     public DbSet<UserSession> UserSessions => Set<UserSession>();

@@ -1,10 +1,11 @@
 import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { DataTable, createColumns } from '@/components/DataTable';
 import { useTranslate } from '@/hooks';
 import type { PaginationState, SortingState } from '@/components/DataTable';
 import { useGetShipmentsQuery } from '@/api/modules/fulfillment';
 import type { ShipmentDto, ShipmentStatus } from '@/api/modules/fulfillment';
-import { FullscreenModal, ModalSection } from '@/components/FullscreenModal';
+import { OUTBOUND } from '@/constants/routes';
 import './Shipping.scss';
 
 const STATUS_COLORS: Record<ShipmentStatus, string> = {
@@ -21,14 +22,13 @@ const STATUS_COLORS: Record<ShipmentStatus, string> = {
  */
 export function Shipping() {
   const t = useTranslate();
+  const navigate = useNavigate();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<ShipmentStatus | ''>('');
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 25 });
   const [sorting, setSorting] = useState<SortingState>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedShipment, setSelectedShipment] = useState<ShipmentDto | null>(null);
 
   const { data: response, isLoading } = useGetShipmentsQuery({
     page: pagination.pageIndex + 1,
@@ -109,8 +109,7 @@ export function Shipping() {
 
   const handleRowClick = (shipment: ShipmentDto) => {
     setSelectedId(shipment.id);
-    setSelectedShipment(shipment);
-    setModalOpen(true);
+    navigate(`${OUTBOUND.SHIPPING}/${shipment.id}`);
   };
 
   return (
@@ -169,69 +168,6 @@ export function Shipping() {
           loading={isLoading}
         />
       </div>
-
-      <FullscreenModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        title={t('shipment.details', 'Shipment Details')}
-        subtitle={selectedShipment?.shipmentNumber}
-        maxWidth="md"
-      >
-        {selectedShipment && (
-          <>
-            <ModalSection title={t('shipment.information', 'Shipment Information')}>
-              <div className="shipment-details">
-                <div className="shipment-details__row">
-                  <span className="shipment-details__label">{t('shipment.shipmentNumber', 'Shipment #')}</span>
-                  <span className="shipment-details__value">{selectedShipment.shipmentNumber}</span>
-                </div>
-                <div className="shipment-details__row">
-                  <span className="shipment-details__label">{t('shipment.orderNumber', 'Order #')}</span>
-                  <span className="shipment-details__value">{selectedShipment.salesOrderNumber || '-'}</span>
-                </div>
-                <div className="shipment-details__row">
-                  <span className="shipment-details__label">{t('common.status', 'Status')}</span>
-                  <span className="shipment-details__value">{selectedShipment.status}</span>
-                </div>
-              </div>
-            </ModalSection>
-
-            <ModalSection title={t('shipment.carrierDetails', 'Carrier Details')}>
-              <div className="shipment-details">
-                <div className="shipment-details__row">
-                  <span className="shipment-details__label">{t('shipment.carrier', 'Carrier')}</span>
-                  <span className="shipment-details__value">{selectedShipment.carrierName || '-'}</span>
-                </div>
-                <div className="shipment-details__row">
-                  <span className="shipment-details__label">{t('shipment.service', 'Service')}</span>
-                  <span className="shipment-details__value">{selectedShipment.carrierServiceName || '-'}</span>
-                </div>
-                <div className="shipment-details__row">
-                  <span className="shipment-details__label">{t('shipment.tracking', 'Tracking #')}</span>
-                  <span className="shipment-details__value">
-                    {selectedShipment.trackingNumber || '-'}
-                  </span>
-                </div>
-              </div>
-            </ModalSection>
-
-            <ModalSection title={t('shipment.packageDetails', 'Package Details')}>
-              <div className="shipment-details">
-                <div className="shipment-details__row">
-                  <span className="shipment-details__label">{t('shipment.packages', 'Packages')}</span>
-                  <span className="shipment-details__value">{selectedShipment.packageCount}</span>
-                </div>
-                <div className="shipment-details__row">
-                  <span className="shipment-details__label">{t('shipment.totalWeight', 'Total Weight')}</span>
-                  <span className="shipment-details__value">
-                    {selectedShipment.totalWeight} {selectedShipment.weightUnit || 'kg'}
-                  </span>
-                </div>
-              </div>
-            </ModalSection>
-          </>
-        )}
-      </FullscreenModal>
     </div>
   );
 }

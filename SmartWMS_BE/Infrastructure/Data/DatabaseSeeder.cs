@@ -6,6 +6,7 @@ using SmartWMS.API.Modules.Companies.Models;
 using SmartWMS.API.Modules.Inventory.Models;
 using SmartWMS.API.Modules.Orders.Models;
 using SmartWMS.API.Modules.Sites.Models;
+using SmartWMS.API.Modules.Configuration.Models;
 
 namespace SmartWMS.API.Infrastructure.Data;
 
@@ -39,6 +40,8 @@ public class DatabaseSeeder
         await SeedCustomersAsync();
         await SeedSuppliersAsync();
         await SeedSalesOrdersAsync();
+        await SeedBarcodePrefixesAsync();
+        await SeedReasonCodesAsync();
     }
 
     private async Task SeedRolesAsync()
@@ -1712,6 +1715,247 @@ public class DatabaseSeeder
 
         _context.SalesOrders.AddRange(orders);
         _context.SalesOrderLines.AddRange(orderLines);
+        await _context.SaveChangesAsync();
+    }
+
+    private async Task SeedBarcodePrefixesAsync()
+    {
+        var tenantId = Guid.Parse("e9006ab8-257f-4021-b60a-cbba785bad46");
+
+        // Skip if barcode prefixes already exist
+        if (await _context.BarcodePrefixes.AnyAsync(b => b.TenantId == tenantId))
+        {
+            return;
+        }
+
+        var barcodePrefixes = new List<BarcodePrefix>
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Prefix = "P",
+                Name = "Product SKU",
+                Description = "Standard product barcode prefix",
+                PrefixType = BarcodePrefixType.Product,
+                MinLength = 8,
+                MaxLength = 20,
+                Pattern = "^P[A-Z0-9-]+$",
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Prefix = "L",
+                Name = "Location Code",
+                Description = "Location barcode prefix",
+                PrefixType = BarcodePrefixType.Location,
+                MinLength = 5,
+                MaxLength = 20,
+                Pattern = "^L[A-Z0-9-]+$",
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Prefix = "BIN",
+                Name = "Bin Location",
+                Description = "Bin location prefix",
+                PrefixType = BarcodePrefixType.Bin,
+                MinLength = 6,
+                MaxLength = 15,
+                Pattern = "^BIN[0-9]+$",
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Prefix = "PLT",
+                Name = "Pallet",
+                Description = "Pallet identifier prefix",
+                PrefixType = BarcodePrefixType.Pallet,
+                MinLength = 10,
+                MaxLength = 20,
+                Pattern = "^PLT[0-9]{10,}$",
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Prefix = "CTN",
+                Name = "Container",
+                Description = "Container/carton prefix",
+                PrefixType = BarcodePrefixType.Container,
+                MinLength = 10,
+                MaxLength = 20,
+                Pattern = "^CTN[0-9]{10,}$",
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Prefix = "USR",
+                Name = "User Badge",
+                Description = "Employee badge barcode",
+                PrefixType = BarcodePrefixType.User,
+                MinLength = 8,
+                MaxLength = 15,
+                Pattern = "^USR[0-9]+$",
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Prefix = "EQP",
+                Name = "Equipment",
+                Description = "Equipment ID prefix",
+                PrefixType = BarcodePrefixType.Equipment,
+                MinLength = 8,
+                MaxLength = 15,
+                Pattern = "^EQP[A-Z0-9-]+$",
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Prefix = "SO",
+                Name = "Sales Order",
+                Description = "Sales order document",
+                PrefixType = BarcodePrefixType.Document,
+                MinLength = 10,
+                MaxLength = 20,
+                Pattern = "^SO-[0-9]{4}-[0-9]+$",
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Prefix = "PO",
+                Name = "Purchase Order",
+                Description = "Purchase order document",
+                PrefixType = BarcodePrefixType.Document,
+                MinLength = 10,
+                MaxLength = 20,
+                Pattern = "^PO-[0-9]{4}-[0-9]+$",
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Prefix = "GR",
+                Name = "Goods Receipt",
+                Description = "Goods receipt document",
+                PrefixType = BarcodePrefixType.Document,
+                MinLength = 10,
+                MaxLength = 20,
+                Pattern = "^GR-[0-9]{4}-[0-9]+$",
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Prefix = "SHP",
+                Name = "Shipment",
+                Description = "Shipment document",
+                PrefixType = BarcodePrefixType.Document,
+                MinLength = 10,
+                MaxLength = 20,
+                Pattern = "^SHP-[0-9]{4}-[0-9]+$",
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Prefix = "RET",
+                Name = "Return",
+                Description = "Return order document",
+                PrefixType = BarcodePrefixType.Document,
+                MinLength = 10,
+                MaxLength = 20,
+                Pattern = "^RET-[0-9]{4}-[0-9]+$",
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            }
+        };
+
+        _context.BarcodePrefixes.AddRange(barcodePrefixes);
+        await _context.SaveChangesAsync();
+    }
+
+    private async Task SeedReasonCodesAsync()
+    {
+        var tenantId = Guid.Parse("e9006ab8-257f-4021-b60a-cbba785bad46");
+
+        // Skip if reason codes already exist
+        if (await _context.ReasonCodes.AnyAsync(r => r.TenantId == tenantId))
+        {
+            return;
+        }
+
+        var reasonCodes = new List<ReasonCode>
+        {
+            // Stock Adjustment Reasons
+            new() { Id = Guid.NewGuid(), TenantId = tenantId, Code = "ADJ-COUNT", Name = "Cycle Count Adjustment", Description = "Variance found during cycle count", ReasonType = ReasonCodeType.StockAdjustment, RequiresNotes = false, RequiresApproval = false, AffectsInventory = true, IsActive = true, SortOrder = 10, CreatedAt = DateTime.UtcNow },
+            new() { Id = Guid.NewGuid(), TenantId = tenantId, Code = "ADJ-DAMAGED", Name = "Damaged Goods", Description = "Items damaged in warehouse", ReasonType = ReasonCodeType.StockAdjustment, RequiresNotes = true, RequiresApproval = true, AffectsInventory = true, IsActive = true, SortOrder = 20, CreatedAt = DateTime.UtcNow },
+            new() { Id = Guid.NewGuid(), TenantId = tenantId, Code = "ADJ-FOUND", Name = "Found Items", Description = "Items found during operations", ReasonType = ReasonCodeType.StockAdjustment, RequiresNotes = true, RequiresApproval = false, AffectsInventory = true, IsActive = true, SortOrder = 30, CreatedAt = DateTime.UtcNow },
+            new() { Id = Guid.NewGuid(), TenantId = tenantId, Code = "ADJ-LOST", Name = "Lost Items", Description = "Items cannot be located", ReasonType = ReasonCodeType.StockAdjustment, RequiresNotes = true, RequiresApproval = true, AffectsInventory = true, IsActive = true, SortOrder = 40, CreatedAt = DateTime.UtcNow },
+            new() { Id = Guid.NewGuid(), TenantId = tenantId, Code = "ADJ-EXPIRED", Name = "Expired Products", Description = "Products past expiry date", ReasonType = ReasonCodeType.StockAdjustment, RequiresNotes = false, RequiresApproval = false, AffectsInventory = true, IsActive = true, SortOrder = 50, CreatedAt = DateTime.UtcNow },
+            new() { Id = Guid.NewGuid(), TenantId = tenantId, Code = "ADJ-QUALITY", Name = "Quality Hold", Description = "Items placed on quality hold", ReasonType = ReasonCodeType.StockAdjustment, RequiresNotes = true, RequiresApproval = true, AffectsInventory = true, IsActive = true, SortOrder = 60, CreatedAt = DateTime.UtcNow },
+            new() { Id = Guid.NewGuid(), TenantId = tenantId, Code = "ADJ-OPENING", Name = "Opening Balance", Description = "Initial inventory setup", ReasonType = ReasonCodeType.StockAdjustment, RequiresNotes = false, RequiresApproval = false, AffectsInventory = true, IsActive = true, SortOrder = 70, CreatedAt = DateTime.UtcNow },
+
+            // Return Reasons
+            new() { Id = Guid.NewGuid(), TenantId = tenantId, Code = "RET-DEFECT", Name = "Defective Product", Description = "Product has manufacturing defect", ReasonType = ReasonCodeType.Return, RequiresNotes = true, RequiresApproval = false, AffectsInventory = true, IsActive = true, SortOrder = 100, CreatedAt = DateTime.UtcNow },
+            new() { Id = Guid.NewGuid(), TenantId = tenantId, Code = "RET-WRONG", Name = "Wrong Item Shipped", Description = "Incorrect item sent to customer", ReasonType = ReasonCodeType.Return, RequiresNotes = true, RequiresApproval = false, AffectsInventory = true, IsActive = true, SortOrder = 110, CreatedAt = DateTime.UtcNow },
+            new() { Id = Guid.NewGuid(), TenantId = tenantId, Code = "RET-DAMAGE", Name = "Damaged in Transit", Description = "Item damaged during shipping", ReasonType = ReasonCodeType.Return, RequiresNotes = true, RequiresApproval = false, AffectsInventory = true, IsActive = true, SortOrder = 120, CreatedAt = DateTime.UtcNow },
+            new() { Id = Guid.NewGuid(), TenantId = tenantId, Code = "RET-NOTWANT", Name = "Customer Changed Mind", Description = "Customer no longer wants item", ReasonType = ReasonCodeType.Return, RequiresNotes = false, RequiresApproval = false, AffectsInventory = true, IsActive = true, SortOrder = 130, CreatedAt = DateTime.UtcNow },
+            new() { Id = Guid.NewGuid(), TenantId = tenantId, Code = "RET-DUPLICATE", Name = "Duplicate Order", Description = "Customer received duplicate", ReasonType = ReasonCodeType.Return, RequiresNotes = false, RequiresApproval = false, AffectsInventory = true, IsActive = true, SortOrder = 140, CreatedAt = DateTime.UtcNow },
+
+            // Scrap Reasons
+            new() { Id = Guid.NewGuid(), TenantId = tenantId, Code = "SCRAP-DAMAGED", Name = "Beyond Repair", Description = "Item damaged beyond repair", ReasonType = ReasonCodeType.Scrap, RequiresNotes = true, RequiresApproval = true, AffectsInventory = true, IsActive = true, SortOrder = 200, CreatedAt = DateTime.UtcNow },
+            new() { Id = Guid.NewGuid(), TenantId = tenantId, Code = "SCRAP-OBSOLETE", Name = "Obsolete Product", Description = "Product no longer sellable", ReasonType = ReasonCodeType.Scrap, RequiresNotes = true, RequiresApproval = true, AffectsInventory = true, IsActive = true, SortOrder = 210, CreatedAt = DateTime.UtcNow },
+            new() { Id = Guid.NewGuid(), TenantId = tenantId, Code = "SCRAP-RECALL", Name = "Product Recall", Description = "Manufacturer recall", ReasonType = ReasonCodeType.Scrap, RequiresNotes = true, RequiresApproval = true, AffectsInventory = true, IsActive = true, SortOrder = 220, CreatedAt = DateTime.UtcNow },
+
+            // Transfer Reasons
+            new() { Id = Guid.NewGuid(), TenantId = tenantId, Code = "TRF-REPLEN", Name = "Replenishment", Description = "Pick location replenishment", ReasonType = ReasonCodeType.Transfer, RequiresNotes = false, RequiresApproval = false, AffectsInventory = true, IsActive = true, SortOrder = 300, CreatedAt = DateTime.UtcNow },
+            new() { Id = Guid.NewGuid(), TenantId = tenantId, Code = "TRF-REORG", Name = "Warehouse Reorganization", Description = "Inventory reorganization", ReasonType = ReasonCodeType.Transfer, RequiresNotes = false, RequiresApproval = false, AffectsInventory = true, IsActive = true, SortOrder = 310, CreatedAt = DateTime.UtcNow },
+            new() { Id = Guid.NewGuid(), TenantId = tenantId, Code = "TRF-CONSOL", Name = "Consolidation", Description = "Consolidating inventory", ReasonType = ReasonCodeType.Transfer, RequiresNotes = false, RequiresApproval = false, AffectsInventory = true, IsActive = true, SortOrder = 320, CreatedAt = DateTime.UtcNow },
+
+            // Order Cancellation Reasons
+            new() { Id = Guid.NewGuid(), TenantId = tenantId, Code = "CAN-CUSTCANC", Name = "Customer Cancelled", Description = "Customer requested cancellation", ReasonType = ReasonCodeType.OrderCancellation, RequiresNotes = false, RequiresApproval = false, AffectsInventory = false, IsActive = true, SortOrder = 400, CreatedAt = DateTime.UtcNow },
+            new() { Id = Guid.NewGuid(), TenantId = tenantId, Code = "CAN-NOSTOCK", Name = "Out of Stock", Description = "Items not available", ReasonType = ReasonCodeType.OrderCancellation, RequiresNotes = false, RequiresApproval = false, AffectsInventory = false, IsActive = true, SortOrder = 410, CreatedAt = DateTime.UtcNow },
+            new() { Id = Guid.NewGuid(), TenantId = tenantId, Code = "CAN-PAYMENT", Name = "Payment Issue", Description = "Payment not received/declined", ReasonType = ReasonCodeType.OrderCancellation, RequiresNotes = true, RequiresApproval = false, AffectsInventory = false, IsActive = true, SortOrder = 420, CreatedAt = DateTime.UtcNow },
+            new() { Id = Guid.NewGuid(), TenantId = tenantId, Code = "CAN-FRAUD", Name = "Fraud Suspected", Description = "Potential fraudulent order", ReasonType = ReasonCodeType.OrderCancellation, RequiresNotes = true, RequiresApproval = true, AffectsInventory = false, IsActive = true, SortOrder = 430, CreatedAt = DateTime.UtcNow },
+
+            // Receiving Reasons
+            new() { Id = Guid.NewGuid(), TenantId = tenantId, Code = "RCV-DAMAGED", Name = "Received Damaged", Description = "Items arrived damaged", ReasonType = ReasonCodeType.Receiving, RequiresNotes = true, RequiresApproval = false, AffectsInventory = true, IsActive = true, SortOrder = 500, CreatedAt = DateTime.UtcNow },
+            new() { Id = Guid.NewGuid(), TenantId = tenantId, Code = "RCV-SHORT", Name = "Short Shipment", Description = "Received less than expected", ReasonType = ReasonCodeType.Receiving, RequiresNotes = true, RequiresApproval = false, AffectsInventory = true, IsActive = true, SortOrder = 510, CreatedAt = DateTime.UtcNow },
+            new() { Id = Guid.NewGuid(), TenantId = tenantId, Code = "RCV-OVER", Name = "Over Shipment", Description = "Received more than expected", ReasonType = ReasonCodeType.Receiving, RequiresNotes = true, RequiresApproval = false, AffectsInventory = true, IsActive = true, SortOrder = 520, CreatedAt = DateTime.UtcNow },
+            new() { Id = Guid.NewGuid(), TenantId = tenantId, Code = "RCV-WRONG", Name = "Wrong Items", Description = "Received incorrect items", ReasonType = ReasonCodeType.Receiving, RequiresNotes = true, RequiresApproval = false, AffectsInventory = true, IsActive = true, SortOrder = 530, CreatedAt = DateTime.UtcNow }
+        };
+
+        _context.ReasonCodes.AddRange(reasonCodes);
         await _context.SaveChangesAsync();
     }
 }

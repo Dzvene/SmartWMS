@@ -222,4 +222,35 @@ public record IntegrationLogQueryParams(
     DateTime? ToDate = null
 );
 
+public record SyncJobQueryParams(
+    int Page = 1,
+    int PageSize = 25,
+    Guid? IntegrationId = null,
+    string? EntityType = null,
+    SyncDirection? Direction = null,
+    SyncJobStatus? Status = null,
+    DateTime? FromDate = null,
+    DateTime? ToDate = null
+);
+
+#endregion
+
+#region Sync Job DTOs
+
+public record SyncJobDto(
+    Guid Id,
+    Guid IntegrationId,
+    string? IntegrationName,
+    string EntityType,
+    SyncDirection Direction,
+    SyncJobStatus Status,
+    DateTime? StartedAt,
+    DateTime? CompletedAt,
+    int TotalRecords,
+    int ProcessedRecords,
+    int FailedRecords,
+    string? ErrorMessage,
+    DateTime CreatedAt
+);
+
 #endregion

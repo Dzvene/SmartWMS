@@ -195,6 +195,38 @@ public class IntegrationsController : ControllerBase
 
     #endregion
 
+    #region Sync Jobs
+
+    [HttpGet("sync-jobs")]
+    public async Task<IActionResult> GetSyncJobs(Guid tenantId, [FromQuery] SyncJobQueryParams query)
+    {
+        var result = await _integrationsService.GetSyncJobsAsync(tenantId, query);
+        return result.Success ? Ok(result) : BadRequest(result);
+    }
+
+    [HttpGet("sync-jobs/{syncJobId}")]
+    public async Task<IActionResult> GetSyncJobById(Guid tenantId, Guid syncJobId)
+    {
+        var result = await _integrationsService.GetSyncJobByIdAsync(tenantId, syncJobId);
+        return result.Success ? Ok(result) : NotFound(result);
+    }
+
+    [HttpPost("sync-jobs/{syncJobId}/cancel")]
+    public async Task<IActionResult> CancelSyncJob(Guid tenantId, Guid syncJobId)
+    {
+        var result = await _integrationsService.CancelSyncJobAsync(tenantId, syncJobId);
+        return result.Success ? Ok(result) : BadRequest(result);
+    }
+
+    [HttpPost("sync-jobs/{syncJobId}/retry")]
+    public async Task<IActionResult> RetrySyncJob(Guid tenantId, Guid syncJobId)
+    {
+        var result = await _integrationsService.RetrySyncJobAsync(tenantId, syncJobId);
+        return result.Success ? Ok(result) : BadRequest(result);
+    }
+
+    #endregion
+
     #region Webhooks
 
     [HttpGet("{integrationId}/webhooks")]

@@ -811,10 +811,16 @@ public class OperationHubService : IOperationHubService
             q = q.Where(p => p.UserId == query.UserId.Value);
 
         if (query.FromDate.HasValue)
-            q = q.Where(p => p.Date >= query.FromDate.Value.Date);
+        {
+            var fromDateUtc = DateTime.SpecifyKind(query.FromDate.Value.Date, DateTimeKind.Utc);
+            q = q.Where(p => p.Date >= fromDateUtc);
+        }
 
         if (query.ToDate.HasValue)
-            q = q.Where(p => p.Date <= query.ToDate.Value.Date);
+        {
+            var toDateUtc = DateTime.SpecifyKind(query.ToDate.Value.Date, DateTimeKind.Utc);
+            q = q.Where(p => p.Date <= toDateUtc);
+        }
 
         var productivities = await q.OrderByDescending(p => p.Date).ToListAsync();
 
@@ -850,8 +856,12 @@ public class OperationHubService : IOperationHubService
 
     public async Task<ApiResponse<ProductivitySummaryDto>> GetProductivitySummaryAsync(Guid tenantId, ProductivityQueryParams query)
     {
-        var fromDate = query.FromDate ?? DateTime.UtcNow.AddDays(-7).Date;
-        var toDate = query.ToDate ?? DateTime.UtcNow.Date;
+        var fromDate = query.FromDate.HasValue
+            ? DateTime.SpecifyKind(query.FromDate.Value.Date, DateTimeKind.Utc)
+            : DateTime.UtcNow.AddDays(-7).Date;
+        var toDate = query.ToDate.HasValue
+            ? DateTime.SpecifyKind(query.ToDate.Value.Date, DateTimeKind.Utc)
+            : DateTime.UtcNow.Date;
 
         var q = _context.Set<OperatorProductivity>()
             .Where(p => p.TenantId == tenantId && p.Date >= fromDate && p.Date <= toDate);

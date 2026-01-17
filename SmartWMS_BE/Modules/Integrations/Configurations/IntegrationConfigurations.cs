@@ -169,3 +169,36 @@ public class WebhookEndpointConfiguration : IEntityTypeConfiguration<WebhookEndp
         builder.HasIndex(w => new { w.TenantId, w.IntegrationId });
     }
 }
+
+public class SyncJobConfiguration : IEntityTypeConfiguration<SyncJob>
+{
+    public void Configure(EntityTypeBuilder<SyncJob> builder)
+    {
+        builder.ToTable("SyncJobs");
+
+        builder.HasKey(s => s.Id);
+
+        builder.Property(s => s.EntityType)
+            .IsRequired()
+            .HasMaxLength(100);
+
+        builder.Property(s => s.Direction)
+            .HasConversion<string>()
+            .HasMaxLength(20);
+
+        builder.Property(s => s.Status)
+            .HasConversion<string>()
+            .HasMaxLength(30);
+
+        builder.Property(s => s.ErrorMessage)
+            .HasMaxLength(2000);
+
+        builder.HasOne(s => s.Integration)
+            .WithMany()
+            .HasForeignKey(s => s.IntegrationId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasIndex(s => new { s.TenantId, s.IntegrationId, s.Status });
+        builder.HasIndex(s => new { s.TenantId, s.CreatedAt });
+    }
+}

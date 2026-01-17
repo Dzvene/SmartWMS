@@ -1,6 +1,6 @@
 import * as signalR from '@microsoft/signalr';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
+const API_URL = process.env.API_URL || 'http://localhost:5050';
 
 let connection: signalR.HubConnection | null = null;
 

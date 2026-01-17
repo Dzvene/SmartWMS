@@ -135,7 +135,7 @@ export function NotificationForm({ initialData, onSubmit, loading, isEditMode }:
               />
               {errors.subject && <span className="form-field__error">{errors.subject.message}</span>}
               <p className="form-field__hint">
-                {t('notifications.subjectHint', 'Use {{variableName}} for dynamic content')}
+                {t('notifications.subjectHint', "Use '{{variableName}}' for dynamic content")}
               </p>
             </div>
 
@@ -218,7 +218,7 @@ Thank you for your business!`}
               />
               {errors.bodyTemplate && <span className="form-field__error">{errors.bodyTemplate.message}</span>}
               <p className="form-field__hint">
-                {t('notifications.bodyHint', 'Use {{variableName}} for dynamic placeholders. HTML is supported for email channels.')}
+                {t('notifications.bodyHint', "Use '{{variableName}}' for dynamic placeholders. HTML is supported for email channels.")}
               </p>
             </div>
           </div>

@@ -94,6 +94,25 @@ public class WebhookEndpoint : TenantEntity
     public int FailureCount { get; set; }
 }
 
+public class SyncJob : TenantEntity
+{
+    public Guid IntegrationId { get; set; }
+    public Integration Integration { get; set; } = null!;
+
+    public string EntityType { get; set; } = string.Empty;
+    public SyncDirection Direction { get; set; }
+    public SyncJobStatus Status { get; set; } = SyncJobStatus.Pending;
+
+    public DateTime? StartedAt { get; set; }
+    public DateTime? CompletedAt { get; set; }
+
+    public int TotalRecords { get; set; }
+    public int ProcessedRecords { get; set; }
+    public int FailedRecords { get; set; }
+
+    public string? ErrorMessage { get; set; }
+}
+
 #region Enums
 
 public enum IntegrationType
@@ -126,6 +145,23 @@ public enum IntegrationLogType
     Webhook,
     Error,
     Info
+}
+
+public enum SyncDirection
+{
+    Inbound,
+    Outbound,
+    Bidirectional
+}
+
+public enum SyncJobStatus
+{
+    Pending,
+    InProgress,
+    Completed,
+    Failed,
+    PartiallyCompleted,
+    Cancelled
 }
 
 #endregion

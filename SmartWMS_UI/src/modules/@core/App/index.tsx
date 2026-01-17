@@ -8,16 +8,16 @@ import { Login } from '../Auth';
 import { ProductCatalog, ProductDetails, ProductCreate } from '../../@inventory/ProductCatalog';
 import { StockLevels } from '../../@inventory/StockLevels';
 import { CycleCount } from '../../@inventory/CycleCount';
-import { Adjustments } from '../../@inventory/Adjustments';
-import { Transfers } from '../../@inventory/Transfers';
+import { Adjustments, AdjustmentCreate, AdjustmentDetails } from '../../@inventory/Adjustments';
+import { Transfers, TransferCreate, TransferDetails } from '../../@inventory/Transfers';
 import { Picking, PickTaskExecution } from '../../@outbound/Picking';
-import { Shipping } from '../../@outbound/Shipping';
+import { Shipping, ShippingDetails } from '../../@outbound/Shipping';
 import { Packing, PackingCreate, PackingTaskExecution } from '../../@outbound/Packing';
 import { Deliveries } from '../../@outbound/Deliveries';
 import { PurchaseOrders } from '../../@inbound/PurchaseOrders';
 import { Receiving, ReceivingCreate, ReceivingExecution } from '../../@inbound/Receiving';
 import { Putaway, PutawayCreate, PutawayTaskExecution } from '../../@inbound/Putaway';
-import { Returns, ReturnsCreate } from '../../@inbound/Returns';
+import { Returns, ReturnsCreate, ReturnsDetails } from '../../@inbound/Returns';
 import { LocationsList, LocationDetails, LocationCreate } from '../../@warehouse/Locations';
 import { ZonesList, ZoneDetails, ZoneCreate } from '../../@warehouse/Zones';
 import { Equipment, EquipmentCreate, EquipmentDetails } from '../../@warehouse/Equipment';
@@ -65,11 +65,11 @@ import {
   OPERATIONS,
 } from '../../../constants/routes';
 
-// Build timestamp injected by Vite at build time
+// Build timestamp injected by Webpack at build time
 declare const __BUILD_TIME__: string;
 
 function DevBuildInfo() {
-  if (import.meta.env.PROD) return null;
+  if (process.env.NODE_ENV === 'production') return null;
 
   return (
     <div
@@ -158,7 +158,11 @@ function App() {
                   <Route path={INVENTORY.STOCK_LEVELS} element={<StockLevels />} />
                   <Route path={INVENTORY.CYCLE_COUNT} element={<CycleCount />} />
                   <Route path={INVENTORY.ADJUSTMENTS} element={<Adjustments />} />
+                  <Route path={INVENTORY.ADJUSTMENT_CREATE} element={<AdjustmentCreate />} />
+                  <Route path={INVENTORY.ADJUSTMENT_DETAILS} element={<AdjustmentDetails />} />
                   <Route path={INVENTORY.TRANSFERS} element={<Transfers />} />
+                  <Route path={INVENTORY.TRANSFER_CREATE} element={<TransferCreate />} />
+                  <Route path={INVENTORY.TRANSFER_DETAILS} element={<TransferDetails />} />
 
                   {/* Outbound */}
                   <Route path={OUTBOUND.SALES_ORDERS} element={<OrdersSalesOrders />} />
@@ -168,6 +172,7 @@ function App() {
                   <Route path={OUTBOUND.PACKING_CREATE} element={<PackingCreate />} />
                   <Route path={OUTBOUND.PACK_EXECUTION} element={<PackingTaskExecution />} />
                   <Route path={OUTBOUND.SHIPPING} element={<Shipping />} />
+                  <Route path={OUTBOUND.SHIPPING_DETAILS} element={<ShippingDetails />} />
                   <Route path={OUTBOUND.DELIVERIES} element={<Deliveries />} />
 
                   {/* Inbound */}
@@ -180,6 +185,7 @@ function App() {
                   <Route path={INBOUND.PUTAWAY_EXECUTION} element={<PutawayTaskExecution />} />
                   <Route path={INBOUND.RETURNS} element={<Returns />} />
                   <Route path={INBOUND.RETURNS_CREATE} element={<ReturnsCreate />} />
+                  <Route path={INBOUND.RETURNS_DETAILS} element={<ReturnsDetails />} />
 
                   {/* Warehouse */}
                   <Route path={WAREHOUSE.WAREHOUSES} element={<WarehousesList />} />

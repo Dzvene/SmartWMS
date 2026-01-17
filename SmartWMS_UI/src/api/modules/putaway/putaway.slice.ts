@@ -25,7 +25,7 @@ export const putawayApi = baseApi.injectEndpoints({
 
     getPutawayTasks: builder.query<PutawayTaskListResponse, PutawayTaskFilters | void>({
       query: (params: PutawayTaskFilters = {}) => ({
-        url: `/putaway/tasks`,
+        url: `/putaway`,
         params,
       }),
       providesTags: (result) =>
@@ -38,13 +38,13 @@ export const putawayApi = baseApi.injectEndpoints({
     }),
 
     getPutawayTaskById: builder.query<PutawayTaskResponse, string>({
-      query: (id) => `/putaway/tasks/${id}`,
+      query: (id) => `/putaway/${id}`,
       providesTags: (_result, _error, id) => [{ type: 'PutawayTasks', id }],
     }),
 
     createPutawayTask: builder.mutation<PutawayTaskResponse, CreatePutawayTaskRequest>({
       query: (body) => ({
-        url: `/putaway/tasks`,
+        url: `/putaway`,
         method: 'POST',
         body,
       }),
@@ -53,7 +53,7 @@ export const putawayApi = baseApi.injectEndpoints({
 
     createPutawayFromReceipt: builder.mutation<ApiResponse<{ count: number }>, CreatePutawayFromReceiptRequest>({
       query: (body) => ({
-        url: `/putaway/tasks/from-receipt`,
+        url: `/putaway/from-goods-receipt`,
         method: 'POST',
         body,
       }),
@@ -62,7 +62,7 @@ export const putawayApi = baseApi.injectEndpoints({
 
     assignPutawayTask: builder.mutation<PutawayTaskResponse, { id: string; data: AssignPutawayTaskRequest }>({
       query: ({ id, data }) => ({
-        url: `/putaway/tasks/${id}/assign`,
+        url: `/putaway/${id}/assign`,
         method: 'POST',
         body: data,
       }),
@@ -74,7 +74,7 @@ export const putawayApi = baseApi.injectEndpoints({
 
     startPutawayTask: builder.mutation<PutawayTaskResponse, string>({
       query: (id) => ({
-        url: `/putaway/tasks/${id}/start`,
+        url: `/putaway/${id}/start`,
         method: 'POST',
       }),
       invalidatesTags: (_result, _error, id) => [
@@ -85,7 +85,7 @@ export const putawayApi = baseApi.injectEndpoints({
 
     completePutawayTask: builder.mutation<PutawayTaskResponse, { id: string; data: CompletePutawayTaskRequest }>({
       query: ({ id, data }) => ({
-        url: `/putaway/tasks/${id}/complete`,
+        url: `/putaway/${id}/complete`,
         method: 'POST',
         body: data,
       }),
@@ -98,7 +98,7 @@ export const putawayApi = baseApi.injectEndpoints({
 
     cancelPutawayTask: builder.mutation<PutawayTaskResponse, string>({
       query: (id) => ({
-        url: `/putaway/tasks/${id}/cancel`,
+        url: `/putaway/${id}/cancel`,
         method: 'POST',
       }),
       invalidatesTags: (_result, _error, id) => [

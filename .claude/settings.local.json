@@ -124,7 +124,13 @@
       "Bash(cmd //c \"taskkill /IM node.exe /F\")",
       "Bash(dotnet restore:*)",
       "Bash(xargs:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(git checkout:*)",
+      "Bash(rd /s /q \"D:\\\\Projects\\\\SmartWMS\\\\SmartWMS_UI\\\\node_modules\")",
+      "Bash(npm run build:dev:*)",
+      "Bash(npm run:*)",
+      "Bash(PGPASSWORD=postgres psql:*)"
     ]
   }
 }

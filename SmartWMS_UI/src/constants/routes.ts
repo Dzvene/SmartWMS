@@ -66,6 +66,7 @@ export const OUTBOUND = {
   PACKING_CREATE: '/outbound/packing/new',
   PACK_EXECUTION: '/outbound/packing/:id',
   SHIPPING: '/outbound/shipping',
+  SHIPPING_DETAILS: '/outbound/shipping/:id',
   DELIVERIES: '/outbound/deliveries',
 } as const;
 
@@ -78,7 +79,11 @@ export const INVENTORY = {
   STOCK_LEVELS: '/inventory/stock-levels',
   CYCLE_COUNT: '/inventory/cycle-count',
   ADJUSTMENTS: '/inventory/adjustments',
+  ADJUSTMENT_CREATE: '/inventory/adjustments/new',
+  ADJUSTMENT_DETAILS: '/inventory/adjustments/:id',
   TRANSFERS: '/inventory/transfers',
+  TRANSFER_CREATE: '/inventory/transfers/new',
+  TRANSFER_DETAILS: '/inventory/transfers/:id',
 } as const;
 
 // ============================================

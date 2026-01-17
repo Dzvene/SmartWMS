@@ -27,7 +27,13 @@ export function RoleForm({ initialData, onSubmit, loading, isEditMode, isSystemR
   const t = useTranslate();
 
   const { data: permissionsResponse } = useGetPermissionsQuery();
-  const availablePermissions = useMemo(() => permissionsResponse?.data || [], [permissionsResponse?.data]);
+  const availablePermissions = useMemo(() => {
+    const data = permissionsResponse?.data || [];
+    // Handle both string[] and object[] responses
+    return data.map((perm: unknown) =>
+      typeof perm === 'string' ? perm : (perm as { name?: string; permission?: string })?.name || (perm as { name?: string; permission?: string })?.permission || ''
+    ).filter(Boolean);
+  }, [permissionsResponse?.data]);
 
   const {
     register,

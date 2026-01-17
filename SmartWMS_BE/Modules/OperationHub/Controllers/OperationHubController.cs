@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartWMS.API.Modules.OperationHub.DTOs;
@@ -26,7 +27,7 @@ public class OperationHubController : ControllerBase
     [HttpPost("sessions/start")]
     public async Task<IActionResult> StartSession(Guid tenantId, [FromBody] StartSessionRequest request)
     {
-        var userIdClaim = User.FindFirst("UserId")?.Value ?? User.FindFirst("sub")?.Value;
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
             return Unauthorized();
 
@@ -40,7 +41,7 @@ public class OperationHubController : ControllerBase
     [HttpGet("sessions/current")]
     public async Task<IActionResult> GetCurrentSession(Guid tenantId)
     {
-        var userIdClaim = User.FindFirst("UserId")?.Value ?? User.FindFirst("sub")?.Value;
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
             return Unauthorized();
 
@@ -108,7 +109,7 @@ public class OperationHubController : ControllerBase
     [HttpGet("tasks/next")]
     public async Task<IActionResult> GetNextTask(Guid tenantId, [FromQuery] Guid warehouseId, [FromQuery] string? preferredTaskType = null)
     {
-        var userIdClaim = User.FindFirst("UserId")?.Value ?? User.FindFirst("sub")?.Value;
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
             return Unauthorized();
 
@@ -132,7 +133,7 @@ public class OperationHubController : ControllerBase
     [HttpPost("tasks/{taskType}/{taskId}/start")]
     public async Task<IActionResult> StartTask(Guid tenantId, string taskType, Guid taskId)
     {
-        var userIdClaim = User.FindFirst("UserId")?.Value ?? User.FindFirst("sub")?.Value;
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
             return Unauthorized();
 
@@ -147,7 +148,7 @@ public class OperationHubController : ControllerBase
     [HttpPost("tasks/{taskType}/{taskId}/complete")]
     public async Task<IActionResult> CompleteTask(Guid tenantId, string taskType, Guid taskId, [FromBody] CompleteTaskRequest request)
     {
-        var userIdClaim = User.FindFirst("UserId")?.Value ?? User.FindFirst("sub")?.Value;
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
             return Unauthorized();
 
@@ -163,7 +164,7 @@ public class OperationHubController : ControllerBase
     [HttpPost("tasks/{taskType}/{taskId}/pause")]
     public async Task<IActionResult> PauseTask(Guid tenantId, string taskType, Guid taskId, [FromBody] PauseTaskRequest? request = null)
     {
-        var userIdClaim = User.FindFirst("UserId")?.Value ?? User.FindFirst("sub")?.Value;
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
             return Unauthorized();
 
@@ -180,7 +181,7 @@ public class OperationHubController : ControllerBase
     [HttpPost("tasks/{taskType}/{taskId}/resume")]
     public async Task<IActionResult> ResumeTask(Guid tenantId, string taskType, Guid taskId)
     {
-        var userIdClaim = User.FindFirst("UserId")?.Value ?? User.FindFirst("sub")?.Value;
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
             return Unauthorized();
 
@@ -199,7 +200,7 @@ public class OperationHubController : ControllerBase
     [HttpPost("scan")]
     public async Task<IActionResult> ProcessScan(Guid tenantId, [FromBody] ScanRequest request)
     {
-        var userIdClaim = User.FindFirst("UserId")?.Value ?? User.FindFirst("sub")?.Value;
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
             return Unauthorized();
 
@@ -247,7 +248,7 @@ public class OperationHubController : ControllerBase
     [HttpGet("operator/me/stats")]
     public async Task<IActionResult> GetMyStats(Guid tenantId)
     {
-        var userIdClaim = User.FindFirst("UserId")?.Value ?? User.FindFirst("sub")?.Value;
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
             return Unauthorized();
 

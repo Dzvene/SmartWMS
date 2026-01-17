@@ -751,6 +751,156 @@ public class IntegrationsService : IIntegrationsService
 
     #endregion
 
+    #region Sync Jobs
+
+    public async Task<ApiResponse<PaginatedResult<SyncJobDto>>> GetSyncJobsAsync(Guid tenantId, SyncJobQueryParams query)
+    {
+        var queryable = _context.SyncJobs
+            .Include(s => s.Integration)
+            .Where(s => s.TenantId == tenantId);
+
+        if (query.IntegrationId.HasValue)
+            queryable = queryable.Where(s => s.IntegrationId == query.IntegrationId.Value);
+
+        if (!string.IsNullOrEmpty(query.EntityType))
+            queryable = queryable.Where(s => s.EntityType == query.EntityType);
+
+        if (query.Direction.HasValue)
+            queryable = queryable.Where(s => s.Direction == query.Direction.Value);
+
+        if (query.Status.HasValue)
+            queryable = queryable.Where(s => s.Status == query.Status.Value);
+
+        if (query.FromDate.HasValue)
+            queryable = queryable.Where(s => s.CreatedAt >= query.FromDate.Value);
+
+        if (query.ToDate.HasValue)
+            queryable = queryable.Where(s => s.CreatedAt <= query.ToDate.Value);
+
+        var totalCount = await queryable.CountAsync();
+
+        var items = await queryable
+            .OrderByDescending(s => s.CreatedAt)
+            .Skip((query.Page - 1) * query.PageSize)
+            .Take(query.PageSize)
+            .Select(s => new SyncJobDto(
+                s.Id,
+                s.IntegrationId,
+                s.Integration.Name,
+                s.EntityType,
+                s.Direction,
+                s.Status,
+                s.StartedAt,
+                s.CompletedAt,
+                s.TotalRecords,
+                s.ProcessedRecords,
+                s.FailedRecords,
+                s.ErrorMessage,
+                s.CreatedAt
+            ))
+            .ToListAsync();
+
+        var result = new PaginatedResult<SyncJobDto>
+        {
+            Items = items,
+            TotalCount = totalCount,
+            Page = query.Page,
+            PageSize = query.PageSize,
+            TotalPages = (int)Math.Ceiling(totalCount / (double)query.PageSize)
+        };
+
+        return ApiResponse<PaginatedResult<SyncJobDto>>.Ok(result);
+    }
+
+    public async Task<ApiResponse<SyncJobDto>> GetSyncJobByIdAsync(Guid tenantId, Guid syncJobId)
+    {
+        var job = await _context.SyncJobs
+            .Include(s => s.Integration)
+            .FirstOrDefaultAsync(s => s.TenantId == tenantId && s.Id == syncJobId);
+
+        if (job == null)
+            return ApiResponse<SyncJobDto>.Fail("Sync job not found");
+
+        return ApiResponse<SyncJobDto>.Ok(new SyncJobDto(
+            job.Id,
+            job.IntegrationId,
+            job.Integration.Name,
+            job.EntityType,
+            job.Direction,
+            job.Status,
+            job.StartedAt,
+            job.CompletedAt,
+            job.TotalRecords,
+            job.ProcessedRecords,
+            job.FailedRecords,
+            job.ErrorMessage,
+            job.CreatedAt
+        ));
+    }
+
+    public async Task<ApiResponse<bool>> CancelSyncJobAsync(Guid tenantId, Guid syncJobId)
+    {
+        var job = await _context.SyncJobs
+            .FirstOrDefaultAsync(s => s.TenantId == tenantId && s.Id == syncJobId);
+
+        if (job == null)
+            return ApiResponse<bool>.Fail("Sync job not found");
+
+        if (job.Status != SyncJobStatus.Pending && job.Status != SyncJobStatus.InProgress)
+            return ApiResponse<bool>.Fail("Only pending or in-progress jobs can be cancelled");
+
+        job.Status = SyncJobStatus.Cancelled;
+        job.CompletedAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync();
+
+        return ApiResponse<bool>.Ok(true, "Sync job cancelled");
+    }
+
+    public async Task<ApiResponse<SyncJobDto>> RetrySyncJobAsync(Guid tenantId, Guid syncJobId)
+    {
+        var job = await _context.SyncJobs
+            .Include(s => s.Integration)
+            .FirstOrDefaultAsync(s => s.TenantId == tenantId && s.Id == syncJobId);
+
+        if (job == null)
+            return ApiResponse<SyncJobDto>.Fail("Sync job not found");
+
+        if (job.Status != SyncJobStatus.Failed && job.Status != SyncJobStatus.PartiallyCompleted)
+            return ApiResponse<SyncJobDto>.Fail("Only failed or partially completed jobs can be retried");
+
+        // Create a new job based on the failed one
+        var newJob = new SyncJob
+        {
+            TenantId = tenantId,
+            IntegrationId = job.IntegrationId,
+            EntityType = job.EntityType,
+            Direction = job.Direction,
+            Status = SyncJobStatus.Pending,
+            TotalRecords = job.TotalRecords
+        };
+
+        _context.SyncJobs.Add(newJob);
+        await _context.SaveChangesAsync();
+
+        return ApiResponse<SyncJobDto>.Ok(new SyncJobDto(
+            newJob.Id,
+            newJob.IntegrationId,
+            job.Integration.Name,
+            newJob.EntityType,
+            newJob.Direction,
+            newJob.Status,
+            newJob.StartedAt,
+            newJob.CompletedAt,
+            newJob.TotalRecords,
+            newJob.ProcessedRecords,
+            newJob.FailedRecords,
+            newJob.ErrorMessage,
+            newJob.CreatedAt
+        ), "New sync job created");
+    }
+
+    #endregion
+
     #region Private Helpers
 
     private static IntegrationDto MapToDto(Integration i) => new(
